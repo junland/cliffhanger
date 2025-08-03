@@ -21,22 +21,18 @@ jobs:
           libssl-dev \
           linux-libc-dev \
           make \
-          zlib1g-dev
+          zlib1g-dev \
+          liblua5.3-dev
 
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Build APK Tools
+    - name: Build & Install APK Tools
       run: |
         cd apk-tools
         make clean || true
         chmod +x libfetch/*.sh
-        LUA=no make
-
-    - name: Install APK Tools
-      run: |
-        cd apk-tools
-        LUA=no make install
+        sudo make install
 
     - name: Verify APK Installation
       run: |
