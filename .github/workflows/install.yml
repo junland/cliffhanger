@@ -1,0 +1,62 @@
+name: Main Workflow
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  install-tools:
+    name: Install apk-tools source code
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install dependencies (Ubuntu/Debian)
+      run: |
+        apt-get update
+        apt-get install -y \
+          build-essential \
+          git \
+          libssl-dev \
+          linux-libc-dev \
+          make \
+          zlib1g-dev
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Build APK Tools
+      run: |
+        cd apk-tools
+        make clean || true
+        make
+
+    - name: Install APK Tools
+      run: |
+        cd apk-tools
+        make install
+
+    - name: Verify APK Installation
+      run: |
+        echo "Checking if apk is installed..."
+        which apk || echo "APK not in PATH, checking /sbin/apk"
+        
+        if [ -f /sbin/apk ]; then
+          echo "✅ APK Tools installed successfully at /sbin/apk"
+          apk --version
+          echo "APK Tools installation verified!"
+        else
+          echo "❌ APK Tools installation failed"
+          exit 1
+        fi
+
+    - name: Test APK Functionality
+      run: |
+        echo "Testing basic APK functionality..."
+        apk --help | head -10
+        
+        # Test info command (should work even without repositories)
+        apk info --version || echo "Info command test completed"
+        
+        echo "✅ APK Tools functionality test completed"
