@@ -58,7 +58,6 @@ dkms.conf
 apk-tools/src/apk
 apk-tools/src/apk-test
 apk-tools/src/apk.static
-apk-tools/src/help.h
 apk-tools/test/*.got
 apk-tools/test/repos.out
 apk-tools/test/repos.stamp
