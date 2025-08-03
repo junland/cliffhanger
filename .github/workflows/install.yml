@@ -36,7 +36,7 @@ jobs:
     - name: Install APK Tools
       run: |
         cd apk-tools
-        make install
+        LUA=no make install
 
     - name: Verify APK Installation
       run: |
