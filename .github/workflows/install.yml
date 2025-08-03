@@ -25,6 +25,7 @@ jobs:
           linux-libc-dev \
           make \
           zlib1g-dev \
+          scdoc \
           lua5.3 \
           liblua5.3-dev
 
