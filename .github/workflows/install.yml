@@ -30,6 +30,7 @@ jobs:
       run: |
         cd apk-tools
         make clean || true
+        chmod +x libfetch/*.sh
         LUA=no make
 
     - name: Install APK Tools
