@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  LUA: "no"
+  NEEDS_LUA: "no"
 
 jobs:
   install-tools:
@@ -34,9 +34,9 @@ jobs:
     - name: Build & Install APK Tools
       run: |
         cd apk-tools
-        make clean || true
+        make clean LUA=${{ env.NEEDS_LUA }} || true
         chmod +x libfetch/*.sh
-        sudo make install
+        sudo make install LUA=${{ env.NEEDS_LUA }}
 
     - name: Verify APK Installation
       run: |
