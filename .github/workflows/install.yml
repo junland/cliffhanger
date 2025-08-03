@@ -30,7 +30,7 @@ jobs:
       run: |
         cd apk-tools
         make clean || true
-        make
+        LUA=no make
 
     - name: Install APK Tools
       run: |
