@@ -42,6 +42,9 @@
 *.idb
 *.pdb
 
+# Debug information files
+*.dwo
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
@@ -51,5 +54,23 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
-*.dwo
+# From apk-tools directory
+apk-tools/src/apk
+apk-tools/src/apk-test
+apk-tools/src/apk.static
+apk-tools/src/help.h
+apk-tools/test/*.got
+apk-tools/test/repos.out
+apk-tools/test/repos.stamp
+apk-tools/test/test*.out
+apk-tools/test/test*.ok
+apk-tools/libfetch/*err.h
+apk-tools/*.a
+apk-tools/*.o
+apk-tools/*.d
+apk-tools/*.cmd
+apk-tools/*.so*
+apk-tools/*.5
+apk-tools/*.8
+apk-tools/*.pc
+apk-tools/config.mk

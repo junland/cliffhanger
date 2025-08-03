@@ -1,0 +1,31 @@
+scdocs-y += \
+	apk-cache.5 \
+	apk-keys.5 \
+	apk-repositories.5 \
+	apk-world.5 \
+	apk.8 \
+	apk-add.8 \
+	apk-audit.8 \
+	apk-cache.8 \
+	apk-del.8 \
+	apk-dot.8 \
+	apk-fetch.8 \
+	apk-fix.8 \
+	apk-index.8 \
+	apk-info.8 \
+	apk-list.8 \
+	apk-manifest.8 \
+	apk-policy.8 \
+	apk-search.8 \
+	apk-stats.8 \
+	apk-update.8 \
+	apk-upgrade.8 \
+	apk-verify.8 \
+	apk-version.8
+
+install:
+	for page in $(scdocs-y); do \
+		section=$${page#*.}; \
+		$(INSTALLDIR) $(DESTDIR)$(MANDIR)/man$$section; \
+		$(INSTALL) $(obj)/$$page $(DESTDIR)$(MANDIR)/man$$section/; \
+	done
