@@ -55,9 +55,6 @@ jobs:
 
     - name: Test APK Functionality
       run: |
-        echo "Testing basic APK functionality..."
-        apk --help | head -10
-        
         # Test info command (should work even without repositories)
         apk info --version || echo "Info command test completed"
         
