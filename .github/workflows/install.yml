@@ -7,12 +7,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
-env:
-  NEEDS_LUA: "no"
-
 jobs:
-  install-tools:
-    name: Install apk-tools source code
+  build:
+    name: Install dependencies
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies (Ubuntu/Debian)
@@ -22,40 +19,23 @@ jobs:
           build-essential \
           git \
           libssl-dev \
-          linux-libc-dev \
           make \
-          zlib1g-dev \
+          meson \
+          ninja-build \
           scdoc \
-          lua5.3 \
-          liblua5.3-dev
+          zlib1g-dev
 
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Build & Install APK Tools
+    - name: Grab, unpack, & install the apk-tools-static package
       run: |
-        cd apk-tools
-        make clean LUA=${{ env.NEEDS_LUA }} || true
-        chmod +x libfetch/*.sh
-        sudo make install LUA=${{ env.NEEDS_LUA }}
+        wget https://dl-cdn.alpinelinux.org/alpine/edge/main/x86_64/apk-tools-static-3.0.0_rc5_git20250715-r0.apk --output apk-tools-static.apk
+        mkdir -p apk-tools
+        tar -xf apk-tools-static.apk -C apk-tools --strip-components=1
+        sudo mv -v apk-tools/sbin/apk.static /usr/local/sbin/apk
+        chmod +x /usr/local/sbin/apk
 
-    - name: Verify APK Installation
+    - name: Verify apk-tools installation
       run: |
-        echo "Checking if apk is installed..."
-        which apk || echo "APK not in PATH, checking /sbin/apk"
-        
-        if [ -f /sbin/apk ]; then
-          echo "✅ APK Tools installed successfully at /sbin/apk"
-          apk --version
-          echo "APK Tools installation verified!"
-        else
-          echo "❌ APK Tools installation failed"
-          exit 1
-        fi
+        apk --version
 
-    - name: Test APK Functionality
-      run: |
-        # Test info command (should work even without repositories)
-        apk info --version || echo "Info command test completed"
-        
-        echo "✅ APK Tools functionality test completed"
+    - name: Remove apk-tools-static package
+      run: rm -rfv apk-tools-static.apk apk-tools
