@@ -17,25 +17,26 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           build-essential \
+          curl \
           git \
           libssl-dev \
           make \
           meson \
           ninja-build \
-          scdoc \
+          wget \
+          unzip \
           zlib1g-dev
 
-    - name: Grab, unpack, & install the apk-tools-static package
+    - name: Grab, unpack, & install the scratchpkg package
       run: |
-        wget https://dl-cdn.alpinelinux.org/alpine/edge/main/x86_64/apk-tools-static-3.0.0_rc5_git20250715-r0.apk -O apk-tools-static.apk
-        mkdir -p apk-tools
-        tar -xvf apk-tools-static.apk -C apk-tools --strip-components=1
-        sudo mv -v apk-tools/sbin/apk.static /usr/local/sbin/apk
-        chmod +x /usr/local/sbin/apk
+        wget https://github.com/venomlinux/scratchpkg/archive/refs/heads/master.zip -O scratchpkg-master.zip
+        unzip scratchpkg-master.zip
+        cd scratchpkg-master
+        chmod +x INSTALL.sh
+        sudo ./INSTALL.sh
 
-    - name: Verify apk-tools installation
+    - name: Verify scratchpkg installation
       run: |
-        apk --version
+        scratchpkg installed
 
-    - name: Remove apk-tools-static package
-      run: rm -rfv apk-tools-static.apk apk-tools
+
