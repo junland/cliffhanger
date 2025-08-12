@@ -23,8 +23,9 @@ jobs:
           make \
           meson \
           ninja-build \
-          wget \
+          tree \
           unzip \
+          wget \
           zlib1g-dev
 
     - name: Grab, unpack, & install the scratchpkg package
@@ -34,6 +35,15 @@ jobs:
         cd scratchpkg-master
         chmod +x INSTALL.sh
         sudo ./INSTALL.sh
+
+    - name: Remove scratchpkg source files
+      run: rm -rf scratchpkg-master.zip scratchpkg-master
+
+    - name: Verify directories
+      run: |
+        tree /usr/cache/scratchpkg
+        tree /usr/ports
+        tree /etc/revdep.d
 
     - name: Verify scratchpkg installation
       run: |
