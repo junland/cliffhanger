@@ -30,14 +30,14 @@ jobs:
 
     - name: Grab, unpack, & install the scratchpkg package
       run: |
-        wget https://github.com/junland/scratchpkg-ng/archive/refs/heads/dev.zip -O scratchpkg-ng-dev .zip
-        unzip scratchpkg-ng-dev .zip
-        cd scratchpkg-ng-dev 
+        wget https://github.com/junland/scratchpkg-ng/archive/refs/heads/dev.zip -O scratchpkg-ng-dev.zip
+        unzip scratchpkg-ng-dev.zip
+        cd scratchpkg-ng-dev
         chmod +x INSTALL.sh
         sudo ./INSTALL.sh
 
     - name: Remove scratchpkg source files
-      run: rm -rf scratchpkg-master.zip scratchpkg-master
+      run: rm -rf scratchpkg-ng-dev.zip scratchpkg-ng-dev
 
     - name: Verify directories
       run: |
