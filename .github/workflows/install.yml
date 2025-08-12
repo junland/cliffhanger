@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    name: Install dependencies
+    name: Run Build
     runs-on: ubuntu-latest
     steps:
     - name: Install dependencies (Ubuntu/Debian)
@@ -30,9 +30,9 @@ jobs:
 
     - name: Grab, unpack, & install the scratchpkg package
       run: |
-        wget https://github.com/venomlinux/scratchpkg/archive/refs/heads/master.zip -O scratchpkg-master.zip
-        unzip scratchpkg-master.zip
-        cd scratchpkg-master
+        wget https://github.com/junland/scratchpkg-ng/archive/refs/heads/dev.zip -O scratchpkg-ng-dev .zip
+        unzip scratchpkg-ng-dev .zip
+        cd scratchpkg-ng-dev 
         chmod +x INSTALL.sh
         sudo ./INSTALL.sh
 
