@@ -37,6 +37,6 @@ jobs:
 
     - name: Verify scratchpkg installation
       run: |
-        scratchpkg installed
+        scratch installed
 
 
