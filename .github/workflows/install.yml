@@ -41,7 +41,7 @@ jobs:
 
     - name: Verify directories
       run: |
-        tree /usr/cache/scratchpkg
+        tree /var/cache/scratchpkg
         tree /usr/ports
         tree /etc/revdep.d
 
