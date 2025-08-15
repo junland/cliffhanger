@@ -8,15 +8,19 @@ CHANNEL_DATE="stable-2025.08-1"
 CONFIG_SITE="toolchains/${TARGET_ARCH}/etc/config.site"
 LC_ALL=POSIX
 TARGET_ARCH="x86_64-v2"
-TARGET_TRIPLET="${TARGET_ARCH}-linux-gnu"
 TARGET_ROOTFS_PATH="rootfs"
-TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
-TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//-/_}"
+TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
+TARGET_TRIPLET="${TARGET_ARCH}-linux-gnu"
 TOOLCHAIN_PATH="toolchains/${TARGET_ARCH}"
+TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//-/_}"
 TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
 export LC_ALL CONFIG_SITE
+
+# Variables with shorter names
+WORK="${TARGET_ROOTFS_WORK_PATH}"
+SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
 M4_VER="1.4.20"
@@ -38,6 +42,8 @@ curl -L "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
 msg "Relocate the toolchain..."
 
+chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
+
 cd "${TOOLCHAIN_PATH}" && ${TOOLCHAIN_PATH}/relocate-sdk.sh && cd ..
 
 # Create necessary directories
@@ -54,7 +60,7 @@ msg "Downloading M4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
-curl -L "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
+curl --quiet -L "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
 
 msg "Copying sources of m4 to work directory..."
 
