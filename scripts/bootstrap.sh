@@ -120,9 +120,9 @@ pushd build
 
 make -C include
 
-popd
-
 make -C progs tic
+
+popd
 
 msg "Configuring ncurses..."
 
