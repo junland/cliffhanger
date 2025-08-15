@@ -16,6 +16,8 @@ TOOLCHAIN_PATH="toolchains/${TARGET_ARCH}"
 TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//-/_}"
 TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
+CURL_OPTS="-L -s"
+
 export LC_ALL CONFIG_SITE
 
 # Variables with shorter names
@@ -38,7 +40,7 @@ echo "Downloading toolchain from ${TOOLCHAIN_URL}..."
 # Download the toolchain and extract it to the appropriate directory
 mkdir -p "${TOOLCHAIN_PATH}"
 
-curl -L "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
+curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
 msg "Relocate the toolchain..."
 
@@ -60,7 +62,7 @@ msg "Downloading M4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
-curl --quiet -L "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
 
 msg "Copying sources of m4 to work directory..."
 
