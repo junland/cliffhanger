@@ -43,11 +43,17 @@ mkdir -p "${TOOLCHAIN_PATH}"
 
 curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
+# Make sure relocate script is present and executable
+if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
+    echo "Error: ${TOOLCHAIN_PATH}/relocate-sdk.sh not found!"
+    exit 1
+else
+    chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
+fi
+
 msg "Relocate the toolchain..."
 
-chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
-
-cd "${TOOLCHAIN_PATH}" && ${TOOLCHAIN_PATH}/relocate-sdk.sh && cd ..
+cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
 
 # Create necessary directories
 msg "Creating necessary directories..."
