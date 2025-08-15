@@ -71,7 +71,9 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 # Setup PATH
 export PATH="${TOOLCHAIN_PATH}/bin:$PATH"
 
-# Download M4
+##
+# m4 Step
+##
 msg "Downloading m4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
@@ -98,6 +100,9 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 clean_work_dir
 
+##
+# ncurses Step
+##
 msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
@@ -151,5 +156,39 @@ make DESTDIR=${TARGET_ROOTFS_PATH} TIC_PATH=${TARGET_ROOTFS_WORK_PATH}/ncurses-$
 ln -sv libncursesw.so ${TARGET_ROOTFS_PATH}/usr/lib/libncurses.so
 
 sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${TARGET_ROOTFS_PATH}/usr/include/curses.h
+
+clean_work_dir
+
+##
+# bash Step
+##
+
+msg "Downloading bash..."
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
+
+msg "Copying sources of bash to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
+
+msg "Configuring bash..."
+
+./configure \
+    --prefix=/usr \
+    --build=$(sh support/config.guess) \
+    --host=${TARGET_TRIPLET} \
+    --without-bash-malloc
+
+msg "Building bash..."
+
+make
+
+msg "Installing bash..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+ln -sv bash ${TARGET_ROOTFS_PATH}/usr/bin/sh
 
 clean_work_dir
