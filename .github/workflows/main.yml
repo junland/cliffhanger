@@ -19,6 +19,7 @@ jobs:
           automake \
           build-essential \
           curl \
+          gettext \
           git \
           gperf \
           help2man \
