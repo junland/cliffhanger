@@ -18,9 +18,8 @@ TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
 CURL_OPTS="-L -s"
-CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2"
 
-export LC_ALL CONFIG_SITE CFLAGS
+export LC_ALL CONFIG_SITE
 
 # Variables with shorter names
 WORK="${TARGET_ROOTFS_WORK_PATH}"
@@ -87,7 +86,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
 msg "Configuring m4..."
 
-./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
+CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" ./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
 
 msg "Building m4..."
 
