@@ -49,6 +49,8 @@ jobs:
       run: |
         scratch installed
 
+    - uses: actions/checkout@v4
+
     - name: Execute the bootstrap script
       run: |
         chmod +x ./scripts/bootstrap.sh
