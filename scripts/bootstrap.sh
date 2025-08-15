@@ -79,7 +79,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
 msg "Configuring M4..."
 
-./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
+CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" ./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
 
 msg "Building M4..."
 
