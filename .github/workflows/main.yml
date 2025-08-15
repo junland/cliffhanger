@@ -49,4 +49,7 @@ jobs:
       run: |
         scratch installed
 
-
+    - name: Execute the bootstrap script
+      run: |
+        chmod +x ./scripts/bootstrap.sh
+        ./scripts/bootstrap.sh
