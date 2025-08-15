@@ -12,8 +12,9 @@ TARGET_TRIPLET="${TARGET_ARCH}-linux-gnu"
 TARGET_ROOTFS_PATH="rootfs"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
+TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//-/_}"
 TOOLCHAIN_PATH="toolchains/${TARGET_ARCH}"
-TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TARGET_ARCH}/tarballs/${TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
+TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
 export LC_ALL CONFIG_SITE
 
