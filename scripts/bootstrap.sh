@@ -162,8 +162,9 @@ clean_work_dir
 ##
 # bash Step
 ##
-
 msg "Downloading bash..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
 curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
 
