@@ -37,6 +37,11 @@ jobs:
           wget \
           zlib1g-dev
 
+    - name: Reconfigure sh to use bash
+      run: |
+        sudo dpkg-reconfigure dash
+        sudo ln -sf bash /bin/sh
+
     - name: Grab, unpack, & install the scratchpkg package
       run: |
         wget https://github.com/junland/scratchpkg-ng/archive/refs/heads/dev.zip -O scratchpkg-ng-dev.zip
