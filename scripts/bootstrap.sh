@@ -32,9 +32,13 @@ NCURSES_VER="6.5"
 BASH_VER="5.3"
 COREUTILS_VER="9.7"
 
+# Prefixes to help with group logging
+START_STEP_PREFIX=""
+END_STEP_PREFIX=""
+
 # msg function that will make echo's pretty.
 msg() {
-    echo "==> $*"
+    echo " ==> $*"
 }
 
 # clean work directory function
@@ -43,6 +47,12 @@ clean_work_dir() {
     msg "Cleaning up work directory..."
     rm -rf "${WORK}/*"
 }
+
+##
+# Toolchain Setup
+##
+
+echo "${START_STEP_PREFIX}toolchain Step..."
 
 msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 
@@ -72,9 +82,14 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 # Setup PATH
 export PATH="${TOOLCHAIN_PATH}/bin:$PATH"
 
+echo "${END_STEP_PREFIX}End of toolchain Step..."
+
 ##
 # m4 Step
 ##
+
+echo "${START_STEP_PREFIX}m4 Step..."
+
 msg "Downloading m4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
@@ -101,9 +116,14 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 clean_work_dir
 
+echo "${END_STEP_PREFIX}End of m4 Step..."
+
 ##
 # ncurses Step
 ##
+
+echo "${START_STEP_PREFIX}ncurses Step..."
+
 msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
@@ -160,9 +180,14 @@ sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${TARGET_ROOTFS_PATH}/usr/include/curses.h
 
 clean_work_dir
 
+echo "${END_STEP_PREFIX}End of ncurses Step..."
+
 ##
 # bash Step
 ##
+
+echo "${START_STEP_PREFIX}bash Step..."
+
 msg "Downloading bash..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
@@ -195,9 +220,14 @@ ln -sv bash ${TARGET_ROOTFS_PATH}/usr/bin/sh
 
 clean_work_dir
 
+echo "${END_STEP_PREFIX}End of bash Step..."
+
 ##
 # coreutils Step
 ##
+
+echo "${START_STEP_PREFIX}coreutils Step..."
+
 msg "Downloading coreutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
@@ -233,6 +263,8 @@ mv -v $TARGET_ROOTFS_PATH/usr/share/man/man1/chroot.1 $TARGET_ROOTFS_PATH/usr/sh
 sed -i 's/"1"/"8"/' $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
 
 clean_work_dir
+
+echo "${END_STEP_PREFIX}End of coreutils Step..."
 
 ##
 # diffutils
