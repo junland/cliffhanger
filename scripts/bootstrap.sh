@@ -31,10 +31,12 @@ M4_VER="1.4.19"
 NCURSES_VER="6.5"
 BASH_VER="5.3"
 COREUTILS_VER="9.7"
-
-# Prefixes to help with group logging
-START_STEP_PREFIX=""
-END_STEP_PREFIX=""
+DIFFUTILS_VER="3.11"
+FILE_VER="5.46"
+FINDUTILS_VER="4.10.0"
+GAWK_VER="5.3.1"
+GREP_VER="3.11"
+GZIP_VER="1.13"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -51,8 +53,6 @@ clean_work_dir() {
 ##
 # Toolchain Setup
 ##
-
-echo "${START_STEP_PREFIX}toolchain Step..."
 
 msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 
@@ -82,13 +82,9 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 # Setup PATH
 export PATH="${TOOLCHAIN_PATH}/bin:$PATH"
 
-echo "${END_STEP_PREFIX}End of toolchain Step..."
-
 ##
 # m4 Step
 ##
-
-echo "${START_STEP_PREFIX}m4 Step..."
 
 msg "Downloading m4..."
 
@@ -116,13 +112,9 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 clean_work_dir
 
-echo "${END_STEP_PREFIX}End of m4 Step..."
-
 ##
 # ncurses Step
 ##
-
-echo "${START_STEP_PREFIX}ncurses Step..."
 
 msg "Downloading ncurses..."
 
@@ -180,13 +172,9 @@ sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${TARGET_ROOTFS_PATH}/usr/include/curses.h
 
 clean_work_dir
 
-echo "${END_STEP_PREFIX}End of ncurses Step..."
-
 ##
 # bash Step
 ##
-
-echo "${START_STEP_PREFIX}bash Step..."
 
 msg "Downloading bash..."
 
@@ -220,13 +208,9 @@ ln -sv bash ${TARGET_ROOTFS_PATH}/usr/bin/sh
 
 clean_work_dir
 
-echo "${END_STEP_PREFIX}End of bash Step..."
-
 ##
 # coreutils Step
 ##
-
-echo "${START_STEP_PREFIX}coreutils Step..."
 
 msg "Downloading coreutils..."
 
@@ -264,8 +248,83 @@ sed -i 's/"1"/"8"/' $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
 
 clean_work_dir
 
-echo "${END_STEP_PREFIX}End of coreutils Step..."
-
 ##
 # diffutils
 ##
+
+msg "Downloading diffutils..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
+
+msg "Copying sources of diffutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
+
+msg "Configuring diffutils..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(./config.guess)
+
+msg "Building diffutils..."
+
+make
+
+msg "Installing diffutils..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# findutils Step
+##
+
+msg "Downloading findutils..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
+
+msg "Copying sources of findutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
+
+msg "Configuring and building temp findutils for signature..."
+
+mkdir build
+
+pushd build
+
+../configure \
+    --disable-bzlib \
+    --disable-libseccomp \
+    --disable-xzlib \
+    --disable-zlib
+
+make
+
+popd
+
+msg "Configuring findutils..."
+
+./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(./config.guess)
+
+msg "Building findutils..."
+
+make FILE_COMPILE=$(pwd)/build/src/file
+
+msg "Installing findutils..."
+
+make DESTDIR="${TARGET_ROOTFS_PATH}" install
+
+rm -v ${TARGET_ROOTFS_PATH}/usr/lib/libmagic.la
+
+clean_work_dir

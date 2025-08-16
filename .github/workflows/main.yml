@@ -64,6 +64,4 @@ jobs:
       run: |
         chmod +x ./scripts/bootstrap.sh
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} \
-        START_STEP_PREFIX="::group::" \
-        END_STEP_PREFIX="::endgroup::" \
         ./scripts/bootstrap.sh
