@@ -11,6 +11,11 @@ jobs:
   build:
     name: Run Build
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - TARGET_ARCH: x86_64
+          - TARGET_ARCH: aarch64
     steps:
     - name: Install dependencies (Ubuntu/Debian)
       run: |
@@ -58,4 +63,4 @@ jobs:
     - name: Execute the bootstrap script
       run: |
         chmod +x ./scripts/bootstrap.sh
-        ./scripts/bootstrap.sh
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh

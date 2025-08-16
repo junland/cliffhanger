@@ -22,6 +22,7 @@ CURL_OPTS="-L -s"
 export LC_ALL CONFIG_SITE
 
 # Variables with shorter names
+ROOTFS="${TARGET_ROOTFS_PATH}"
 WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
@@ -193,3 +194,46 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 ln -sv bash ${TARGET_ROOTFS_PATH}/usr/bin/sh
 
 clean_work_dir
+
+##
+# coreutils Step
+##
+msg "Downloading coreutils..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
+
+msg "Copying sources of coreutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
+
+msg "Configuring coreutils..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(./config.guess) \
+    --enable-install-program=hostname \
+    --enable-no-install-program=kill,uptime
+
+msg "Building coreutils..."
+
+make
+
+msg "Installing coreutils..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+mv -v $TARGET_ROOTFS_PATH/usr/bin/chroot $TARGET_ROOTFS_PATH/usr/sbin
+mkdir -pv $TARGET_ROOTFS_PATH/usr/share/man/man8
+mv -v $TARGET_ROOTFS_PATH/usr/share/man/man1/chroot.1 $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
+sed -i 's/"1"/"8"/' $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
+
+clean_work_dir
+
+##
+# diffutils
+##
