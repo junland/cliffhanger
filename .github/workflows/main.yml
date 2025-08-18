@@ -37,6 +37,12 @@ jobs:
           wget \
           zlib1g-dev
 
+    - name: Download and install automake-1.17
+      run: |
+        wget http://archive.ubuntu.com/ubuntu/pool/main/a/automake-1.17/automake_1.17-3ubuntu1_all.deb
+        sudo apt install ./automake_1.17-3ubuntu1_all.deb -y
+        rm ./automake_1.17-3ubuntu1_all.deb
+
     - name: Reconfigure sh to use bash
       run: |
         sudo dpkg-reconfigure dash
