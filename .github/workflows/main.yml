@@ -22,10 +22,12 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           automake \
+          bison \
           build-essential \
-          curl \
+          byacc \
+          flex \
+          gawk \
           gettext \
-          git \
           gperf \
           help2man \
           libssl-dev \
@@ -34,7 +36,6 @@ jobs:
           ninja-build \
           tree \
           unzip \
-          wget \
           zlib1g-dev
 
     - name: Download and install automake-1.17
