@@ -15,7 +15,6 @@ jobs:
       matrix:
         include:
           - TARGET_ARCH: x86_64
-          - TARGET_ARCH: aarch64
     steps:
     - name: Install dependencies (Ubuntu/Debian)
       run: |
