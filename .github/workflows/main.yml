@@ -31,9 +31,11 @@ jobs:
           gperf \
           help2man \
           libssl-dev \
+          m4 \
           make \
           meson \
           ninja-build \
+          perl \
           tree \
           unzip \
           zlib1g-dev
