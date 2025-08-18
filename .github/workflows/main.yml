@@ -23,21 +23,24 @@ jobs:
         sudo apt-get install -y \
           autoconf \
           automake \
+          bison \
           build-essential \
-          curl \
+          byacc \
+          flex \
+          gawk \
           gettext \
-          git \
           gperf \
           help2man \
           libssl-dev \
           libtool \
+          m4 \
           make \
           meson \
           ninja-build \
+          perl \
           pkg-config \
           tree \
           unzip \
-          wget \
           zlib1g-dev
 
     - name: Reconfigure sh to use bash
