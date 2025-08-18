@@ -19,8 +19,6 @@ TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TO
 
 CURL_OPTS="-L -s"
 
-export LC_ALL CONFIG_SITE
-
 # Variables with shorter names
 ROOTFS="${TARGET_ROOTFS_PATH}"
 WORK="${TARGET_ROOTFS_WORK_PATH}"
@@ -46,8 +44,8 @@ msg() {
 # clean work directory function
 clean_work_dir() {
     cd "${TARGET_ROOTFS_PATH}"
-    msg "Cleaning up work directory..."
-    rm -rf "${WORK}/*"
+    msg "Cleaning up work directory at ${WORK}..."
+    rm -rf ${WORK}/*
 }
 
 ##
@@ -80,7 +78,10 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Setup PATH
-export PATH="${TOOLCHAIN_PATH}/bin:$PATH"
+PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Export needed variables
+export PATH LC_ALL CONFIG_SITE
 
 ##
 # m4 Step

@@ -21,6 +21,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
+          autoconf \
           automake \
           build-essential \
           curl \
@@ -29,9 +30,11 @@ jobs:
           gperf \
           help2man \
           libssl-dev \
+          libtool \
           make \
           meson \
           ninja-build \
+          pkg-config \
           tree \
           unzip \
           wget \
