@@ -45,7 +45,7 @@ msg() {
 clean_work_dir() {
     cd "${TARGET_ROOTFS_PATH}"
     msg "Cleaning up work directory at ${WORK}..."
-    rm -rf ${WORK}/*
+    rm -rf "${WORK}"/*
 }
 
 ##
@@ -57,7 +57,7 @@ msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 # Download the toolchain and extract it to the appropriate directory
 mkdir -p "${TOOLCHAIN_PATH}"
 
-curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
+curl "${CURL_OPTS}" "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
 # Make sure relocate script is present and executable
 if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
@@ -91,7 +91,7 @@ msg "Downloading m4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
 
 msg "Copying sources of m4 to work directory..."
 
@@ -121,7 +121,7 @@ msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
 
 msg "Copying sources of ncurses to work directory..."
 
@@ -165,11 +165,11 @@ make
 
 msg "Installing ncurses..."
 
-make DESTDIR=${TARGET_ROOTFS_PATH} TIC_PATH=${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}/build/progs/tic install
+make DESTDIR="${TARGET_ROOTFS_PATH}" TIC_PATH="${TARGET_ROOTFS_WORK_PATH}"/ncurses-${NCURSES_VER}/build/progs/tic install
 
-ln -sv libncursesw.so ${TARGET_ROOTFS_PATH}/usr/lib/libncurses.so
+ln -sv libncursesw.so "${TARGET_ROOTFS_PATH}"/usr/lib/libncurses.so
 
-sed -e 's/^#if.*XOPEN.*$/#if 1/' -i ${TARGET_ROOTFS_PATH}/usr/include/curses.h
+sed -e 's/^#if.*XOPEN.*$/#if 1/' -i "${TARGET_ROOTFS_PATH}"/usr/include/curses.h
 
 clean_work_dir
 
@@ -181,7 +181,7 @@ msg "Downloading bash..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
 
 msg "Copying sources of bash to work directory..."
 
@@ -205,7 +205,7 @@ msg "Installing bash..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-ln -sv bash ${TARGET_ROOTFS_PATH}/usr/bin/sh
+ln -sv bash "${TARGET_ROOTFS_PATH}"/usr/bin/sh
 
 clean_work_dir
 
@@ -217,7 +217,7 @@ msg "Downloading coreutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
 
 msg "Copying sources of coreutils to work directory..."
 
@@ -242,10 +242,10 @@ msg "Installing coreutils..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-mv -v $TARGET_ROOTFS_PATH/usr/bin/chroot $TARGET_ROOTFS_PATH/usr/sbin
-mkdir -pv $TARGET_ROOTFS_PATH/usr/share/man/man8
-mv -v $TARGET_ROOTFS_PATH/usr/share/man/man1/chroot.1 $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
-sed -i 's/"1"/"8"/' $TARGET_ROOTFS_PATH/usr/share/man/man8/chroot.8
+mv -v "$TARGET_ROOTFS_PATH"/usr/bin/chroot "$TARGET_ROOTFS_PATH"/usr/sbin
+mkdir -pv "$TARGET_ROOTFS_PATH"/usr/share/man/man8
+mv -v "$TARGET_ROOTFS_PATH"/usr/share/man/man1/chroot.1 "$TARGET_ROOTFS_PATH"/usr/share/man/man8/chroot.8
+sed -i 's/"1"/"8"/' "$TARGET_ROOTFS_PATH"/usr/share/man/man8/chroot.8
 
 clean_work_dir
 
@@ -257,7 +257,7 @@ msg "Downloading diffutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
 
 msg "Copying sources of diffutils to work directory..."
 
@@ -293,7 +293,7 @@ msg "Downloading findutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
 
 msg "Copying sources of findutils to work directory..."
 
@@ -329,6 +329,6 @@ msg "Installing findutils..."
 
 make DESTDIR="${TARGET_ROOTFS_PATH}" install
 
-rm -v ${TARGET_ROOTFS_PATH}/usr/lib/libmagic.la
+rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/libmagic.la
 
 clean_work_dir
