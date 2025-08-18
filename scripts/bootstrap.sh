@@ -266,7 +266,7 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" "${TARGET_ROOTF
 cd "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
 
 # Reconfigure to point to our version of automake
-autoreconf -fiv
+autoreconf -f
 
 msg "Configuring diffutils..."
 
