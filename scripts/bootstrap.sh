@@ -36,6 +36,14 @@ GAWK_VER="5.3.1"
 GREP_VER="3.11"
 GZIP_VER="1.13"
 
+MAKE_VER="4.4.1"
+PATCH_VER="2.7.6"
+SED_VER="4.9"
+TAR_VER="1.35"
+XZ_VER="5.6.2"
+BINUTILS_VER="2.44"
+GCC_VER="14.2.0"
+
 # msg function that will make echo's pretty.
 msg() {
     echo " ==> $*"
@@ -434,5 +442,207 @@ make
 msg "Installing grep..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# gzip Step
+##
+
+msg "Downloading gzip..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}" --strip-components=1
+
+msg "Copying sources of gzip to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
+
+msg "Configuring gzip..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET}
+
+msg "Building gzip..."
+
+make
+
+msg "Installing gzip..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# make Step
+##
+
+msg "Downloading make..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" --strip-components=1
+
+msg "Copying sources of make to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
+
+msg "Configuring make..."
+
+./configure \
+    --prefix=/usr \
+    --without-guile \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building make..."
+
+make
+
+msg "Installing make..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# patch Step
+##
+
+msg "Downloading patch..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}" --strip-components=1
+
+msg "Copying sources of patch to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
+
+msg "Configuring patch..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building patch..."
+
+make
+
+msg "Installing patch..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# sed Step
+##
+
+msg "Downloading sed..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}" --strip-components=1
+
+msg "Copying sources of sed to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
+
+msg "Configuring sed..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building sed..."
+
+make
+
+msg "Installing sed..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# tar Step
+##
+
+msg "Downloading tar..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}" --strip-components=1
+
+msg "Copying sources of tar to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
+
+msg "Configuring tar..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building tar..."
+
+make
+
+msg "Installing tar..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
+
+##
+# xz Step
+##
+
+msg "Downloading xz..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}"
+
+curl ${CURL_OPTS} "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}" --strip-components=1
+
+msg "Copying sources of xz to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
+
+msg "Configuring xz..."
+
+./configure \
+    --prefix=/usr \
+    --host=$LFS_TGT \
+    --build=$(build-aux/config.guess) \
+    --disable-static \
+    --docdir=/usr/share/doc/xz-5.6.4
+
+msg "Building xz..."
+
+make
+
+msg "Installing xz..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+rm -v ${TARGET_ROOTFS_PATH}/usr/lib/liblzma.la
 
 clean_work_dir
