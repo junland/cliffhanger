@@ -57,7 +57,7 @@ msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 # Download the toolchain and extract it to the appropriate directory
 mkdir -p "${TOOLCHAIN_PATH}"
 
-curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xa -C "${TOOLCHAIN_PATH}" --strip-components=1
+curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
 # Make sure relocate script is present and executable
 if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
@@ -91,7 +91,7 @@ msg "Downloading m4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xa -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
 
 msg "Copying sources of m4 to work directory..."
 
@@ -121,7 +121,7 @@ msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VER}.tar.gz" | tar -xa -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
 
 msg "Copying sources of ncurses to work directory..."
 
@@ -181,7 +181,7 @@ msg "Downloading bash..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xa -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
 
 msg "Copying sources of bash to work directory..."
 
@@ -217,7 +217,7 @@ msg "Downloading coreutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xa -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
 
 msg "Copying sources of coreutils to work directory..."
 
@@ -257,7 +257,7 @@ msg "Downloading diffutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xa -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
 
 msg "Copying sources of diffutils to work directory..."
 
