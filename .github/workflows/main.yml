@@ -77,7 +77,20 @@ jobs:
         ./scripts/version_check.sh
 
     - name: Execute the bootstrap script
+      id: bootstrap
       run: |
         chmod +x ./scripts/bootstrap.sh
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} \
-        ./scripts/bootstrap.sh
+        ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log
+
+    - name: Grab last 100 lines and put it to summary
+      if: always()
+      run: |
+        # If scripts log doesnt exist exit cleanly.
+        if [ ! -f ./scripts/bootstrap.log ]; then
+          echo "Error: ./scripts/bootstrap.log not found!"
+          exit 0
+        fi
+        TEXT=$(tail -n 100 ./scripts/bootstrap.log)
+        # Put the text into github summary
+        echo "\`$TEXT\`" >> $GITHUB_STEP_SUMMARY
