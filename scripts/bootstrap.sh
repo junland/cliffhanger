@@ -338,3 +338,33 @@ clean_work_dir
 ##
 # findutils Step
 ##
+
+msg "Downloading findutils..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
+
+msg "Copying sources of findutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
+
+msg "Configuring findutils..."
+
+./configure \
+    --prefix=/usr \
+    --localstatedir=/var/lib/locate \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building findutils..."
+
+make
+
+msg "Installing findutils..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
