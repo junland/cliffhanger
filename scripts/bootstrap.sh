@@ -44,6 +44,12 @@ XZ_VER="5.6.2"
 BINUTILS_VER="2.44"
 GCC_VER="14.2.0"
 
+BINUTILS_VER="2.44"
+MPFR_VER="4.2.1"
+GMP_VER="6.3.0"
+MPC_VER="1.3.1"
+GCC_VER="14.2.0"
+
 # msg function that will make echo's pretty.
 msg() {
     echo " ==> $*"
@@ -644,5 +650,127 @@ msg "Installing xz..."
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 rm -v ${TARGET_ROOTFS_PATH}/usr/lib/liblzma.la
+
+clean_work_dir
+
+##
+# binutils Step
+##
+
+msg "Downloading binutils..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
+
+msg "Copying sources of binutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
+
+msg "Configuring binutils..."
+
+sed '6031s/$add_dir//' -i ltmain.sh
+
+mkdir -v build
+
+cd build
+
+../configure \
+    --prefix=/usr \
+    --build=$(../config.guess) \
+    --host=${TARGET_TRIPLET} \
+    --disable-nls \
+    --enable-shared \
+    --enable-gprofng=no \
+    --disable-werror \
+    --enable-64-bit-bfd \
+    --enable-new-dtags \
+    --enable-default-hash-style=gnu
+
+msg "Building binutils..."
+
+make
+
+msg "Installing binutils..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+rm -v ${TARGET_ROOTFS_PATH}/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
+
+clean_work_dir
+
+# Clean up sources for final step..
+
+rm -rf "${TARGET_ROOTFS_SOURCES_PATH}"
+
+##
+# gcc Step
+##
+
+msg "Download gcc..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}" --strip-components=1
+
+msg "Copying sources of gcc to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gmp-${GCC_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpc-${GCC_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpfr-${GCC_VER}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+
+msg "Configuring gcc..."
+
+case $(uname -m) in
+x86_64)
+    sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+    ;;
+esac
+
+sed '/thread_header =/s/@.*@/gthr-posix.h/' -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
+
+mkdir -v build
+
+cd build
+
+../configure \
+    --build=$(../config.guess) \
+    --host=${TARGET_TRIPLET} \
+    --target=${TARGET_TRIPLET} \
+    LDFLAGS_FOR_TARGET=-L$PWD/${TARGET_TRIPLET}/libgcc \
+    --prefix=/usr \
+    --with-build-sysroot=$TARGET_ROOTFS_PATH \
+    --enable-default-pie \
+    --enable-default-ssp \
+    --disable-nls \
+    --disable-multilib \
+    --disable-libatomic \
+    --disable-libgomp \
+    --disable-libquadmath \
+    --disable-libsanitizer \
+    --disable-libssp \
+    --disable-libvtv \
+    --enable-languages=c,c++
+
+msg "Building gcc..."
+
+make
+
+msg "Installing gcc..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+ln -sv gcc ${TARGET_ROOTFS_PATH}/usr/bin/cc
 
 clean_work_dir
