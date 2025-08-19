@@ -368,3 +368,38 @@ msg "Installing findutils..."
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 clean_work_dir
+
+##
+# gawk Step
+##
+
+msg "Downloading gawk..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}" --strip-components=1
+
+msg "Copying sources of gawk to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
+
+msg "Configuring gawk..."
+
+sed -i 's/extras//' Makefile.in
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building gawk..."
+
+make
+
+msg "Installing gawk..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
