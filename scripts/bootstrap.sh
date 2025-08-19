@@ -286,22 +286,22 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 clean_work_dir
 
 ##
-# findutils Step
+# file Step
 ##
 
-msg "Downloading findutils..."
+msg "Downloading file..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/file/file-${FILE_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}" --strip-components=1
 
-msg "Copying sources of findutils to work directory..."
+msg "Copying sources of file to work directory..."
 
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
-cd "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
+cd "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 
-msg "Configuring and building temp findutils for signature..."
+msg "Configure temp file command..."
 
 mkdir build
 
@@ -313,22 +313,28 @@ pushd build
     --disable-xzlib \
     --disable-zlib
 
+msg "Building temp file command..."
+
 make
 
 popd
 
-msg "Configuring findutils..."
+msg "Configuring file..."
 
 ./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(./config.guess)
 
-msg "Building findutils..."
+msg "Building file..."
 
 make FILE_COMPILE=$(pwd)/build/src/file
 
-msg "Installing findutils..."
+msg "Installing file..."
 
-make DESTDIR="${TARGET_ROOTFS_PATH}" install
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/libmagic.la
 
 clean_work_dir
+
+##
+# findutils Step
+##
