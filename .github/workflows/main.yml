@@ -93,4 +93,4 @@ jobs:
         fi
         TEXT=$(tail -n 100 ./scripts/bootstrap.log)
         # Put the text into github summary
-        echo "\`$TEXT\`" >> $GITHUB_STEP_SUMMARY
+        echo "\`\`\`$TEXT\`\`\`" >> $GITHUB_STEP_SUMMARY
