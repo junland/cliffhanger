@@ -403,3 +403,36 @@ msg "Installing gawk..."
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 clean_work_dir
+
+##
+# grep Step
+##
+
+msg "Downloading grep..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}" --strip-components=1
+
+msg "Copying sources of grep to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
+
+msg "Configuring grep..."
+
+./configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(build-aux/config.guess)
+
+msg "Building grep..."
+
+make
+
+msg "Installing grep..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+clean_work_dir
