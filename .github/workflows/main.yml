@@ -91,6 +91,5 @@ jobs:
           echo "Error: ./scripts/bootstrap.log not found!"
           exit 0
         fi
-        TEXT=$(tail -n 100 ./scripts/bootstrap.log)
         # Put the text into github summary
-        echo "\`\`\`$TEXT\`\`\`" >> $GITHUB_STEP_SUMMARY
+        echo -e "\`\`\`\n$(tail -n 100 ./scripts/bootstrap.log)\n\`\`\`" >> $GITHUB_STEP_SUMMARY
