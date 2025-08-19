@@ -485,7 +485,7 @@ msg "Downloading make..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" --strip-components=1
 
 msg "Copying sources of make to work directory..."
 
