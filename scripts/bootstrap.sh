@@ -728,6 +728,10 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}" "${TARGET_RO
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpc-${GCC_VER}/"
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpfr-${GCC_VER}/"
 
+ln -svf gmp-${GMP_VER} gmp
+ln -svf mpc-${MPC_VER} mpc
+ln -svf mpfr-${MPFR_VER} mpfr
+
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
 msg "Configuring gcc..."
