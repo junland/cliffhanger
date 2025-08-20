@@ -94,3 +94,9 @@ jobs:
         fi
         # Put the text into github summary
         echo -e "\`\`\`\n$(tail -n 100 ./scripts/bootstrap.log)\n\`\`\`" >> $GITHUB_STEP_SUMMARY
+
+    - name: Upload bootstrap rootfs
+      uses: actions/upload-artifact@v2
+      with:
+        name: bootstrap-rootfs
+        path: rootfs/*
