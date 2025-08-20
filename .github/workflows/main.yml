@@ -80,6 +80,7 @@ jobs:
       id: bootstrap
       run: |
         chmod +x ./scripts/bootstrap.sh
+        set -o pipefail
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} \
         ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log
 
