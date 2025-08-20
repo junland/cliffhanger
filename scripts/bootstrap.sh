@@ -712,25 +712,25 @@ rm -rf "${TARGET_ROOTFS_SOURCES_PATH}"
 msg "Download gcc..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
 
 curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
 
 msg "Copying sources of gcc to work directory..."
 
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gmp-${GCC_VER}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpc-${GCC_VER}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpfr-${GCC_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gmp-${GMP_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/"
 
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/gmp-${GCC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gmp
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpc-${GCC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/mpc
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpfr-${GCC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/mpfr
+ln -svf "${TARGET_ROOTFS_WORK_PATH}/gmp-${GMP_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp
+ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc
+ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
