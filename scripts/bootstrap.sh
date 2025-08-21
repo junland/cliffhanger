@@ -93,7 +93,8 @@ cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
 
 msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
 
-cp -r "${TOOLCHAIN_PATH}/${TARGET_ARCH}-*-linux-gnu/sysroot/"* "${TARGET_ROOTFS_PATH}/"
+# find a directory called sysroot and copy the contents to the rootfs
+find "${TOOLCHAIN_PATH}" -name "sysroot" -type d -exec cp -r {}/* "${TARGET_ROOTFS_PATH}/" \;
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
