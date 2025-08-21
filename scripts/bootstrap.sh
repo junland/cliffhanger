@@ -186,7 +186,7 @@ msg "Installing ncurses..."
 
 make DESTDIR="${TARGET_ROOTFS_PATH}" TIC_PATH="${TARGET_ROOTFS_WORK_PATH}"/ncurses-${NCURSES_VER}/build/progs/tic install
 
-ln -sv libncursesw.so "${TARGET_ROOTFS_PATH}"/usr/lib/libncurses.so
+ln -svf libncursesw.so "${TARGET_ROOTFS_PATH}"/usr/lib/libncurses.so
 
 sed -e 's/^#if.*XOPEN.*$/#if 1/' -i "${TARGET_ROOTFS_PATH}"/usr/include/curses.h
 
