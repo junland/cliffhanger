@@ -62,6 +62,12 @@ clean_work_dir() {
     rm -rf "${WORK}"/*
 }
 
+# Create necessary directories
+msg "Creating necessary directories..."
+mkdir -vp "${TARGET_ROOTFS_PATH}"
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
+
 ##
 # Toolchain Setup
 ##
@@ -85,11 +91,9 @@ msg "Relocate the toolchain..."
 
 cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
 
-# Create necessary directories
-msg "Creating necessary directories..."
-mkdir -vp "${TARGET_ROOTFS_PATH}"
-mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
+msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
+
+cp -r "${TOOLCHAIN_PATH}/sysroot/"* "${TARGET_ROOTFS_PATH}/"
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -504,7 +508,7 @@ msg "Configuring make..."
 ./configure \
     --prefix=/usr \
     --without-guile \
-    --host=${TARGET_TRIPLET} \
+ --host=${TARGET_TRIPLET} \
     --build=$(build-aux/config.guess)
 
 msg "Building make..."
