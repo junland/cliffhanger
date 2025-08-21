@@ -224,7 +224,7 @@ msg "Installing bash..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-ln -sv bash "${TARGET_ROOTFS_PATH}"/usr/bin/sh
+ln -svf bash "${TARGET_ROOTFS_PATH}"/usr/bin/sh
 
 clean_work_dir
 
@@ -783,6 +783,6 @@ msg "Installing gcc..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-ln -sv gcc ${TARGET_ROOTFS_PATH}/usr/bin/cc
+ln -svf gcc ${TARGET_ROOTFS_PATH}/usr/bin/cc
 
 clean_work_dir
