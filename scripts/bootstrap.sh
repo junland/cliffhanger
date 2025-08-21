@@ -77,24 +77,24 @@ msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 # Download the toolchain and extract it to the appropriate directory
 mkdir -p "${TOOLCHAIN_PATH}"
 
-curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
+# curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
-# Make sure relocate script is present and executable
-if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
-    msg "Error: ${TOOLCHAIN_PATH}/relocate-sdk.sh not found!"
-    exit 1
-else
-    chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
-fi
+# # Make sure relocate script is present and executable
+# if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
+#     msg "Error: ${TOOLCHAIN_PATH}/relocate-sdk.sh not found!"
+#     exit 1
+# else
+#     chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
+# fi
 
-msg "Relocate the toolchain..."
+# msg "Relocate the toolchain..."
 
-cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
+# cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
 
-msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
+# msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
 
-# Move the files within the sysroot directory within the toolchain
-find "${TOOLCHAIN_PATH}" -name "sysroot" -type d -exec cp -r {}/* "${TARGET_ROOTFS_PATH}/" \;
+# # Move the files within the sysroot directory within the toolchain
+# find "${TOOLCHAIN_PATH}" -name "sysroot" -type d -exec cp -r {}/* "${TARGET_ROOTFS_PATH}/" \;
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -644,7 +644,7 @@ msg "Configuring xz..."
 
 ./configure \
     --prefix=/usr \
-    --host=$LFS_TGT \
+    --host=${TARGET_TRIPLET} \
     --build=$(build-aux/config.guess) \
     --disable-static \
     --docdir=/usr/share/doc/xz-5.6.4
