@@ -93,7 +93,7 @@ cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
 
 msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
 
-cp -r "${TOOLCHAIN_PATH}/sysroot/"* "${TARGET_ROOTFS_PATH}/"
+cp -r "${TOOLCHAIN_PATH}/${TARGET_ARCH}-*-linux-gnu/sysroot/"* "${TARGET_ROOTFS_PATH}/"
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
@@ -506,10 +506,10 @@ cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 msg "Configuring make..."
 
 ./configure \
+    --build=$(build-aux/config.guess) \
     --prefix=/usr \
     --without-guile \
- --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+    --host=${TARGET_TRIPLET}
 
 msg "Building make..."
 
