@@ -5,8 +5,6 @@ set -e # Exit on error
 
 umask 022
 
-CHANNEL_DATE="stable-2025.08-1"
-CONFIG_SITE="toolchains/${TARGET_ARCH}/etc/config.site"
 LC_ALL=POSIX
 TARGET_ARCH="x86_64"
 TARGET_ROOTFS_PATH="$PWD/rootfs"
@@ -18,6 +16,7 @@ TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
 CURL_OPTS="-L -s"
+CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
 # Variables with shorter names
 ROOTFS="${TARGET_ROOTFS_PATH}"
@@ -25,28 +24,26 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
-M4_VER="1.4.19"
-NCURSES_VER="6.5"
 BASH_VER="5.2.37"
+BINUTILS_VER="2.44"
 COREUTILS_VER="9.6"
 DIFFUTILS_VER="3.11"
 FILE_VER="5.46"
 FINDUTILS_VER="4.10.0"
 GAWK_VER="5.3.1"
+GCC_VER="14.2.0"
+GMP_VER="6.3.0"
 GREP_VER="3.11"
 GZIP_VER="1.13"
-
+M4_VER="1.4.19"
 MAKE_VER="4.4.1"
+MPC_VER="1.3.1"
+MPFR_VER="4.2.1"
+NCURSES_VER="6.5"
 PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
 XZ_VER="5.6.2"
-BINUTILS_VER="2.44"
-
-GCC_VER="14.2.0"
-MPFR_VER="4.2.1"
-GMP_VER="6.3.0"
-MPC_VER="1.3.1"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -60,6 +57,12 @@ clean_work_dir() {
     rm -rf "${WORK}"/*
 }
 
+# Setup PATH
+PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Export needed variables
+export PATH LC_ALL CONFIG_SITE
+
 # Create necessary directories
 msg "Creating necessary directories..."
 mkdir -vp "${TARGET_ROOTFS_PATH}"
@@ -71,7 +74,7 @@ mkdir -vp "${TOOLCHAIN_PATH}"
 # Toolchain Setup
 ##
 
-msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
+# msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 
 # curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
@@ -91,12 +94,6 @@ msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
 
 # # Move the files within the sysroot directory within the toolchain
 # find "${TOOLCHAIN_PATH}" -name "sysroot" -type d -exec cp -r {}/* "${TARGET_ROOTFS_PATH}/" \;
-
-# Setup PATH
-PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-# Export needed variables
-export PATH LC_ALL CONFIG_SITE
 
 ##
 # m4 Step

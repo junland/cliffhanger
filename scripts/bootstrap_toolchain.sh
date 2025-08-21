@@ -15,7 +15,7 @@ TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_PATH="$PWD/toolchains/${TARGET_ARCH}"
 
 CURL_OPTS="-L -s"
-CONFIG_SITE="$PWD/toolchains/${TARGET_ARCH}/etc/config.site"
+CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
 # Variables with shorter names
 ROOTFS="${TARGET_ROOTFS_PATH}"
@@ -23,13 +23,13 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
-LINUX_VER="6.13.4"
 BINUTILS_VER="2.44"
-MPFR_VER="4.2.1"
-GMP_VER="6.3.0"
-MPC_VER="1.3.1"
 GCC_VER="14.2.0"
 GLIBC_VER="2.41"
+GMP_VER="6.3.0"
+LINUX_VER="6.13.4"
+MPC_VER="1.3.1"
+MPFR_VER="4.2.1"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -43,18 +43,18 @@ clean_work_dir() {
     rm -rf "${WORK}"/*
 }
 
+# Setup PATH
+PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Export needed variables
+export PATH LC_ALL CONFIG_SITE
+
 # Create necessary directories
 msg "Creating necessary directories..."
 mkdir -vp "${TARGET_ROOTFS_PATH}"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
-
-# Setup PATH
-PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-
-# Export needed variables
-export PATH LC_ALL CONFIG_SITE
 
 ##
 # binutils Step
