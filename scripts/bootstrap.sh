@@ -42,13 +42,11 @@ SED_VER="4.9"
 TAR_VER="1.35"
 XZ_VER="5.6.2"
 BINUTILS_VER="2.44"
-GCC_VER="14.2.0"
 
-BINUTILS_VER="2.44"
+GCC_VER="14.2.0"
 MPFR_VER="4.2.1"
 GMP_VER="6.3.0"
 MPC_VER="1.3.1"
-GCC_VER="14.2.0"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -67,15 +65,13 @@ msg "Creating necessary directories..."
 mkdir -vp "${TARGET_ROOTFS_PATH}"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
+mkdir -vp "${TOOLCHAIN_PATH}"
 
 ##
 # Toolchain Setup
 ##
 
 msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
-
-# Download the toolchain and extract it to the appropriate directory
-mkdir -p "${TOOLCHAIN_PATH}"
 
 # curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
 
