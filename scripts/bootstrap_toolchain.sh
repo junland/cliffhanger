@@ -104,7 +104,7 @@ clean_work_dir
 
 msg "Download gcc..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/{gmp,mpc,mpfr}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
