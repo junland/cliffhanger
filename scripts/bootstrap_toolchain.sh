@@ -10,7 +10,7 @@ TARGET_ARCH="x86_64"
 TARGET_ROOTFS_PATH="$PWD/rootfs"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
-TARGET_TRIPLET="${TARGET_ARCH}-linux-gnu"
+TARGET_TRIPLET="${TARGET_ARCH}-buildroot-linux-gnu"
 TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_PATH="$PWD/toolchains/${TARGET_ARCH}"
 
@@ -80,8 +80,8 @@ cd build
 
 ../configure \
     --prefix=${TOOLCHAIN_PATH} \
-    --with-sysroot=${TARGET_ROOTFS_PATH} \
     --target=${TARGET_TRIPLET} \
+    --with-sysroot=${TARGET_ROOTFS_PATH} \
     --disable-nls \
     --enable-gprofng=no \
     --disable-werror \
