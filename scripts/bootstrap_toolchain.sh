@@ -74,6 +74,9 @@ cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 msg "Configuring binutils..."
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 mkdir -v build
 
 cd build
