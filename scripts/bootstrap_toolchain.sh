@@ -132,9 +132,6 @@ x86_64)
     ;;
 esac
 
-# Reconfigure to point to our version of automake
-autoreconf -f
-
 mkdir -v build
 
 cd build
