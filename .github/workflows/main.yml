@@ -82,7 +82,6 @@ jobs:
         $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
         brew install automake@1.17
 
-
     - name: Execute the bootstrap toolchain script
       id: bootstrap-toolchain
       run: |
