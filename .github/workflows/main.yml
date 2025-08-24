@@ -78,7 +78,10 @@ jobs:
       run: ./scripts/version_check.sh
 
     - name: Install automake 1.17 using Brew
-      run: brew install automake@1.17
+      run: |
+        $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        brew install automake@1.17
+
 
     - name: Execute the bootstrap toolchain script
       id: bootstrap-toolchain
