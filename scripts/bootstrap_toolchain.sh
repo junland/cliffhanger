@@ -23,13 +23,13 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
-BINUTILS_VER="2.44"
-GCC_VER="14.2.0"
-GLIBC_VER="2.41"
+BINUTILS_VER="2.45"
+GCC_VER="15.2.0"
+GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 LINUX_VER="6.13.4"
 MPC_VER="1.3.1"
-MPFR_VER="4.2.1"
+MPFR_VER="4.2.2"
 
 # msg function that will make echo's pretty.
 msg() {
