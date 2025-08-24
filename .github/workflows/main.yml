@@ -79,7 +79,7 @@ jobs:
 
     - name: Install automake 1.17 using Brew
       run: |
-        $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+        eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         brew install automake@1.17
 
     - name: Execute the bootstrap toolchain script
