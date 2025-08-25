@@ -117,7 +117,7 @@ curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -
 
 msg "Copying sources of gcc to work directory..."
 
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/"
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp/"
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc/"
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr/"

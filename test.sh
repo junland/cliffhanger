@@ -1,0 +1,20 @@
+../configure \
+    --target=x86_64-boot-linux-gnu \
+    --prefix=/opt/rootfs/tools \
+    --with-glibc-version=2.41 \
+    --with-sysroot=/opt/rootfs \
+    --with-newlib \
+    --without-headers \
+    --enable-default-pie \
+    --enable-default-ssp \
+    --disable-nls \
+    --disable-shared \
+    --disable-multilib \
+    --disable-threads \
+    --disable-libatomic \
+    --disable-libgomp \
+    --disable-libquadmath \
+    --disable-libssp \
+    --disable-libvtv \
+    --disable-libstdcxx \
+    --enable-languages=c,c++
