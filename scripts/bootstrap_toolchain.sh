@@ -29,7 +29,7 @@ GLIBC_VER="2.41"
 GMP_VER="6.3.0"
 LINUX_VER="6.13.4"
 MPC_VER="1.3.1"
-MPFR_VER="4.2.2"
+MPFR_VER="4.2.1"
 
 # msg function that will make echo's pretty.
 msg() {
