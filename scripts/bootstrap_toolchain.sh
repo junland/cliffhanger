@@ -181,7 +181,7 @@ msg "Downloading linux kernel..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
-curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*}/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
 
 msg "Copying sources of linux kernel to work directory..."
 
