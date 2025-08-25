@@ -31,6 +31,8 @@ LINUX_VER="6.13.4"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.1"
 
+GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/12.3/glibc-2.41-fhs-1.patch"
+
 # msg function that will make echo's pretty.
 msg() {
     echo " ==> $*"
@@ -99,7 +101,7 @@ make install
 clean_work_dir
 
 ##
-# gcc Step
+# gcc Step (1st Pass - Part A)
 ##
 
 msg "Download gcc..."
@@ -170,3 +172,157 @@ cd ..
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h
 
 clean_work_dir
+
+##
+# linux-headers Step
+##
+
+msg "Downloading linux kernel..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
+
+curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*}/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
+
+msg "Copying sources of linux kernel to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
+
+msg "Confirming files..."
+
+make mrproper
+
+msg "Building headers..."
+
+make headers
+
+msg "Installing headers..."
+
+find usr/include -type f ! -name '*.h' -delete
+
+cp -rv usr/include/* "${TARGET_ROOTFS_PATH}/usr/"
+
+clean_work_dir
+
+##
+# glibc Step
+##
+
+msg "Downloading glibc..."
+
+mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
+
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" --strip-components=1
+
+msg "Copying sources of glibc to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
+
+msg "Configuring glibc..."
+
+case ${TARGET_ARCH} in
+i?86)
+    ln -sfv ld-linux.so.2 ${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3
+    ;;
+x86_64)
+    ln -sfv ../lib/ld-linux-x86-64.so.2 ${TARGET_ROOTFS_PATH}/lib64
+    ln -sfv ../lib/ld-linux-x86-64.so.2 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3
+    ;;
+aarch64)
+    ln -sfv ../lib/ld-linux-aarch64.so.1 ${TARGET_ROOTFS_PATH}/lib64
+    ln -sfv ../lib/ld-linux-aarch64.so.1 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3
+    ;;
+riscv64)
+    ln -sfv ../lib/ld-linux-riscv64.so.1 ${TARGET_ROOTFS_PATH}/lib64
+    ln -sfv ../lib/ld-linux-riscv64.so.1 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3
+    ;;
+*)
+    echo "Unknown architecture: ${TARGET_ARCH}"
+    exit 1
+    ;;
+esac
+
+curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
+
+patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch"
+
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
+
+echo "rootsbindir=/usr/sbin" >configparms
+
+../configure \
+    --prefix=/usr \
+    --host=${TARGET_TRIPLET} \
+    --build=$(../scripts/config.guess) \
+    --enable-kernel=5.4 \
+    --with-headers=${TARGET_ROOTFS_PATH}/usr/include \
+    --disable-nscd \
+    libc_cv_slibdir=/usr/lib
+
+msg "Building glibc..."
+
+make -j1
+
+msg "Installing glibc..."
+
+make install DESTDIR=${TARGET_ROOTFS_PATH}
+
+sed '/RTLDLIST=/s@/usr@@g' -i ${TARGET_ROOTFS_PATH}/usr/bin/ldd
+
+msg "Verify that compiling and linking works..."
+
+echo 'int main(){}' | ${TARGET_TRIPLET}-gcc -xc -
+
+readelf -l a.out | grep ld-linux
+
+rm -v a.out
+
+clean_work_dir
+
+##
+# gcc - libstdc++ Step (1st Pass - Part B)
+##
+
+msg "Setting up gcc for libstdc++..."
+
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
+
+tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
+tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp" --strip-components=1
+tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc" --strip-components=1
+tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr" --strip-components=1
+
+msg "Configuring gcc for libstdc++..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+
+mkdir -vp build
+
+cd build
+
+../libstdc++-v3/configure \
+    --host=${TARGET_TRIPLET} \
+    --build=$(../config.guess) \
+    --prefix=/usr \
+    --disable-multilib \
+    --disable-nls \
+    --disable-libstdcxx-pch \
+    --with-gxx-include-dir=/tools/${TARGET_TRIPLET}/include/c++/14.2.0
+
+msg "Building gcc for libstdc++..."
+
+make
+
+msg "Installing gcc for libstdc++..."
+
+make install DESTDIR=${TARGET_ROOTFS_PATH}
+
+rm -v ${TARGET_ROOTFS_PATH}/usr/lib/lib{stdc++{,exp,fs},supc++}.la
