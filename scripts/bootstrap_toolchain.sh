@@ -213,7 +213,7 @@ find usr/include -type f ! -name '*.h' -delete
 
 mkdir -vp "${TARGET_ROOTFS_PATH}/usr"
 
-cp -rv usr/include/* "${TARGET_ROOTFS_PATH}/usr/"
+cp -rv usr/include/* "${TARGET_ROOTFS_PATH}/usr"
 
 clean_work_dir
 
