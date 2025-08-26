@@ -58,14 +58,14 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
 
-mkdir -pv $TARGET_ROOTFS_PATH/{etc,var} $TARGET_ROOTFS_PATH/usr/{bin,lib,sbin}
+mkdir -vp $TARGET_ROOTFS_PATH/{etc,var} $TARGET_ROOTFS_PATH/usr/{bin,lib,sbin}
 
 for i in bin lib sbin; do
     ln -sv usr/$i $TARGET_ROOTFS_PATH/$i
 done
 
 case $(uname -m) in
-x86_64) mkdir -pv $TARGET_ROOTFS_PATH/lib64 ;;
+x86_64) mkdir -vp $TARGET_ROOTFS_PATH/lib64 ;;
 esac
 
 ##
