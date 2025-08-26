@@ -58,14 +58,14 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
 
-mkdir -vp $TARGET_ROOTFS_PATH/{etc,var} $TARGET_ROOTFS_PATH/usr/{bin,lib,sbin}
+mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,sbin}
 
 for i in bin lib sbin; do
-    ln -sv usr/$i $TARGET_ROOTFS_PATH/$i
+    ln -sv usr/$i "$TARGET_ROOTFS_PATH"/$i
 done
 
 case $(uname -m) in
-x86_64) mkdir -vp $TARGET_ROOTFS_PATH/lib64 ;;
+x86_64) mkdir -vp "$TARGET_ROOTFS_PATH"/lib64 ;;
 esac
 
 ##
@@ -76,7 +76,7 @@ msg "Downloading binutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
 
 msg "Copying sources of binutils to work directory..."
 
@@ -91,9 +91,9 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix=${TOOLCHAIN_PATH} \
+    --prefix="${TOOLCHAIN_PATH}" \
     --target=${TARGET_TRIPLET} \
-    --with-sysroot=${TARGET_ROOTFS_PATH} \
+    --with-sysroot="${TARGET_ROOTFS_PATH}" \
     --disable-nls \
     --enable-gprofng=no \
     --disable-werror \
@@ -122,10 +122,10 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
 
 # curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
 
 msg "Copying sources of gcc to work directory..."
 
@@ -149,10 +149,10 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix=${TOOLCHAIN_PATH} \
+    --prefix="${TOOLCHAIN_PATH}" \
     --target=${TARGET_TRIPLET} \
     --with-glibc-version=${GLIBC_VER} \
-    --with-sysroot=${TARGET_ROOTFS_PATH} \
+    --with-sysroot="${TARGET_ROOTFS_PATH}" \
     --with-newlib \
     --without-headers \
     --enable-default-pie \
@@ -191,7 +191,7 @@ msg "Downloading linux kernel..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
-curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
 
 msg "Copying sources of linux kernel to work directory..."
 
@@ -225,7 +225,7 @@ msg "Downloading glibc..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" --strip-components=1
+curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" --strip-components=1
 
 msg "Copying sources of glibc to work directory..."
 
@@ -237,19 +237,19 @@ msg "Configuring glibc..."
 
 case ${TARGET_ARCH} in
 i?86)
-    ln -sfv ld-linux.so.2 ${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3
+    ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}"/lib/ld-lsb.so.3
     ;;
 x86_64)
-    ln -sfv ../lib/ld-linux-x86-64.so.2 ${TARGET_ROOTFS_PATH}/lib64
-    ln -sfv ../lib/ld-linux-x86-64.so.2 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3
+    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}"/lib64
+    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-x86-64.so.3
     ;;
 aarch64)
-    ln -sfv ../lib/ld-linux-aarch64.so.1 ${TARGET_ROOTFS_PATH}/lib64
-    ln -sfv ../lib/ld-linux-aarch64.so.1 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3
+    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}"/lib64
+    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-aarch64.so.3
     ;;
 riscv64)
-    ln -sfv ../lib/ld-linux-riscv64.so.1 ${TARGET_ROOTFS_PATH}/lib64
-    ln -sfv ../lib/ld-linux-riscv64.so.1 ${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3
+    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}"/lib64
+    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-riscv64.so.3
     ;;
 *)
     echo "Unknown architecture: ${TARGET_ARCH}"
@@ -257,7 +257,7 @@ riscv64)
     ;;
 esac
 
-curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
+curl "${CURL_OPTS}" -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
 
 patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch"
 
@@ -269,10 +269,10 @@ echo "rootsbindir=/usr/sbin" >configparms
 
 ../configure \
     --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
+    --host="${TARGET_TRIPLET}" \
     --build=$(../scripts/config.guess) \
     --enable-kernel=5.4 \
-    --with-headers=${TARGET_ROOTFS_PATH}/usr/include \
+    --with-headers="${TARGET_ROOTFS_PATH}"/usr/include \
     --disable-nscd \
     libc_cv_slibdir=/usr/lib
 
@@ -282,9 +282,9 @@ make -j1
 
 msg "Installing glibc..."
 
-make install DESTDIR=${TARGET_ROOTFS_PATH}
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-sed '/RTLDLIST=/s@/usr@@g' -i ${TARGET_ROOTFS_PATH}/usr/bin/ldd
+sed '/RTLDLIST=/s@/usr@@g' -i "${TARGET_ROOTFS_PATH}"/usr/bin/ldd
 
 msg "Verify that compiling and linking works..."
 
@@ -321,7 +321,7 @@ mkdir -vp build
 cd build
 
 ../libstdc++-v3/configure \
-    --host=${TARGET_TRIPLET} \
+    --host="${TARGET_TRIPLET}" \
     --build=$(../config.guess) \
     --prefix=/usr \
     --disable-multilib \
@@ -335,6 +335,6 @@ make
 
 msg "Installing gcc for libstdc++..."
 
-make install DESTDIR=${TARGET_ROOTFS_PATH}
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-rm -v ${TARGET_ROOTFS_PATH}/usr/lib/lib{stdc++{,exp,fs},supc++}.la
+rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
