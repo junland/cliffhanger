@@ -76,7 +76,7 @@ msg "Downloading binutils..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
 
-curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
 
 msg "Copying sources of binutils to work directory..."
 
@@ -122,10 +122,10 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
 
 # curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl "${CURL_OPTS}" "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
-curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
-curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
 
 msg "Copying sources of gcc to work directory..."
 
@@ -191,7 +191,7 @@ msg "Downloading linux kernel..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
-curl "${CURL_OPTS}" "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
 
 msg "Copying sources of linux kernel to work directory..."
 
@@ -225,7 +225,7 @@ msg "Downloading glibc..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
 
-curl "${CURL_OPTS}" "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" --strip-components=1
 
 msg "Copying sources of glibc to work directory..."
 
@@ -257,7 +257,7 @@ riscv64)
     ;;
 esac
 
-curl "${CURL_OPTS}" -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
+curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
 
 patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch"
 
