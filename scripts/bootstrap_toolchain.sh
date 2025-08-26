@@ -92,7 +92,7 @@ cd build
 
 ../configure \
     --prefix="${TOOLCHAIN_PATH}" \
-    --target=${TARGET_TRIPLET} \
+    --target="${TARGET_TRIPLET}" \
     --with-sysroot="${TARGET_ROOTFS_PATH}" \
     --disable-nls \
     --enable-gprofng=no \
@@ -150,8 +150,8 @@ cd build
 
 ../configure \
     --prefix="${TOOLCHAIN_PATH}" \
-    --target=${TARGET_TRIPLET} \
-    --with-glibc-version=${GLIBC_VER} \
+    --target="${TARGET_TRIPLET}" \
+    --with-glibc-version="${GLIBC_VER}" \
     --with-sysroot="${TARGET_ROOTFS_PATH}" \
     --with-newlib \
     --without-headers \
@@ -322,12 +322,12 @@ cd build
 
 ../libstdc++-v3/configure \
     --host="${TARGET_TRIPLET}" \
-    --build=$(../config.guess) \
+    --build="$(../config.guess)" \
     --prefix=/usr \
     --disable-multilib \
     --disable-nls \
     --disable-libstdcxx-pch \
-    --with-gxx-include-dir=/tools/${TARGET_TRIPLET}/include/c++/14.2.0
+    --with-gxx-include-dir="/tools/${TARGET_TRIPLET}/include/c++/14.2.0"
 
 msg "Building gcc for libstdc++..."
 
