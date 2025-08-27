@@ -283,14 +283,17 @@ cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 
 echo "rootsbindir=/usr/sbin" >configparms
 
+export libc_cv_slibdir=/usr/lib
+
 ../configure \
-    libc_cv_slibdir=/usr/lib \
     --prefix=/usr \
     --host="${TARGET_TRIPLET}" \
     --build=$(../scripts/config.guess) \
     --enable-kernel=5.4 \
     --with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
     --disable-nscd
+
+unset libc_cv_slibdir
 
 msg "Building glibc..."
 
