@@ -25,7 +25,7 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
-BINUTILS_VER="2.45"
+BINUTILS_VER="2.44"
 GCC_VER="14.2.0"
 GLIBC_VER="2.41"
 GMP_VER="6.3.0"
@@ -181,9 +181,11 @@ make install
 
 cd ..
 
-mkdir -p $(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include
+LIMITS_PATH="$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include"
 
-cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h
+msg "Creating limits.h in ${LIMITS_PATH}"
+
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h >${LIMITS_PATH}/limits.h
 
 clean_work_dir
 
@@ -195,7 +197,7 @@ msg "Downloading linux kernel..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
-curl ${CURL_OPTS} "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://www.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" --strip-components=1
 
 msg "Copying sources of linux kernel to work directory..."
 
