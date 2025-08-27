@@ -213,7 +213,7 @@ find usr/include -type f ! -name '*.h' -delete
 
 mkdir -vp "${TARGET_ROOTFS_PATH}/usr"
 
-cp -rv usr/include/* "${TARGET_ROOTFS_PATH}/usr"
+cp -rv usr/include "${TARGET_ROOTFS_PATH}/usr"
 
 clean_work_dir
 
@@ -272,7 +272,7 @@ echo "rootsbindir=/usr/sbin" >configparms
     --host="${TARGET_TRIPLET}" \
     --build=$(../scripts/config.guess) \
     --enable-kernel=5.4 \
-    --with-headers="${TARGET_ROOTFS_PATH}"/usr/include \
+    --with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
     --disable-nscd \
     libc_cv_slibdir=/usr/lib
 
