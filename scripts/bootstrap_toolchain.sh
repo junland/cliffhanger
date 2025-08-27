@@ -11,7 +11,6 @@ TARGET_ROOTFS_PATH="${PWD}/rootfs"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_TRIPLET="${TARGET_ARCH}-buildroot-linux-gnu"
-TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_PATH="${PWD}/toolchains/${TARGET_ARCH}"
 
 CURL_OPTS="-L -s"
@@ -268,13 +267,13 @@ cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 echo "rootsbindir=/usr/sbin" >configparms
 
 ../configure \
+    libc_cv_slibdir=/usr/lib \
     --prefix=/usr \
     --host="${TARGET_TRIPLET}" \
     --build=$(../scripts/config.guess) \
     --enable-kernel=5.4 \
     --with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
-    --disable-nscd \
-    libc_cv_slibdir=/usr/lib
+    --disable-nscd
 
 msg "Building glibc..."
 
