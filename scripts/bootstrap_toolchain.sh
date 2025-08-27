@@ -9,7 +9,7 @@ LC_ALL=POSIX
 TARGET_ARCH="x86_64"
 
 TARGET_ROOTFS_PATH="${PWD}/rootfs"
-TARGET_ROOTFS_TARGET_ROOTFS_TOOLCHAIN_PATH="${TARGET_ROOTFS_PATH}/tools"
+TARGET_ROOTFS_TOOLCHAIN_PATH="${TARGET_ROOTFS_PATH}/tools"
 
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
@@ -48,7 +48,7 @@ clean_work_dir() {
 }
 
 # Setup PATH
-PATH="${TARGET_ROOTFS_TARGET_ROOTFS_TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+PATH="${TARGET_ROOTFS_TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE
@@ -311,7 +311,7 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
-tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
+tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
 tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp" --strip-components=1
 tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc" --strip-components=1
 tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr" --strip-components=1
@@ -331,7 +331,7 @@ cd build
     --disable-multilib \
     --disable-nls \
     --disable-libstdcxx-pch \
-    --with-gxx-include-dir="/usr/${TARGET_TRIPLET}/include/c++/14.2.0"
+    --with-gxx-include-dir="/usr/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
 
 msg "Building gcc for libstdc++..."
 
@@ -341,4 +341,4 @@ msg "Installing gcc for libstdc++..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
+rm -fv "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
