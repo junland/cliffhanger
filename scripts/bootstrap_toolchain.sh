@@ -7,12 +7,14 @@ umask 022
 
 LC_ALL=POSIX
 TARGET_ARCH="x86_64"
+
 TARGET_ROOTFS_PATH="${PWD}/rootfs"
+TARGET_ROOTFS_TARGET_ROOTFS_TOOLCHAIN_PATH="${TARGET_ROOTFS_PATH}/tools"
+
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_TRIPLET="${TARGET_ARCH}-buildroot-linux-gnu"
 TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
-TOOLCHAIN_PATH="${PWD}/toolchains/${TARGET_ARCH}"
 
 CURL_OPTS="-L -s"
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
@@ -46,7 +48,7 @@ clean_work_dir() {
 }
 
 # Setup PATH
-PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+PATH="${TARGET_ROOTFS_TARGET_ROOTFS_TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE
@@ -56,7 +58,7 @@ msg "Creating necessary directories..."
 mkdir -vp "${TARGET_ROOTFS_PATH}"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
-mkdir -vp "${TOOLCHAIN_PATH}"
+mkdir -vp "${TARGET_ROOTFS_TOOLCHAIN_PATH}"
 
 mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,sbin}
 
@@ -91,7 +93,7 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix="${TOOLCHAIN_PATH}" \
+    --prefix="${TARGET_ROOTFS_TOOLCHAIN_PATH}" \
     --target="${TARGET_TRIPLET}" \
     --with-sysroot="${TARGET_ROOTFS_PATH}" \
     --disable-nls \
@@ -149,7 +151,7 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix="${TOOLCHAIN_PATH}" \
+    --prefix="${TARGET_ROOTFS_TOOLCHAIN_PATH}" \
     --target="${TARGET_TRIPLET}" \
     --with-glibc-version="${GLIBC_VER}" \
     --with-sysroot="${TARGET_ROOTFS_PATH}" \
@@ -178,6 +180,8 @@ msg "Installing gcc..."
 make install
 
 cd ..
+
+mkdir -p $(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include
 
 cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h
 
@@ -307,10 +311,10 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr" --strip-components=1
+tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
+tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp" --strip-components=1
+tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc" --strip-components=1
+tar -xf "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr" --strip-components=1
 
 msg "Configuring gcc for libstdc++..."
 
@@ -327,7 +331,7 @@ cd build
     --disable-multilib \
     --disable-nls \
     --disable-libstdcxx-pch \
-    --with-gxx-include-dir="/tools/${TARGET_TRIPLET}/include/c++/14.2.0"
+    --with-gxx-include-dir="/usr/${TARGET_TRIPLET}/include/c++/14.2.0"
 
 msg "Building gcc for libstdc++..."
 
