@@ -11,7 +11,6 @@ TARGET_ROOTFS_PATH="${PWD}/rootfs"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_TRIPLET="${TARGET_ARCH}-buildroot-linux-gnu"
-TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_PATH="${PWD}/toolchains/${TARGET_ARCH}"
 
 CURL_OPTS="-L -s"
@@ -199,13 +198,30 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_P
 
 cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
+# Deduce the kernel arch from the target arch.
+case ${TARGET_ARCH} in
+x86_64)
+    KARCH="x86_64"
+    ;;
+aarch64)
+    KARCH="arm64"
+    ;;
+riscv64)
+    KARCH="riscv64"
+    ;;
+*)
+    echo "Unknown architecture: ${TARGET_ARCH}"
+    exit 1
+    ;;
+esac
+
 msg "Confirming files..."
 
-make mrproper
+make mrproper -j1 ARCH="${KARCH}"
 
 msg "Building headers..."
 
-make headers
+make headers -j1 ARCH="${KARCH}"
 
 msg "Installing headers..."
 
@@ -266,6 +282,8 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 
 echo "rootsbindir=/usr/sbin" >configparms
+
+export libc_cv_slibdir=/usr/lib
 
 ../configure \
     --prefix=/usr \
