@@ -200,19 +200,19 @@ cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
 # Deduce the kernel arch from the target arch.
 case ${TARGET_ARCH} in
-    x86_64)
-        KARCH="x86_64"
-        ;;
-    aarch64)
-        KARCH="arm64"
-        ;;
-    riscv64)
-        KARCH="riscv64"
-        ;;
-    *)
-        echo "Unknown architecture: ${TARGET_ARCH}"
-        exit 1
-        ;;
+x86_64)
+    KARCH="x86_64"
+    ;;
+aarch64)
+    KARCH="arm64"
+    ;;
+riscv64)
+    KARCH="riscv64"
+    ;;
+*)
+    echo "Unknown architecture: ${TARGET_ARCH}"
+    exit 1
+    ;;
 esac
 
 msg "Confirming files..."
