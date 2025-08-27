@@ -198,13 +198,30 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_P
 
 cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
+# Deduce the kernel arch from the target arch.
+case ${TARGET_ARCH} in
+    x86_64)
+        KARCH="x86_64"
+        ;;
+    aarch64)
+        KARCH="arm64"
+        ;;
+    riscv64)
+        KARCH="riscv64"
+        ;;
+    *)
+        echo "Unknown architecture: ${TARGET_ARCH}"
+        exit 1
+        ;;
+esac
+
 msg "Confirming files..."
 
-make mrproper
+make mrproper -j1 ARCH="${KARCH}"
 
 msg "Building headers..."
 
-make headers
+make headers -j1 ARCH="${KARCH}"
 
 msg "Installing headers..."
 
