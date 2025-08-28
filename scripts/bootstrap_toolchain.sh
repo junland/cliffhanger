@@ -283,7 +283,7 @@ msg "Installing glibc..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-sed '/RTLDLIST=/s@/usr@@g' -i "${TARGET_ROOTFS_PATH}"/usr/bin/ldd
+sed '/RTLDLIST=/s@/usr@@g' -i "${TARGET_ROOTFS_PATH}/usr/bin/ldd"
 
 msg "Verify that compiling and linking works..."
 
