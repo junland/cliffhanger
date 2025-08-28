@@ -198,30 +198,13 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_P
 
 cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
-# Deduce the kernel arch from the target arch.
-case ${TARGET_ARCH} in
-x86_64)
-    KARCH="x86_64"
-    ;;
-aarch64)
-    KARCH="arm64"
-    ;;
-riscv64)
-    KARCH="riscv64"
-    ;;
-*)
-    echo "Unknown architecture: ${TARGET_ARCH}"
-    exit 1
-    ;;
-esac
-
 msg "Confirming files..."
 
-make mrproper -j1 ARCH="${KARCH}"
+make mrproper
 
 msg "Building headers..."
 
-make headers -j1 ARCH="${KARCH}"
+make headers
 
 msg "Installing headers..."
 
@@ -253,19 +236,19 @@ msg "Configuring glibc..."
 
 case ${TARGET_ARCH} in
 i?86)
-    ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}"/lib/ld-lsb.so.3
+    ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3"
     ;;
 x86_64)
-    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}"/lib64
-    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-x86-64.so.3
+    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64"
+    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3"
     ;;
 aarch64)
-    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}"/lib64
-    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-aarch64.so.3
+    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3"
     ;;
 riscv64)
-    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}"/lib64
-    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}"/lib64/ld-lsb-riscv64.so.3
+    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3"
     ;;
 *)
     echo "Unknown architecture: ${TARGET_ARCH}"
@@ -282,8 +265,6 @@ mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 
 echo "rootsbindir=/usr/sbin" >configparms
-
-export libc_cv_slibdir=/usr/lib
 
 ../configure \
     --prefix=/usr \
