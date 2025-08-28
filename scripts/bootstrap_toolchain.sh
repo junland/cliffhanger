@@ -301,15 +301,11 @@ clean_work_dir
 
 msg "Setting up gcc for libstdc++..."
 
-mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
-mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
-mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
-mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
-
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc" --strip-components=1
-tar -xzf "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.gz" -C "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr" --strip-components=1
+# Copy contents since we already downloaded the source code.
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 msg "Configuring gcc for libstdc++..."
 
