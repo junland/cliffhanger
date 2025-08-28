@@ -337,3 +337,4 @@ msg "Installing gcc for libstdc++..."
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
 rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
+--with-gxx-include-dir="${TOOLCHAIN_PATH}/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
