@@ -322,7 +322,7 @@ cd build
     --disable-multilib \
     --disable-nls \
     --disable-libstdcxx-pch \
-    --with-gxx-include-dir="/tools/${TARGET_TRIPLET}/include/c++/14.2.0"
+    --with-gxx-include-dir="${TARGET_TRIPLET}/include/c++/${GCC_VER}"
 
 msg "Building gcc for libstdc++..."
 
