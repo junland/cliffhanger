@@ -23,25 +23,25 @@ SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
 BINUTILS_VER="2.45"
-GCC_VER="14.2.0"
-GLIBC_VER="2.41"
+GCC_VER="15.2.0"
+GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 LINUX_VER="6.13.4"
 MPC_VER="1.3.1"
-MPFR_VER="4.2.1"
+MPFR_VER="4.2.2"
 
-GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/12.3/glibc-2.41-fhs-1.patch"
+GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/12.3/glibc-2.42-fhs-1.patch"
 
 # msg function that will make echo's pretty.
 msg() {
-    echo " ==> $*"
+	echo " ==> $*"
 }
 
 # clean work directory function
 clean_work_dir() {
-    cd "${TARGET_ROOTFS_PATH}"
-    msg "Cleaning up work directory at ${WORK}..."
-    rm -rf "${WORK}"/*
+	cd "${TARGET_ROOTFS_PATH}"
+	msg "Cleaning up work directory at ${WORK}..."
+	rm -rf "${WORK}"/*
 }
 
 # Setup PATH
@@ -60,7 +60,7 @@ mkdir -vp "${TOOLCHAIN_PATH}"
 mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,sbin}
 
 for i in bin lib sbin; do
-    ln -sv usr/$i "$TARGET_ROOTFS_PATH"/$i
+	ln -sv usr/$i "$TARGET_ROOTFS_PATH"/$i
 done
 
 case $(uname -m) in
@@ -90,14 +90,14 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix="${TOOLCHAIN_PATH}" \
-    --target="${TARGET_TRIPLET}" \
-    --with-sysroot="${TARGET_ROOTFS_PATH}" \
-    --disable-nls \
-    --enable-gprofng=no \
-    --disable-werror \
-    --enable-new-dtags \
-    --enable-default-hash-style=gnu
+	--prefix="${TOOLCHAIN_PATH}" \
+	--target="${TARGET_TRIPLET}" \
+	--with-sysroot="${TARGET_ROOTFS_PATH}" \
+	--disable-nls \
+	--enable-gprofng=no \
+	--disable-werror \
+	--enable-new-dtags \
+	--enable-default-hash-style=gnu
 
 msg "Building binutils..."
 
@@ -139,8 +139,8 @@ msg "Configuring gcc..."
 
 case $(uname -m) in
 x86_64)
-    sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
-    ;;
+	sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+	;;
 esac
 
 mkdir -v build
@@ -148,25 +148,25 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix="${TOOLCHAIN_PATH}" \
-    --target="${TARGET_TRIPLET}" \
-    --with-glibc-version="${GLIBC_VER}" \
-    --with-sysroot="${TARGET_ROOTFS_PATH}" \
-    --with-newlib \
-    --without-headers \
-    --enable-default-pie \
-    --enable-default-ssp \
-    --disable-nls \
-    --disable-shared \
-    --disable-multilib \
-    --disable-threads \
-    --disable-libatomic \
-    --disable-libgomp \
-    --disable-libquadmath \
-    --disable-libssp \
-    --disable-libvtv \
-    --disable-libstdcxx \
-    --enable-languages=c,c++
+	--prefix="${TOOLCHAIN_PATH}" \
+	--target="${TARGET_TRIPLET}" \
+	--with-glibc-version="${GLIBC_VER}" \
+	--with-sysroot="${TARGET_ROOTFS_PATH}" \
+	--with-newlib \
+	--without-headers \
+	--enable-default-pie \
+	--enable-default-ssp \
+	--disable-nls \
+	--disable-shared \
+	--disable-multilib \
+	--disable-threads \
+	--disable-libatomic \
+	--disable-libgomp \
+	--disable-libquadmath \
+	--disable-libssp \
+	--disable-libvtv \
+	--disable-libstdcxx \
+	--enable-languages=c,c++
 
 msg "Building gcc..."
 
@@ -236,24 +236,24 @@ msg "Configuring glibc..."
 
 case ${TARGET_ARCH} in
 i?86)
-    ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3"
-    ;;
+	ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3"
+	;;
 x86_64)
-    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64"
-    ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3"
-    ;;
+	ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3"
+	;;
 aarch64)
-    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
-    ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3"
-    ;;
+	ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3"
+	;;
 riscv64)
-    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
-    ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3"
-    ;;
+	ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3"
+	;;
 *)
-    echo "Unknown architecture: ${TARGET_ARCH}"
-    exit 1
-    ;;
+	echo "Unknown architecture: ${TARGET_ARCH}"
+	exit 1
+	;;
 esac
 
 curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
@@ -267,13 +267,13 @@ cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 echo "rootsbindir=/usr/sbin" >configparms
 
 ../configure \
-    --prefix=/usr \
-    --host="${TARGET_TRIPLET}" \
-    --build=$(../scripts/config.guess) \
-    --enable-kernel=5.4 \
-    --with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
-    --disable-nscd \
-    libc_cv_slibdir=/usr/lib
+	--prefix=/usr \
+	--host="${TARGET_TRIPLET}" \
+	--build=$(../scripts/config.guess) \
+	--enable-kernel=5.4 \
+	--with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
+	--disable-nscd \
+	libc_cv_slibdir=/usr/lib
 
 msg "Building glibc..."
 
@@ -316,13 +316,13 @@ mkdir -vp build
 cd build
 
 ../libstdc++-v3/configure \
-    --host="${TARGET_TRIPLET}" \
-    --build="$(../config.guess)" \
-    --prefix=/usr \
-    --disable-multilib \
-    --disable-nls \
-    --disable-libstdcxx-pch \
-    --with-gxx-include-dir="/usr/include/c++/${GCC_VER}"
+	--host="${TARGET_TRIPLET}" \
+	--build="$(../config.guess)" \
+	--prefix=/usr \
+	--disable-multilib \
+	--disable-nls \
+	--disable-libstdcxx-pch \
+	--with-gxx-include-dir="/usr/include/c++/${GCC_VER}"
 
 msg "Building gcc for libstdc++..."
 
