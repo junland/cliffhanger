@@ -21,6 +21,8 @@ ROOTFS="${TARGET_ROOTFS_PATH}"
 WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
+LFS_BOOK_VER="12.4"
+
 # Versions for temporary tools
 BINUTILS_VER="2.45"
 GCC_VER="15.2.0"
@@ -30,7 +32,7 @@ LINUX_VER="6.13.4"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
 
-GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/12.3/glibc-2.42-fhs-1.patch"
+GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-2.42-fhs-1.patch"
 
 # msg function that will make echo's pretty.
 msg() {
