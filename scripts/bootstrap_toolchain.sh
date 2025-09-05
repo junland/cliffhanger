@@ -338,6 +338,13 @@ rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
 
 clean_work_dir
 
+# Write full path where the toolchain is installed to a file in the
+msg "Writing toolchain path..."
+
+mkdir -p "${TOOLCHAIN_PATH}/share/vendor"
+
+echo "${TOOLCHAIN_PATH}" >"${TOOLCHAIN_PATH}/share/vendor/toolchain_path"
+
 msg "Done"
 
 exit 0
