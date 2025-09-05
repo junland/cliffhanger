@@ -24,21 +24,22 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Versions for temporary tools
-BASH_VER="5.2.37"
-BINUTILS_VER="2.44"
-COREUTILS_VER="9.6"
+BASH_VER="5.3"
+BINUTILS_VER="2.45"
+COREUTILS_VER="9.7"
 DIFFUTILS_VER="3.11"
 FILE_VER="5.46"
 FINDUTILS_VER="4.10.0"
 GAWK_VER="5.3.1"
-GCC_VER="14.2.0"
+GCC_VER="15.2.0"
+GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 GREP_VER="3.11"
 GZIP_VER="1.13"
-M4_VER="1.4.19"
+M4_VER="1.4.2"
 MAKE_VER="4.4.1"
 MPC_VER="1.3.1"
-MPFR_VER="4.2.1"
+MPFR_VER="4.2.2"
 NCURSES_VER="6.5"
 PATCH_VER="2.7.6"
 SED_VER="4.9"
@@ -47,14 +48,14 @@ XZ_VER="5.6.2"
 
 # msg function that will make echo's pretty.
 msg() {
-    echo " ==> $*"
+	echo " ==> $*"
 }
 
 # clean work directory function
 clean_work_dir() {
-    cd "${TARGET_ROOTFS_PATH}"
-    msg "Cleaning up work directory at ${WORK}..."
-    rm -rf "${WORK}"/*
+	cd "${TARGET_ROOTFS_PATH}"
+	msg "Cleaning up work directory at ${WORK}..."
+	rm -rf "${WORK}"/*
 }
 
 # Setup PATH
@@ -158,18 +159,18 @@ popd
 msg "Configuring ncurses..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(./config.guess) \
-    --mandir=/usr/share/man \
-    --with-manpage-format=normal \
-    --with-shared \
-    --without-normal \
-    --with-cxx-shared \
-    --without-debug \
-    --without-ada \
-    --disable-stripping \
-    AWK=gawk
+ --prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(./config.guess) \
+	--mandir=/usr/share/man \
+	--with-manpage-format=normal \
+	--with-shared \
+	--without-normal \
+	--with-cxx-shared \
+	--without-debug \
+	--without-ada \
+	--disable-stripping \
+	AWK=gawk
 
 msg "Building ncurses..."
 
@@ -204,10 +205,10 @@ cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 msg "Configuring bash..."
 
 ./configure \
-    --prefix=/usr \
-    --build=$(sh support/config.guess) \
-    --host=${TARGET_TRIPLET} \
-    --without-bash-malloc
+	--prefix=/usr \
+	--build=$(sh support/config.guess) \
+	--host=${TARGET_TRIPLET} \
+	--without-bash-malloc
 
 msg "Building bash..."
 
@@ -240,11 +241,11 @@ cd "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 msg "Configuring coreutils..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(./config.guess) \
-    --enable-install-program=hostname \
-    --enable-no-install-program=kill,uptime
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(./config.guess) \
+	--enable-install-program=hostname \
+	--enable-no-install-program=kill,uptime
 
 msg "Building coreutils..."
 
@@ -283,9 +284,9 @@ autoreconf -f
 msg "Configuring diffutils..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(./config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(./config.guess)
 
 msg "Building diffutils..."
 
@@ -320,10 +321,10 @@ mkdir build
 pushd build
 
 ../configure \
-    --disable-bzlib \
-    --disable-libseccomp \
-    --disable-xzlib \
-    --disable-zlib
+	--disable-bzlib \
+	--disable-libseccomp \
+	--disable-xzlib \
+	--disable-zlib
 
 msg "Building temp file command..."
 
@@ -366,10 +367,10 @@ cd "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
 msg "Configuring findutils..."
 
 ./configure \
-    --prefix=/usr \
-    --localstatedir=/var/lib/locate \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--localstatedir=/var/lib/locate \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building findutils..."
 
@@ -402,9 +403,9 @@ msg "Configuring gawk..."
 sed -i 's/extras//' Makefile.in
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building gawk..."
 
@@ -435,9 +436,9 @@ cd "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 msg "Configuring grep..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building grep..."
 
@@ -468,8 +469,8 @@ cd "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 msg "Configuring gzip..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET}
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET}
 
 msg "Building gzip..."
 
@@ -500,10 +501,10 @@ cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 msg "Configuring make..."
 
 ./configure \
-    --build=$(build-aux/config.guess) \
-    --prefix=/usr \
-    --without-guile \
-    --host=${TARGET_TRIPLET}
+	--build=$(build-aux/config.guess) \
+	--prefix=/usr \
+	--without-guile \
+	--host=${TARGET_TRIPLET}
 
 msg "Building make..."
 
@@ -537,9 +538,9 @@ autoreconf -f
 msg "Configuring patch..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building patch..."
 
@@ -570,9 +571,9 @@ cd "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 msg "Configuring sed..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building sed..."
 
@@ -603,9 +604,9 @@ cd "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 msg "Configuring tar..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess)
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess)
 
 msg "Building tar..."
 
@@ -636,11 +637,11 @@ cd "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
 msg "Configuring xz..."
 
 ./configure \
-    --prefix=/usr \
-    --host=${TARGET_TRIPLET} \
-    --build=$(build-aux/config.guess) \
-    --disable-static \
-    --docdir=/usr/share/doc/xz-5.6.4
+	--prefix=/usr \
+	--host=${TARGET_TRIPLET} \
+	--build=$(build-aux/config.guess) \
+	--disable-static \
+	--docdir=/usr/share/doc/xz-5.6.4
 
 msg "Building xz..."
 
@@ -679,16 +680,16 @@ mkdir -v build
 cd build
 
 ../configure \
-    --prefix=/usr \
-    --build=$(../config.guess) \
-    --host=${TARGET_TRIPLET} \
-    --disable-nls \
-    --enable-shared \
-    --enable-gprofng=no \
-    --disable-werror \
-    --enable-64-bit-bfd \
-    --enable-new-dtags \
-    --enable-default-hash-style=gnu
+	--prefix=/usr \
+	--build=$(../config.guess) \
+	--host=${TARGET_TRIPLET} \
+	--disable-nls \
+	--enable-shared \
+	--enable-gprofng=no \
+	--disable-werror \
+	--enable-64-bit-bfd \
+	--enable-new-dtags \
+	--enable-default-hash-style=gnu
 
 msg "Building binutils..."
 
@@ -739,8 +740,8 @@ msg "Configuring gcc..."
 
 case $(uname -m) in
 x86_64)
-    sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
-    ;;
+	sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+	;;
 esac
 
 sed '/thread_header =/s/@.*@/gthr-posix.h/' -i libgcc/Makefile.in libstdc++-v3/include/Makefile.in
@@ -750,23 +751,23 @@ mkdir -v build
 cd build
 
 ../configure \
-    --build=$(../config.guess) \
-    --host=${TARGET_TRIPLET} \
-    --target=${TARGET_TRIPLET} \
-    LDFLAGS_FOR_TARGET=-L$PWD/${TARGET_TRIPLET}/libgcc \
-    --prefix=/usr \
-    --with-build-sysroot=$TARGET_ROOTFS_PATH \
-    --enable-default-pie \
-    --enable-default-ssp \
-    --disable-nls \
-    --disable-multilib \
-    --disable-libatomic \
-    --disable-libgomp \
-    --disable-libquadmath \
-    --disable-libsanitizer \
-    --disable-libssp \
-    --disable-libvtv \
-    --enable-languages=c,c++
+	--build=$(../config.guess) \
+	--host=${TARGET_TRIPLET} \
+	--target=${TARGET_TRIPLET} \
+	LDFLAGS_FOR_TARGET=-L$PWD/${TARGET_TRIPLET}/libgcc \
+	--prefix=/usr \
+	--with-build-sysroot=$TARGET_ROOTFS_PATH \
+	--enable-default-pie \
+	--enable-default-ssp \
+	--disable-nls \
+	--disable-multilib \
+	--disable-libatomic \
+	--disable-libgomp \
+	--disable-libquadmath \
+	--disable-libsanitizer \
+	--disable-libssp \
+	--disable-libvtv \
+	--enable-languages=c,c++
 
 msg "Building gcc..."
 
