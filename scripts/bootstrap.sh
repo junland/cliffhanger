@@ -36,7 +36,7 @@ GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 GREP_VER="3.11"
 GZIP_VER="1.13"
-M4_VER="1.4.2"
+M4_VER="1.4.20"
 MAKE_VER="4.4.1"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
@@ -114,7 +114,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
 msg "Configuring m4..."
 
-CFLAGS="-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2" ./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
+./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
 
 msg "Building m4..."
 
@@ -159,7 +159,7 @@ popd
 msg "Configuring ncurses..."
 
 ./configure \
- --prefix=/usr \
+	--prefix=/usr \
 	--host=${TARGET_TRIPLET} \
 	--build=$(./config.guess) \
 	--mandir=/usr/share/man \
@@ -244,7 +244,7 @@ msg "Configuring coreutils..."
 	--prefix=/usr \
 	--host=${TARGET_TRIPLET} \
 	--build=$(./config.guess) \
-	--enable-install-program=hostname \
+ --enable-install-program=hostname \
 	--enable-no-install-program=kill,uptime
 
 msg "Building coreutils..."
