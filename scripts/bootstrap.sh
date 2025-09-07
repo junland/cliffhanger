@@ -246,7 +246,7 @@ msg "Configuring coreutils..."
 	--prefix=/usr \
 	--host=${TARGET_TRIPLET} \
 	--build=$(./config.guess) \
- --enable-install-program=hostname \
+	--enable-install-program=hostname \
 	--enable-no-install-program=kill,uptime
 
 msg "Building coreutils..."
@@ -371,7 +371,7 @@ msg "Configuring findutils..."
 ./configure \
 	--prefix=/usr \
 	--localstatedir=/var/lib/locate \
-	--host=${TARGET_TRIPLET} \
+ --host=${TARGET_TRIPLET} \
 	--build=$(build-aux/config.guess)
 
 msg "Building findutils..."
