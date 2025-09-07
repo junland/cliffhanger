@@ -40,7 +40,7 @@ M4_VER="1.4.20"
 MAKE_VER="4.4.1"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
-NCURSES_VER="6.5"
+NCURSES_VER="6.5-20250809"
 PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
@@ -134,7 +134,7 @@ msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/ncurses/ncurses-${NCURSES_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
+curl ${CURL_OPTS} "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
 
 msg "Copying sources of ncurses to work directory..."
 
@@ -148,11 +148,13 @@ mkdir -vp build
 
 pushd build
 
-../configure AWK=gawk
+../configure --prefix=${TARGET_ROOTFS_PATH} AWK=gawk
 
 make -C include
 
 make -C progs tic
+
+install progs/tic ${TOOLCHAIN_PATH}/bin
 
 popd
 
@@ -178,7 +180,7 @@ make
 
 msg "Installing ncurses..."
 
-make DESTDIR="${TARGET_ROOTFS_PATH}" TIC_PATH="${TARGET_ROOTFS_WORK_PATH}"/ncurses-${NCURSES_VER}/build/progs/tic install
+make DESTDIR="${TARGET_ROOTFS_PATH}" install
 
 ln -svf libncursesw.so "${TARGET_ROOTFS_PATH}"/usr/lib/libncurses.so
 
