@@ -11,7 +11,7 @@ TARGET_ROOTFS_PATH="$PWD/rootfs"
 TARGET_ROOTFS_SOURCES_PATH="${TARGET_ROOTFS_PATH}/tmp/sources"
 TARGET_ROOTFS_WORK_PATH="${TARGET_ROOTFS_PATH}/tmp/work"
 TARGET_TRIPLET="${TARGET_ARCH}-buildroot-linux-gnu"
-TOOLCHAIN_PATH="$PWD/toolchains/${TARGET_ARCH}"
+TOOLCHAIN_PATH="$PWD/toolchain-${TARGET_ARCH}"
 TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 TOOLCHAIN_URL="https://toolchains.bootlin.com/downloads/releases/toolchains/${TOOLCHAIN_TARGET_ARCH}/tarballs/${TOOLCHAIN_TARGET_ARCH}--glibc--${CHANNEL_DATE}.tar.xz"
 
@@ -371,7 +371,7 @@ msg "Configuring findutils..."
 ./configure \
 	--prefix=/usr \
 	--localstatedir=/var/lib/locate \
- --host=${TARGET_TRIPLET} \
+	--host=${TARGET_TRIPLET} \
 	--build=$(build-aux/config.guess)
 
 msg "Building findutils..."

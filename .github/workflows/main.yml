@@ -83,6 +83,12 @@ jobs:
         set -o pipefail
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap_toolchain.sh
 
+    - name: Upload toolchain
+      uses: actions/upload-artifact@v4
+      with:
+        name: toolchain
+        path: toolchain-${{ matrix.TARGET_ARCH }}
+
     - name: Execute the bootstrap script
       id: bootstrap
       run: |
