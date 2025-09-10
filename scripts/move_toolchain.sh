@@ -38,6 +38,7 @@ export LC_ALL=C
 # Replace the old path with the new one in all text files
 grep -lr "${OLD_PATH}" . | while read -r FILE; do
 	if file -b --mime-type "${FILE}" | grep -q '^text/' && [ "${FILE}" != "${FULL_LOCATION_FILE}" ]; then
+		echo "Updating file: ${FILE}"
 		sed -i "s|${OLD_PATH}|${NEW_PATH}|g" "${FILE}"
 	fi
 done
