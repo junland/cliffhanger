@@ -319,6 +319,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}" "${TARGET_ROOTFS_WORK_PAT
 
 cd "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configure temp file command..."
 
 mkdir build
