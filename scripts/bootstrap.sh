@@ -240,6 +240,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" "${TARGET_ROOTF
 
 cd "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -fi
+
 msg "Configuring coreutils..."
 
 ./configure \
@@ -281,7 +284,7 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" "${TARGET_ROOTF
 cd "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
 
 # Reconfigure to point to our version of automake
-autoreconf -f
+autoreconf -fi
 
 msg "Configuring diffutils..."
 
@@ -535,7 +538,7 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}" "${TARGET_ROOTFS_WORK_P
 cd "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
 
 # Reconfigure to point to our version of automake
-autoreconf -f
+autoreconf -fi
 
 msg "Configuring patch..."
 
