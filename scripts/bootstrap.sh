@@ -703,9 +703,6 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_
 
 cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
-# Reconfigure to point to our version of automake
-autoreconf -f
-
 msg "Configuring binutils..."
 
 sed '6031s/$add_dir//' -i ltmain.sh
