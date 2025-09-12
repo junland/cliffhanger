@@ -591,6 +591,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}" "${TARGET_ROOTFS_WORK_PATH}
 
 cd "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring sed..."
 
 ./configure \
@@ -624,6 +627,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}" "${TARGET_ROOTFS_WORK_PATH}
 
 cd "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring tar..."
 
 ./configure \
@@ -656,6 +662,9 @@ msg "Copying sources of xz to work directory..."
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
+
+# Reconfigure to point to our version of automake
+autoreconf -f
 
 msg "Configuring xz..."
 
@@ -693,6 +702,9 @@ msg "Copying sources of binutils to work directory..."
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
+
+# Reconfigure to point to our version of automake
+autoreconf -f
 
 msg "Configuring binutils..."
 
@@ -758,6 +770,9 @@ ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/
 ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+
+# Reconfigure to point to our version of automake
+autoreconf -f
 
 msg "Configuring gcc..."
 
