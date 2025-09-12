@@ -447,6 +447,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}" "${TARGET_ROOTFS_WORK_PAT
 
 cd "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring grep..."
 
 ./configure \
@@ -480,6 +483,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}" "${TARGET_ROOTFS_WORK_PAT
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring gzip..."
 
 ./configure \
@@ -511,6 +517,9 @@ msg "Copying sources of make to work directory..."
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
+
+# Reconfigure to point to our version of automake
+autoreconf -f
 
 msg "Configuring make..."
 
