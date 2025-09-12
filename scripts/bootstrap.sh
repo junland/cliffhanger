@@ -409,6 +409,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}" "${TARGET_ROOTFS_WORK_PAT
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring gawk..."
 
 sed -i 's/extras//' Makefile.in
