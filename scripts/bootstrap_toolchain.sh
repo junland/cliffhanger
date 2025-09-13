@@ -11,7 +11,8 @@ TARGET_ROOTFS_PATH=${TARGET_ROOTFS_PATH:-"${PWD}/rootfs"}
 TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"${TARGET_ROOTFS_PATH}/tmp/sources"}
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"${TARGET_ROOTFS_PATH}/tmp/work"}
 TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_ARCH}-buildroot-linux-gnu"}
-TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${PWD}/toolchain-${TARGET_ARCH}"}
+TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${TARGET_ROOTFS_PATH}/toolchain"}
+TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 
 CURL_OPTS="-L -s"
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
@@ -313,6 +314,8 @@ msg "Configuring gcc for libstdc++..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
+TOOLCHAIN_BASE_DIR=$(basename "${TOOLCHAIN_PATH}")
+
 mkdir -vp build
 
 cd build
@@ -324,7 +327,7 @@ cd build
 	--disable-multilib \
 	--disable-nls \
 	--disable-libstdcxx-pch \
-	--with-gxx-include-dir="/usr/include/c++/${GCC_VER}"
+	--with-gxx-include-dir="${TOOLCHAIN_BASE_DIR}/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
 
 msg "Building gcc for libstdc++..."
 
