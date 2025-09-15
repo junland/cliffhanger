@@ -316,6 +316,8 @@ cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
 TOOLCHAIN_BASE_DIR=$(basename "${TOOLCHAIN_PATH}")
 
+msg "Using toolchain base dir: ${TOOLCHAIN_BASE_DIR}"
+
 mkdir -vp build
 
 cd build
