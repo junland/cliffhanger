@@ -57,6 +57,31 @@ clean_work_dir() {
 	rm -rf "${WORK}"/*
 }
 
+download_and_extract() {
+	local url=$1
+	local dest_dir=$2
+	local strip_components=${3:-1}
+
+	# Determine if the file has already been downloaded
+	if [ -d "${dest_dir}" ]; then
+		msg "Directory ${dest_dir} already exists, skipping download."
+		return
+	fi
+
+	mkdir -vp "${dest_dir}"
+
+	case ${url} in
+	*.tar.bz2 | *.tbz2) curl ${CURL_OPTS} "${url}" | tar -xj -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.xz) curl ${CURL_OPTS} "${url}" | tar -xJ -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.gz | *.tgz) curl ${CURL_OPTS} "${url}" | tar -xz -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.zip) curl ${CURL_OPTS} -o /tmp/temp.zip "${url}" && unzip -q /tmp/temp.zip -d "${dest_dir}" && rm -v /tmp/temp.zip ;;
+	*)
+		echo "Unknown archive format: ${url}"
+		exit 1
+		;;
+	esac
+}
+
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 
@@ -71,31 +96,6 @@ mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
 
 ##
-# Toolchain Setup
-##
-
-# msg "Downloading toolchain from ${TOOLCHAIN_URL}..."
-
-# curl ${CURL_OPTS} "${TOOLCHAIN_URL}" | tar -xJ -C "${TOOLCHAIN_PATH}" --strip-components=1
-
-# # Make sure relocate script is present and executable
-# if [ ! -f "${TOOLCHAIN_PATH}/relocate-sdk.sh" ]; then
-#     msg "Error: ${TOOLCHAIN_PATH}/relocate-sdk.sh not found!"
-#     exit 1
-# else
-#     chmod +x "${TOOLCHAIN_PATH}/relocate-sdk.sh"
-# fi
-
-# msg "Relocate the toolchain..."
-
-# cd "${TOOLCHAIN_PATH}" && ./relocate-sdk.sh && cd ..
-
-# msg "Copying toolchain sysroot to ${TARGET_ROOTFS_PATH}..."
-
-# # Move the files within the sysroot directory within the toolchain
-# find "${TOOLCHAIN_PATH}" -name "sysroot" -type d -exec cp -r {}/* "${TARGET_ROOTFS_PATH}/" \;
-
-##
 # m4 Step
 ##
 
@@ -103,7 +103,7 @@ msg "Downloading m4..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
 msg "Copying sources of m4 to work directory..."
 
@@ -133,7 +133,7 @@ msg "Downloading ncurses..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
-curl ${CURL_OPTS} "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" --strip-components=1
+download_and_extract "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
 msg "Copying sources of ncurses to work directory..."
 
@@ -195,7 +195,7 @@ msg "Downloading bash..."
 
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
 msg "Copying sources of bash to work directory..."
 
@@ -229,9 +229,7 @@ clean_work_dir
 
 msg "Downloading coreutils..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
 
 msg "Copying sources of coreutils to work directory..."
 
@@ -272,9 +270,7 @@ clean_work_dir
 
 msg "Downloading diffutils..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
 
 msg "Copying sources of diffutils to work directory..."
 
@@ -308,9 +304,7 @@ clean_work_dir
 
 msg "Downloading file..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}"
-
-curl ${CURL_OPTS} "https://astron.com/pub/file/file-${FILE_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}" --strip-components=1
+download_and_extract "https://astron.com/pub/file/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}"
 
 msg "Copying sources of file to work directory..."
 
@@ -361,9 +355,7 @@ clean_work_dir
 
 msg "Downloading findutils..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
 
 msg "Copying sources of findutils to work directory..."
 
@@ -398,9 +390,7 @@ clean_work_dir
 
 msg "Downloading gawk..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}"
 
 msg "Copying sources of gawk to work directory..."
 
@@ -436,9 +426,7 @@ clean_work_dir
 
 msg "Downloading grep..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}"
 
 msg "Copying sources of grep to work directory..."
 
@@ -472,9 +460,7 @@ clean_work_dir
 
 msg "Downloading gzip..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}"
 
 msg "Copying sources of gzip to work directory..."
 
@@ -507,9 +493,7 @@ clean_work_dir
 
 msg "Downloading make..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}"
 
 msg "Copying sources of make to work directory..."
 
@@ -544,9 +528,7 @@ clean_work_dir
 
 msg "Downloading patch..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}"
 
 msg "Copying sources of patch to work directory..."
 
@@ -580,9 +562,7 @@ clean_work_dir
 
 msg "Downloading sed..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}"
 
 msg "Copying sources of sed to work directory..."
 
@@ -616,9 +596,7 @@ clean_work_dir
 
 msg "Downloading tar..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}"
 
 msg "Copying sources of tar to work directory..."
 
@@ -652,9 +630,7 @@ clean_work_dir
 
 msg "Downloading xz..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}"
-
-curl ${CURL_OPTS} "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}" --strip-components=1
+download_and_extract "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}"
 
 msg "Copying sources of xz to work directory..."
 
@@ -692,9 +668,7 @@ clean_work_dir
 
 msg "Downloading binutils..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
 
 msg "Copying sources of binutils to work directory..."
 
@@ -744,15 +718,10 @@ rm -rf "${TARGET_ROOTFS_SOURCES_PATH}"
 
 msg "Download gcc..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
-
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" --strip-components=1
-curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" | tar -xz -C "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" --strip-components=1
+download_and_extract "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
 
 msg "Copying sources of gcc to work directory..."
 

@@ -65,7 +65,10 @@ download_and_extract() {
 	*.tar.xz) curl ${CURL_OPTS} "${url}" | tar -xJ -C "${dest_dir}" --strip-components=${strip_components} ;;
 	*.tar.gz | *.tgz) curl ${CURL_OPTS} "${url}" | tar -xz -C "${dest_dir}" --strip-components=${strip_components} ;;
 	*.zip) curl ${CURL_OPTS} -o /tmp/temp.zip "${url}" && unzip -q /tmp/temp.zip -d "${dest_dir}" && rm -v /tmp/temp.zip ;;
-	*) echo "Unknown archive format: ${url}" ; exit 1 ;;
+	*)
+		echo "Unknown archive format: ${url}"
+		exit 1
+		;;
 	esac
 }
 
@@ -97,8 +100,6 @@ esac
 ##
 
 msg "Downloading binutils..."
-
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
 
 download_and_extract "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
 
@@ -139,11 +140,6 @@ clean_work_dir
 ##
 
 msg "Download gcc..."
-
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}/{gmp,mpc,mpfr}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
 
 # curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
 download_and_extract "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
@@ -213,8 +209,6 @@ clean_work_dir
 
 msg "Downloading linux kernel..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
-
 download_and_extract "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
 msg "Copying sources of linux kernel to work directory..."
@@ -246,8 +240,6 @@ clean_work_dir
 ##
 
 msg "Downloading glibc..."
-
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
 
 download_and_extract "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
 
