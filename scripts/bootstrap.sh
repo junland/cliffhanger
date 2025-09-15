@@ -101,8 +101,6 @@ mkdir -vp "${TOOLCHAIN_PATH}"
 
 msg "Downloading m4..."
 
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
-
 download_and_extract "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
 
 msg "Copying sources of m4 to work directory..."
@@ -130,8 +128,6 @@ clean_work_dir
 ##
 
 msg "Downloading ncurses..."
-
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
 download_and_extract "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
 
@@ -192,8 +188,6 @@ clean_work_dir
 ##
 
 msg "Downloading bash..."
-
-mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
 download_and_extract "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
 
