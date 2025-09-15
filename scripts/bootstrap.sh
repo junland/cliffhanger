@@ -109,6 +109,9 @@ cp -r "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
+# Reconfigure to point to our version of automake
+autoreconf -f
+
 msg "Configuring m4..."
 
 ./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
@@ -239,7 +242,7 @@ msg "Configuring coreutils..."
 ./configure \
 	--prefix=/usr \
 	--host=${TARGET_TRIPLET} \
-	--build=$(./config.guess) \
+	--build=$(build-aux/config.guess) \
 	--enable-install-program=hostname \
 	--enable-no-install-program=kill,uptime
 
