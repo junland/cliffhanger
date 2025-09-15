@@ -259,9 +259,9 @@ riscv64)
 	;;
 esac
 
-curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch" "${GLIBC_PATCH_URL}"
+curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch" "${GLIBC_PATCH_URL}"
 
-patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-2.41-fhs-1.patch"
+patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch"
 
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 
@@ -327,7 +327,7 @@ cd build
 	--disable-multilib \
 	--disable-nls \
 	--disable-libstdcxx-pch \
-	--with-gxx-include-dir="${TOOLCHAIN_BASE_DIR}/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
+	--with-gxx-include-dir="/${TOOLCHAIN_BASE_DIR}/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
 
 msg "Building gcc for libstdc++..."
 
