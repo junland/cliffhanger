@@ -161,12 +161,12 @@ clean_work_dir
 
 download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
 download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz"
 download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
@@ -325,7 +325,7 @@ msg "Setting up gcc for libstdc++..."
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 msg "Configuring gcc for libstdc++..."
@@ -920,12 +920,12 @@ clean_work_dir
 
 download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
 download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz"
 download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 msg "Configuring gcc..."
