@@ -225,9 +225,9 @@ clean_work_dir
 download_file "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
-cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
-
 msg "Confirming files..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
 make mrproper
 
