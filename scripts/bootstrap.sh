@@ -16,6 +16,7 @@ TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 
 CURL_OPTS="-L -s"
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
+EXIT_AFTER_TEMP_TOOLS=${EXIT_AFTER_TEMP_TOOLS:-false}
 
 # Variables with shorter names
 ROOTFS="${TARGET_ROOTFS_PATH}"
@@ -44,6 +45,8 @@ PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
 XZ_VER="5.6.2"
+
+GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-2.42-fhs-1.patch"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -94,6 +97,281 @@ mkdir -vp "${TARGET_ROOTFS_PATH}"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
+mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,sbin}
+
+for i in bin lib sbin; do
+	ln -sv usr/$i "$TARGET_ROOTFS_PATH"/$i
+done
+
+case $(uname -m) in
+x86_64) mkdir -vp "$TARGET_ROOTFS_PATH"/lib64 ;;
+esac
+
+##
+# binutils Step
+##
+
+msg "Downloading binutils..."
+
+download_and_extract "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
+
+msg "Copying sources of binutils to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
+
+msg "Configuring binutils..."
+
+mkdir -v build
+
+cd build
+
+../configure \
+	--prefix="${TOOLCHAIN_PATH}" \
+	--target="${TARGET_TRIPLET}" \
+	--with-sysroot="${TARGET_ROOTFS_PATH}" \
+	--disable-nls \
+	--enable-gprofng=no \
+	--disable-werror \
+	--enable-new-dtags \
+	--enable-default-hash-style=gnu
+
+msg "Building binutils..."
+
+make
+
+msg "Installing binutils..."
+
+make install
+
+clean_work_dir
+
+##
+# gcc Step (1st Pass - Part A)
+##
+
+msg "Download gcc..."
+
+# curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
+download_and_extract "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
+download_and_extract "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
+
+msg "Copying sources of gcc to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+
+msg "Configuring gcc..."
+
+case $(uname -m) in
+x86_64)
+	sed -e '/m64=/s/lib64/lib/' -i.orig gcc/config/i386/t-linux64
+	;;
+esac
+
+mkdir -v build
+
+cd build
+
+../configure \
+	--prefix="${TOOLCHAIN_PATH}" \
+	--target="${TARGET_TRIPLET}" \
+	--with-glibc-version="${GLIBC_VER}" \
+	--with-sysroot="${TARGET_ROOTFS_PATH}" \
+	--with-newlib \
+	--without-headers \
+	--enable-default-pie \
+	--enable-default-ssp \
+	--disable-nls \
+	--disable-shared \
+	--disable-multilib \
+	--disable-threads \
+	--disable-libatomic \
+	--disable-libgomp \
+	--disable-libquadmath \
+	--disable-libssp \
+	--disable-libvtv \
+	--disable-libstdcxx \
+	--enable-languages=c,c++
+
+msg "Building gcc..."
+
+make
+
+msg "Installing gcc..."
+
+make install
+
+cd ..
+
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h
+
+clean_work_dir
+
+##
+# linux-headers Step
+##
+
+msg "Downloading linux kernel..."
+
+download_and_extract "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
+
+msg "Copying sources of linux kernel to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
+
+msg "Confirming files..."
+
+make mrproper
+
+msg "Building headers..."
+
+make headers
+
+msg "Installing headers..."
+
+find usr/include -type f ! -name '*.h' -delete
+
+mkdir -vp "${TARGET_ROOTFS_PATH}/usr"
+
+cp -rv usr/include "${TARGET_ROOTFS_PATH}/usr"
+
+clean_work_dir
+
+##
+# glibc Step
+##
+
+msg "Downloading glibc..."
+
+download_and_extract "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
+
+msg "Copying sources of glibc to work directory..."
+
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
+
+msg "Configuring glibc..."
+
+case ${TARGET_ARCH} in
+i?86)
+	ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3"
+	;;
+x86_64)
+	ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-x86-64.so.2 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-x86-64.so.3"
+	;;
+aarch64)
+	ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-aarch64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-aarch64.so.3"
+	;;
+riscv64)
+	ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64"
+	ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3"
+	;;
+*)
+	echo "Unknown architecture: ${TARGET_ARCH}"
+	exit 1
+	;;
+esac
+
+curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch" "${GLIBC_PATCH_URL}"
+
+patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch"
+
+mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
+
+cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
+
+echo "rootsbindir=/usr/sbin" >configparms
+
+../configure \
+	--prefix=/usr \
+	--host="${TARGET_TRIPLET}" \
+	--build=$(../scripts/config.guess) \
+	--enable-kernel=5.4 \
+	--with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
+	--disable-nscd \
+	libc_cv_slibdir=/usr/lib
+
+msg "Building glibc..."
+
+make -j1
+
+msg "Installing glibc..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+sed '/RTLDLIST=/s@/usr@@g' -i "${TARGET_ROOTFS_PATH}/usr/bin/ldd"
+
+msg "Verify that compiling and linking works..."
+
+echo 'int main(){}' | ${TARGET_TRIPLET}-gcc -xc -
+
+readelf -l a.out | grep ld-linux
+
+rm -v a.out
+
+clean_work_dir
+
+##
+# gcc - libstdc++ Step (1st Pass - Part B)
+##
+
+msg "Setting up gcc for libstdc++..."
+
+# Copy contents since we already downloaded the source code.
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
+
+msg "Configuring gcc for libstdc++..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+
+TOOLCHAIN_BASE_DIR=$(basename "${TOOLCHAIN_PATH}")
+
+msg "Using toolchain base dir: ${TOOLCHAIN_BASE_DIR}"
+
+mkdir -vp build
+
+cd build
+
+../libstdc++-v3/configure \
+	--host="${TARGET_TRIPLET}" \
+	--build="$(../config.guess)" \
+	--prefix=/usr \
+	--disable-multilib \
+	--disable-nls \
+	--disable-libstdcxx-pch \
+	--with-gxx-include-dir="/${TOOLCHAIN_BASE_DIR}/${TARGET_TRIPLET}/include/c++/${GCC_VER}"
+
+msg "Building gcc for libstdc++..."
+
+make
+
+msg "Installing gcc for libstdc++..."
+
+make install DESTDIR="${TARGET_ROOTFS_PATH}"
+
+rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{stdc++{,exp,fs},supc++}.la
+
+clean_work_dir
+
+##
+# Temporary Tools Installed
+##
 
 ##
 # m4 Step
@@ -780,3 +1058,8 @@ make install DESTDIR="${TARGET_ROOTFS_PATH}"
 ln -svf gcc ${TARGET_ROOTFS_PATH}/usr/bin/cc
 
 clean_work_dir
+
+if [ "${EXIT_AFTER_TEMP_TOOLS}" = true ]; then
+	msg "Exiting after temporary tools installation as requested."
+	exit 0
+fi
