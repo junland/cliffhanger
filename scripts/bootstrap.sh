@@ -53,33 +53,44 @@ msg() {
 	echo " ==> $*"
 }
 
-# clean work directory function
+# Clean work directory function
 clean_work_dir() {
 	cd "${TARGET_ROOTFS_PATH}"
 	msg "Cleaning up work directory at ${WORK}..."
 	rm -rf "${WORK}"/*
 }
 
-download_and_extract() {
+# Downloads a file from a URL
+download_file() {
 	local url=$1
-	local dest_dir=$2
-	local strip_components=${3:-1}
+	local dest_file=$2
 
-	# Determine if the file has already been downloaded
-	if [ -d "${dest_dir}" ]; then
-		msg "Directory ${dest_dir} already exists, skipping download."
+	# Make sure we haven't already downloaded the file
+	if [ -f "${dest_file}" ]; then
+		msg "File ${dest_file} already exists, skipping download."
 		return
 	fi
 
+	msg "Downloading ${url}..."
+	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
+}
+
+# Extracts an archive file to a destination directory
+extract_file() {
+	local archive_file=$1
+	local dest_dir=$2
+	local strip_components=${3:-1}
+
 	mkdir -vp "${dest_dir}"
 
-	case ${url} in
-	*.tar.bz2 | *.tbz2) curl ${CURL_OPTS} "${url}" | tar -xj -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.xz) curl ${CURL_OPTS} "${url}" | tar -xJ -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.gz | *.tgz) curl ${CURL_OPTS} "${url}" | tar -xz -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.zip) curl ${CURL_OPTS} -o /tmp/temp.zip "${url}" && unzip -q /tmp/temp.zip -d "${dest_dir}" && rm -v /tmp/temp.zip ;;
+	msg "Extracting to ${dest_dir}..."
+	case ${archive_file} in
+	*.tar.bz2 | *.tbz2) tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.xz) tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.gz | *.tgz) tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.zip) unzip -q "${archive_file}" -d "${dest_dir}" ;;
 	*)
-		echo "Unknown archive format: ${url}"
+		echo "Unknown archive format: ${archive_file}"
 		exit 1
 		;;
 	esac
@@ -113,11 +124,8 @@ esac
 
 msg "Downloading binutils..."
 
-download_and_extract "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
-
-msg "Copying sources of binutils to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+download_file "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
@@ -151,20 +159,15 @@ clean_work_dir
 # gcc Step (1st Pass - Part A)
 ##
 
-msg "Download gcc..."
+download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
-# curl ${CURL_OPTS} "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" | tar -xJ -C "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" --strip-components=1
-download_and_extract "https://github.com/gcc-mirror/gcc/archive/refs/tags/releases/gcc-${GCC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
-
-msg "Copying sources of gcc to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr/"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
@@ -219,13 +222,8 @@ clean_work_dir
 # linux-headers Step
 ##
 
-msg "Downloading linux kernel..."
-
-download_and_extract "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
-
-msg "Copying sources of linux kernel to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+download_file "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
@@ -251,13 +249,8 @@ clean_work_dir
 # glibc Step
 ##
 
-msg "Downloading glibc..."
-
-download_and_extract "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
-
-msg "Copying sources of glibc to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+download_file "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
@@ -330,11 +323,10 @@ clean_work_dir
 
 msg "Setting up gcc for libstdc++..."
 
-# Copy contents since we already downloaded the source code.
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 msg "Configuring gcc for libstdc++..."
 
@@ -379,11 +371,11 @@ clean_work_dir
 
 msg "Downloading m4..."
 
-download_and_extract "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}"
+download_file "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.gz"
 
-msg "Copying sources of m4 to work directory..."
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Preparing m4 build environment..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
@@ -408,17 +400,13 @@ clean_work_dir
 # ncurses Step
 ##
 
-msg "Downloading ncurses..."
+download_file "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}.tgz"
 
-download_and_extract "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}"
-
-msg "Copying sources of ncurses to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
-
-cd "${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}"
 
 msg "Creating tic program in ncurses..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}"
 
 mkdir -vp build
 
@@ -468,17 +456,17 @@ clean_work_dir
 # bash Step
 ##
 
-msg "Downloading bash..."
+download_file "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz"
 
-download_and_extract "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 
-msg "Copying sources of bash to work directory..."
+msg "Setting up bash..."
 
 cp -r "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
 
-cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
-
 msg "Configuring bash..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 
 ./configure \
 	--prefix=/usr \
@@ -502,20 +490,16 @@ clean_work_dir
 # coreutils Step
 ##
 
-msg "Downloading coreutils..."
+download_file "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 
-msg "Copying sources of coreutils to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring coreutils..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring coreutils..."
 
 ./configure \
 	--prefix=/usr \
@@ -543,13 +527,11 @@ clean_work_dir
 # diffutils
 ##
 
-msg "Downloading diffutils..."
+download_file "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
 
-msg "Copying sources of diffutils to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring diffutils..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
 
@@ -577,20 +559,16 @@ clean_work_dir
 # file Step
 ##
 
-msg "Downloading file..."
+download_file "https://astron.com/pub/file/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}.tar.gz"
 
-download_and_extract "https://astron.com/pub/file/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 
-msg "Copying sources of file to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring temp file command..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configure temp file command..."
 
 mkdir build
 
@@ -628,20 +606,16 @@ clean_work_dir
 # findutils Step
 ##
 
-msg "Downloading findutils..."
+download_file "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
 
-msg "Copying sources of findutils to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring findutils..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring findutils..."
 
 ./configure \
 	--prefix=/usr \
@@ -663,20 +637,16 @@ clean_work_dir
 # gawk Step
 ##
 
-msg "Downloading gawk..."
+download_file "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
 
-msg "Copying sources of gawk to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring gawk..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring gawk..."
 
 sed -i 's/extras//' Makefile.in
 
@@ -699,20 +669,16 @@ clean_work_dir
 # grep Step
 ##
 
-msg "Downloading grep..."
+download_file "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 
-msg "Copying sources of grep to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring grep..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring grep..."
 
 ./configure \
 	--prefix=/usr \
@@ -733,20 +699,15 @@ clean_work_dir
 # gzip Step
 ##
 
-msg "Downloading gzip..."
+download_file "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 
-download_and_extract "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}"
-
-msg "Copying sources of gzip to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring gzip..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring gzip..."
 
 ./configure \
 	--prefix=/usr \
@@ -766,20 +727,15 @@ clean_work_dir
 # make Step
 ##
 
-msg "Downloading make..."
+download_file "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}.tar.gz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 
-download_and_extract "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}"
-
-msg "Copying sources of make to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring make..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring make..."
 
 ./configure \
 	--build=$(build-aux/config.guess) \
@@ -801,20 +757,15 @@ clean_work_dir
 # patch Step
 ##
 
-msg "Downloading patch..."
+download_file "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
 
-download_and_extract "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}"
-
-msg "Copying sources of patch to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring patch..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring patch..."
 
 ./configure \
 	--prefix=/usr \
@@ -835,20 +786,15 @@ clean_work_dir
 # sed Step
 ##
 
-msg "Downloading sed..."
+download_file "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 
-download_and_extract "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}"
-
-msg "Copying sources of sed to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring sed..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring sed..."
 
 ./configure \
 	--prefix=/usr \
@@ -869,20 +815,15 @@ clean_work_dir
 # tar Step
 ##
 
-msg "Downloading tar..."
+download_file "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 
-download_and_extract "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}"
-
-msg "Copying sources of tar to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring tar..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring tar..."
 
 ./configure \
 	--prefix=/usr \
@@ -903,20 +844,15 @@ clean_work_dir
 # xz Step
 ##
 
-msg "Downloading xz..."
+download_file "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
 
-download_and_extract "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}"
-
-msg "Copying sources of xz to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+msg "Configuring xz..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
 
 # Reconfigure to point to our version of automake
 autoreconf -f
-
-msg "Configuring xz..."
 
 ./configure \
 	--prefix=/usr \
@@ -941,13 +877,8 @@ clean_work_dir
 # binutils Step
 ##
 
-msg "Downloading binutils..."
-
-download_and_extract "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}"
-
-msg "Copying sources of binutils to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
+download_file "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
@@ -987,27 +918,19 @@ clean_work_dir
 # gcc Step
 ##
 
-msg "Download gcc..."
+download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
-download_and_extract "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}"
-download_and_extract "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}"
-
-msg "Copying sources of gcc to work directory..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}" "${TARGET_ROOTFS_WORK_PATH}/gmp-${GMP_VER}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/"
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}" "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/"
-
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/gmp-${GMP_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc
-ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr
-
-cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr"
 
 msg "Configuring gcc..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
 case $(uname -m) in
 x86_64)
