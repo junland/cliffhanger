@@ -224,7 +224,7 @@ clean_work_dir
 ##
 
 download_file "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz"
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
 msg "Confirming files..."
 
@@ -251,7 +251,7 @@ clean_work_dir
 ##
 
 download_file "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz"
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
@@ -881,9 +881,9 @@ clean_work_dir
 download_file "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
-cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
-
 msg "Configuring binutils..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 sed '6031s/$add_dir//' -i ltmain.sh
 
