@@ -983,10 +983,6 @@ rm -v ${TARGET_ROOTFS_PATH}/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
 
 clean_work_dir
 
-# Clean up sources for final step..
-
-rm -rf "${TARGET_ROOTFS_SOURCES_PATH}"
-
 ##
 # gcc Step
 ##
@@ -1010,9 +1006,6 @@ ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpc-${MPC_VER}/" ${TARGET_ROOTFS_WORK_PATH}/
 ln -svf "${TARGET_ROOTFS_WORK_PATH}/mpfr-${MPFR_VER}/" ${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpfr
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
-
-# Reconfigure to point to our version of automake
-autoreconf -f
 
 msg "Configuring gcc..."
 
