@@ -462,10 +462,6 @@ download_file "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_R
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 
-msg "Setting up bash..."
-
-cp -r "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}" "${TARGET_ROOTFS_WORK_PATH}/"
-
 msg "Configuring bash..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
