@@ -45,9 +45,10 @@ PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
 XZ_VER="5.6.2"
+LFS_BOOK_VER="12.4"
 LINUX_VER="6.16.1"
 
-GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-2.42-fhs-1.patch"
+GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-${GLIBC_VER}-fhs-1.patch"
 
 # msg function that will make echo's pretty.
 msg() {
