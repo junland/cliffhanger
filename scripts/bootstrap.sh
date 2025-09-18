@@ -253,9 +253,9 @@ clean_work_dir
 download_file "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
-cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
-
 msg "Configuring glibc..."
+
+cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
 case ${TARGET_ARCH} in
 i?86)
