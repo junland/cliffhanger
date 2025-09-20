@@ -78,11 +78,6 @@ ln -sv /proc/self/mounts /etc/mtab
 
 msg "Creating essential files..."
 
-touch /var/log/{btmp,lastlog,faillog,wtmp}
-chgrp -v utmp /var/log/lastlog
-chmod -v 664  /var/log/lastlog
-chmod -v 600  /var/log/btmp
-
 cat > /etc/hosts << EOF
 127.0.0.1  localhost $(hostname)
 ::1        localhost
@@ -136,4 +131,9 @@ HOME_URL="https://www.linuxfromscratch.org/"
 BUG_REPORT_URL="https://www.linuxfromscratch.org/bugreport.html"
 SUPPORT_URL="https://www.linuxfromscratch.org/mail.html"
 EOF
+
+touch /var/log/{btmp,lastlog,faillog,wtmp}
+chgrp -v utmp /var/log/lastlog
+chmod -v 664  /var/log/lastlog
+chmod -v 600  /var/log/btmp
 
