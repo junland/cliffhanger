@@ -5,6 +5,9 @@ set -e # Exit on error
 
 umask 022
 
+LC_ALL=${LC_ALL:-POSIX}
+TERM=${TERM:-xterm}
+
 if [ "$EUID" -ne 0 ]; then
 	echo "Please run as root"
 	exit 1
