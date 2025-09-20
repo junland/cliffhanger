@@ -49,15 +49,15 @@ fi
 cleanup() {
 	echo "Cleaning up chroot environment..."
 
-	umount -v $CHROOT_PATH/dev/pts 2>/dev/null || true
-	umount -v $CHROOT_PATH/dev/shm 2>/dev/null || true
-	umount -v $CHROOT_PATH/dev 2>/dev/null || true
-	umount -v $CHROOT_PATH/run 2>/dev/null || true
-	umount -v $CHROOT_PATH/proc 2>/dev/null || true
-	umount -v $CHROOT_PATH/sys 2>/dev/null || true
+	umount -v $CHROOT_PATH/dev/pts || true
+	umount -v $CHROOT_PATH/dev/shm || true
+	umount -v $CHROOT_PATH/dev || true
+	umount -v $CHROOT_PATH/run || true
+	umount -v $CHROOT_PATH/proc || true
+	umount -v $CHROOT_PATH/sys || true
 
-	rm -v $CHROOT_PATH/dev/console 2>/dev/null || true
-	rm -v $CHROOT_PATH/dev/null 2>/dev/null || true
+	rm -v $CHROOT_PATH/dev/console || true
+	rm -v $CHROOT_PATH/dev/null || true
 }
 
 # Set trap to ensure cleanup always runs
