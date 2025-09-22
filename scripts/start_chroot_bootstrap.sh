@@ -3,23 +3,6 @@
 set +h # Disable hashall to speed up script execution
 set -e # Exit on error
 
-umask 022
-
-LC_ALL=${LC_ALL:-POSIX}
-TERM=${TERM:-xterm}
-
-# Variables with shorter names
-ROOTFS="${TARGET_ROOTFS_PATH}"
-WORK="${TARGET_ROOTFS_WORK_PATH}"
-SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
-
-GETTEXT_VER="0.26"
-BISON_VER="2.8.2"
-PERL_VER="5.42.0"
-PYTHON_VER="3.13.7"
-TEXINFO_VER="7.2"
-UTIL_LINUX_VER="2.41.1"
-
 if [ "$EUID" -ne 0 ]; then
 	echo "Please run as root"
 	exit 1
@@ -36,6 +19,52 @@ if [ ! -d "$CHROOT_PATH" ]; then
 	echo "Error: $CHROOT_PATH is not a directory"
 	exit 1
 fi
+
+umask 022
+
+LC_ALL=${LC_ALL:-POSIX}
+TERM=${TERM:-xterm}
+
+# Variables with shorter names
+ROOTFS="${CHROOT_PATH}"
+WORK="${ROOTFS}/tmp/work"
+SOURCES="${ROOTFS}/tmp/sources"
+
+GETTEXT_VER="0.26"
+BISON_VER="2.8.2"
+PERL_VER="5.42.0"
+PYTHON_VER="3.13.7"
+TEXINFO_VER="7.2"
+UTIL_LINUX_VER="2.41.1"
+
+# msg function that will make echo's pretty.
+msg() {
+	echo " ==> $*"
+}
+
+# Downloads a file from a URL
+download_file() {
+	local url=$1
+	local dest_file=$2
+
+	# Make sure we haven't already downloaded the file
+	if [ -f "${dest_file}" ]; then
+		msg "File ${dest_file} already exists, skipping download."
+		return
+	fi
+
+	msg "Downloading ${url}..."
+	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
+}
+
+msg "Downloading source files needed for next steps..."
+
+download_file "https://ftp.gnu.org/pub/gnu/gettext/gettext-${GETTEXT_VER}.tar.xz" "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz"
+download_file "https://ftp.gnu.org/pub/gnu/bison/bison-${BISON_VER}.tar.xz" "${SOURCES}/bison-${BISON_VER}.tar.xz"
+download_file "https://www.cpan.org/src/5.0/perl-${PERL_VER}.tar.xz" "${SOURCES}/perl-${PERL_VER}.tar.xz"
+download_file "https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tar.xz" "${SOURCES}/Python-${PYTHON_VER}.tar.xz"
+download_file "https://ftp.gnu.org/pub/gnu/texinfo/texinfo-${TEXINFO_VER}.tar.xz" "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz"
+download_file "https://www.kernel.org/pub/linux/utils/util-linux/v${UTIL_LINUX_VER%.*}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz"
 
 # Make sure directories have root ownership
 echo "Setting ownership of $CHROOT_PATH to root..."

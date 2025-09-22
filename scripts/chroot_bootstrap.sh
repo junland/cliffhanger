@@ -32,19 +32,25 @@ clean_work_dir() {
 	rm -rf "${WORK}"/*
 }
 
-# Downloads a file from a URL
-download_file() {
-	local url=$1
-	local dest_file=$2
+# Extracts an archive file to a destination directory
+extract_file() {
+	local archive_file=$1
+	local dest_dir=$2
+	local strip_components=${3:-1}
 
-	# Make sure we haven't already downloaded the file
-	if [ -f "${dest_file}" ]; then
-		msg "File ${dest_file} already exists, skipping download."
-		return
-	fi
+	mkdir -vp "${dest_dir}"
 
-	msg "Downloading ${url}..."
-	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
+	msg "Extracting to ${dest_dir}..."
+	case ${archive_file} in
+	*.tar.bz2 | *.tbz2) tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.xz) tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.tar.gz | *.tgz) tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
+	*.zip) unzip -q "${archive_file}" -d "${dest_dir}" ;;
+	*)
+		echo "Unknown archive format: ${archive_file}"
+		exit 1
+		;;
+	esac
 }
 
 msg "Creating standard directory tree in chroot..."
@@ -137,12 +143,3 @@ touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
 chmod -v 664 /var/log/lastlog
 chmod -v 600 /var/log/btmp
-
-msg "Downloading source files needed for next steps..."
-
-download_file "https://ftp.gnu.org/pub/gnu/gettext/gettext-${GETTEXT_VER}.tar.xz" "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz"
-download_file "https://ftp.gnu.org/pub/gnu/bison/bison-${BISON_VER}.tar.xz" "${SOURCES}/bison-${BISON_VER}.tar.xz"
-download_file "https://www.cpan.org/src/5.0/perl-${PERL_VER}.tar.xz" "${SOURCES}/perl-${PERL_VER}.tar.xz"
-download_file "https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tar.xz" "${SOURCES}/Python-${PYTHON_VER}.tar.xz"
-download_file "https://ftp.gnu.org/pub/gnu/texinfo/texinfo-${TEXINFO_VER}.tar.xz" "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz"
-download_file "https://www.kernel.org/pub/linux/utils/util-linux/v${UTIL_LINUX_VER%.*}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz"
