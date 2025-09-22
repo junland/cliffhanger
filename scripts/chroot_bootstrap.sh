@@ -13,6 +13,13 @@ TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"/tmp/work"}
 WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
+GETTEXT_VER="0.26"
+BISON_VER="2.8.2"
+PERL_VER="5.42.0"
+PYTHON_VER="3.13.7"
+TEXINFO_VER="7.2"
+UTIL_LINUX_VER="2.41.1"
+
 # msg function that will make echo's pretty.
 msg() {
 	echo " ==> $*"
@@ -25,25 +32,19 @@ clean_work_dir() {
 	rm -rf "${WORK}"/*
 }
 
-# Extracts an archive file to a destination directory
-extract_file() {
-	local archive_file=$1
-	local dest_dir=$2
-	local strip_components=${3:-1}
+# Downloads a file from a URL
+download_file() {
+	local url=$1
+	local dest_file=$2
 
-	mkdir -vp "${dest_dir}"
+	# Make sure we haven't already downloaded the file
+	if [ -f "${dest_file}" ]; then
+		msg "File ${dest_file} already exists, skipping download."
+		return
+	fi
 
-	msg "Extracting to ${dest_dir}..."
-	case ${archive_file} in
-	*.tar.bz2 | *.tbz2) tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.xz) tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.gz | *.tgz) tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.zip) unzip -q "${archive_file}" -d "${dest_dir}" ;;
-	*)
-		echo "Unknown archive format: ${archive_file}"
-		exit 1
-		;;
-	esac
+	msg "Downloading ${url}..."
+	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
 }
 
 msg "Creating standard directory tree in chroot..."
@@ -78,12 +79,12 @@ ln -sv /proc/self/mounts /etc/mtab
 
 msg "Creating essential files..."
 
-cat > /etc/hosts << EOF
+cat >/etc/hosts <<EOF
 127.0.0.1  localhost $(hostname)
 ::1        localhost
 EOF
 
-cat > /etc/passwd << "EOF"
+cat >/etc/passwd <<"EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/usr/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
@@ -92,7 +93,7 @@ uuidd:x:80:80:UUID Generation Daemon User:/dev/null:/usr/bin/false
 nobody:x:65534:65534:Unprivileged User:/dev/null:/usr/bin/false
 EOF
 
-cat > /etc/group << "EOF"
+cat >/etc/group <<"EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -120,7 +121,7 @@ users:x:999:
 nogroup:x:65534:
 EOF
 
-cat > /etc/os-release << "EOF"
+cat >/etc/os-release <<"EOF"
 NAME="Bootstrap Linux Toolchain"
 VERSION="0.0.0"
 ID=bootstraplinux
@@ -134,6 +135,14 @@ EOF
 
 touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
-chmod -v 664  /var/log/lastlog
-chmod -v 600  /var/log/btmp
+chmod -v 664 /var/log/lastlog
+chmod -v 600 /var/log/btmp
 
+msg "Downloading source files needed for next steps..."
+
+download_file "https://ftp.gnu.org/pub/gnu/gettext/gettext-${GETTEXT_VER}.tar.xz" "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz"
+download_file "https://ftp.gnu.org/pub/gnu/bison/bison-${BISON_VER}.tar.xz" "${SOURCES}/bison-${BISON_VER}.tar.xz"
+download_file "https://www.cpan.org/src/5.0/perl-${PERL_VER}.tar.xz" "${SOURCES}/perl-${PERL_VER}.tar.xz"
+download_file "https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tar.xz" "${SOURCES}/Python-${PYTHON_VER}.tar.xz"
+download_file "https://ftp.gnu.org/pub/gnu/texinfo/texinfo-${TEXINFO_VER}.tar.xz" "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz"
+download_file "https://www.kernel.org/pub/linux/utils/util-linux/v${UTIL_LINUX_VER%.*}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz"

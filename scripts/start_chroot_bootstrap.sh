@@ -8,6 +8,18 @@ umask 022
 LC_ALL=${LC_ALL:-POSIX}
 TERM=${TERM:-xterm}
 
+# Variables with shorter names
+ROOTFS="${TARGET_ROOTFS_PATH}"
+WORK="${TARGET_ROOTFS_WORK_PATH}"
+SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
+
+GETTEXT_VER="0.26"
+BISON_VER="2.8.2"
+PERL_VER="5.42.0"
+PYTHON_VER="3.13.7"
+TEXINFO_VER="7.2"
+UTIL_LINUX_VER="2.41.1"
+
 if [ "$EUID" -ne 0 ]; then
 	echo "Please run as root"
 	exit 1
