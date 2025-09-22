@@ -121,7 +121,7 @@ nogroup:x:65534:
 EOF
 
 cat > /etc/os-release << "EOF"
-NAME="Azure Linux Toolchain"
+NAME="Bootstrap Linux Toolchain"
 VERSION="0.0.0"
 ID=bootstraplinux
 VERSION_ID="0.0"
