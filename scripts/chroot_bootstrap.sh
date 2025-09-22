@@ -58,6 +58,8 @@ LC_ALL=POSIX
 # Export needed variables
 export LC_ALL
 
+clean_work_dir
+
 msg "Creating standard directory tree in chroot..."
 
 mkdir -pv /{boot,home,mnt,opt,srv}
@@ -70,7 +72,7 @@ mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
 mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}
 mkdir -pv /usr/{,local/}share/man/man{1..8}
 mkdir -pv /var/{cache,local,log,mail,opt,spool}
-mkdir -pv /var/lib/{color,misc,locate}
+mkdir -pv /var/lib/{color,misc,locate,hwclock}
 
 install -dv -m 0750 /root
 install -dv -m 1777 /tmp /var/tmp
@@ -168,3 +170,152 @@ make
 msg "Installing gettext..."
 
 cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
+
+clean_work_dir
+
+##
+# bison Step
+##
+
+extract_file "${SOURCES}/bison-${BISON_VER}.tar.xz" "${WORK}/bison-${BISON_VER}"
+
+cd "${WORK}/bison-${BISON_VER}"
+
+msg "Configuring bison..."
+
+./configure --prefix=/usr --docdir=/usr/share/doc/bison-${BISON_VER}
+
+msg "Building bison..."
+
+make
+
+msg "Installing bison..."
+
+make install
+
+clean_work_dir
+
+##
+# Perl Step
+##
+
+extract_file "${SOURCES}/perl-${PERL_VER}.tar.xz" "${WORK}/perl-${PERL_VER}"
+
+cd "${WORK}/perl-${PERL_VER}"
+
+msg "Configuring Perl..."
+
+sh Configure -des \
+	-D prefix=/usr \
+	-D vendorprefix=/usr \
+	-D useshrplib \
+	-D privlib=/usr/lib/perl5/5.42/core_perl \
+	-D archlib=/usr/lib/perl5/5.42/core_perl \
+	-D sitelib=/usr/lib/perl5/5.42/site_perl \
+	-D sitearch=/usr/lib/perl5/5.42/site_perl \
+	-D vendorlib=/usr/lib/perl5/5.42/vendor_perl \
+	-D vendorarch=/usr/lib/perl5/5.42/vendor_perl
+
+msg "Building Perl..."
+
+make
+
+msg "Installing Perl..."
+
+make install
+
+clean_work_dir
+
+##
+# Python Step
+##
+
+extract_file "${SOURCES}/Python-${PYTHON_VER}.tar.xz" "${WORK}/Python-${PYTHON_VER}"
+
+cd "${WORK}/Python-${PYTHON_VER}"
+
+msg "Configuring Python..."
+
+./configure \
+	--prefix=/usr \
+	--enable-shared \
+	--without-ensurepip \
+	--without-static-libpython
+
+msg "Building Python..."
+
+make
+
+msg "Installing Python..."
+
+make install
+
+clean_work_dir
+
+##
+# Texinfo Step
+##
+
+extract_file "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz" "${WORK}/texinfo-${TEXINFO_VER}"
+
+cd "${WORK}/texinfo-${TEXINFO_VER}"
+
+msg "Configuring texinfo..."
+
+./configure --prefix=/usr
+
+msg "Building texinfo..."
+
+make
+
+msg "Installing texinfo..."
+
+make install
+
+clean_work_dir
+
+##
+# util-linux Step
+##
+
+extract_file "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${WORK}/util-linux-${UTIL_LINUX_VER}"
+
+cd "${WORK}/util-linux-${UTIL_LINUX_VER}"
+
+msg "Configuring util-linux..."
+
+./configure \
+	--libdir=/usr/lib \
+	--runstatedir=/run \
+	--disable-chfn-chsh \
+	--disable-login \
+	--disable-nologin \
+	--disable-su \
+	--disable-setpriv \
+	--disable-runuser \
+	--disable-pylibmount \
+	--disable-static \
+	--disable-liblastlog2 \
+	--without-python \
+	ADJTIME_PATH=/var/lib/hwclock/adjtime \
+	--docdir=/usr/share/doc/util-linux-${UTIL_LINUX_VER}
+
+msg "Building util-linux..."
+
+make
+
+msg "Installing util-linux..."
+
+make install
+
+clean_work_dir
+
+##
+# Cleanup Step
+##
+
+msg "Cleaning up unnecessary files..."
+
+rm -rf /usr/share/{info,man,doc}/*
+
+find /usr/{lib,libexec} -name \*.la -delete
