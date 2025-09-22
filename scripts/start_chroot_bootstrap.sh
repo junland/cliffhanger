@@ -3,6 +3,8 @@
 set +h # Disable hashall to speed up script execution
 set -e # Exit on error
 
+umask 022
+
 if [ "$EUID" -ne 0 ]; then
 	echo "Please run as root"
 	exit 1
@@ -13,23 +15,19 @@ if [ "$#" -ne 1 ]; then
 	exit 1
 fi
 
-CHROOT_PATH="$1"
-
-if [ ! -d "$CHROOT_PATH" ]; then
-	echo "Error: $CHROOT_PATH is not a directory"
+if [ ! -d "$1" ]; then
+	echo "Error: $1 is not a directory"
 	exit 1
 fi
 
-umask 022
-
-LC_ALL=${LC_ALL:-POSIX}
-TERM=${TERM:-xterm}
-
-# Variables with shorter names
+# Script variables
+CHROOT_PATH="$1"
+CURL_OPTS="-L -s"
 ROOTFS="${CHROOT_PATH}"
 WORK="${ROOTFS}/tmp/work"
 SOURCES="${ROOTFS}/tmp/sources"
 
+# Version variables
 GETTEXT_VER="0.26"
 BISON_VER="2.8.2"
 PERL_VER="5.42.0"
@@ -56,6 +54,15 @@ download_file() {
 	msg "Downloading ${url}..."
 	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
 }
+
+# Set locale
+LC_ALL=POSIX
+
+# Set TERM
+TERM=xterm
+
+# Export needed variables
+export LC_ALL TERM
 
 msg "Downloading source files needed for next steps..."
 

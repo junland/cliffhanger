@@ -5,14 +5,13 @@ set -e # Exit on error
 
 umask 022
 
-LC_ALL=POSIX
+# Directory variables
 TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"/tmp/sources"}
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"/tmp/work"}
-
-# Variables with shorter names
 WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
+# Version variables
 GETTEXT_VER="0.26"
 BISON_VER="2.8.2"
 PERL_VER="5.42.0"
@@ -52,6 +51,12 @@ extract_file() {
 		;;
 	esac
 }
+
+# Set locale
+LC_ALL=POSIX
+
+# Export needed variables
+export LC_ALL
 
 msg "Creating standard directory tree in chroot..."
 

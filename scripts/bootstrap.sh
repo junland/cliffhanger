@@ -5,7 +5,7 @@ set -e # Exit on error
 
 umask 022
 
-LC_ALL=POSIX
+# Locale, directory, and architecture variables
 TARGET_ARCH=${TARGET_ARCH:-"x86_64"}
 TARGET_ROOTFS_PATH=${TARGET_ROOTFS_PATH:-"${PWD}/rootfs"}
 TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"${TARGET_ROOTFS_PATH}/tmp/sources"}
@@ -14,8 +14,9 @@ TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_ARCH}-buildroot-linux-gnu"}
 TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${TARGET_ROOTFS_PATH}/toolchain"}
 TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
 
+# Runtime variables
 CURL_OPTS="-L -s"
-CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
+
 EXIT_AFTER_TEMP_TOOLS=${EXIT_AFTER_TEMP_TOOLS:-false}
 
 # Variables with shorter names
@@ -100,6 +101,12 @@ extract_file() {
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+# Set CONFIG_SITE for cross-compilation
+CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
+
+# Set locale
+LC_ALL=POSIX
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE
