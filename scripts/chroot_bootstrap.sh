@@ -26,7 +26,7 @@ msg() {
 
 # Clean work directory function
 clean_work_dir() {
-	cd "${TARGET_ROOTFS_PATH}"
+	cd ${WORK}
 	msg "Cleaning up work directory at ${WORK}..."
 	rm -rf "${WORK}"/*
 }
