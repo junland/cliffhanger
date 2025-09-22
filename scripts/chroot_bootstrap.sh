@@ -148,3 +148,23 @@ touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
 chmod -v 664 /var/log/lastlog
 chmod -v 600 /var/log/btmp
+
+##
+# gettext Step
+##
+
+extract_file "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz" "${WORK}/gettext-${GETTEXT_VER}"
+
+cd "${WORK}/gettext-${GETTEXT_VER}"
+
+msg "Configuring gettext..."
+
+./configure --disable-shared
+
+msg "Building gettext..."
+
+make
+
+msg "Installing gettext..."
+
+cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
