@@ -177,7 +177,7 @@ clean_work_dir
 # bison Step
 ##
 
-extract_file "${SOURCES}/bison-${BISON_VER}.tar.xz" "${WORK}/bison-${BISON_VER}"
+extract_file "${SOURCES}/bison-${BISON_VER}.tar.gz" "${WORK}/bison-${BISON_VER}"
 
 cd "${WORK}/bison-${BISON_VER}"
 

@@ -67,7 +67,7 @@ export LC_ALL TERM
 msg "Downloading source files needed for next steps..."
 
 download_file "https://ftp.gnu.org/gnu/gettext/gettext-${GETTEXT_VER}.tar.xz" "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/bison/bison-${BISON_VER}.tar.xz" "${SOURCES}/bison-${BISON_VER}.tar.xz"
+download_file "https://ftp.gnu.org/gnu/bison/bison-${BISON_VER}.tar.gz" "${SOURCES}/bison-${BISON_VER}.tar.gz"
 download_file "https://www.cpan.org/src/5.0/perl-${PERL_VER}.tar.xz" "${SOURCES}/perl-${PERL_VER}.tar.xz"
 download_file "https://www.python.org/ftp/python/${PYTHON_VER}/Python-${PYTHON_VER}.tar.xz" "${SOURCES}/Python-${PYTHON_VER}.tar.xz"
 download_file "https://ftp.gnu.org/gnu/texinfo/texinfo-${TEXINFO_VER}.tar.xz" "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz"
