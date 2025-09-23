@@ -64,7 +64,7 @@ clean_work_dir
 msg "Creating standard directory tree in chroot..."
 
 mkdir -pv /{boot,home,mnt,opt,srv}
-mkdir -pv /etc/{opt,sysconfig}
+mkdir -pv /etc/{opt,sysconfig,ld.so.conf.d}
 mkdir -pv /lib/firmware
 mkdir -pv /media/{floppy,cdrom}
 mkdir -pv /usr/{,local/}{include,src}
@@ -135,7 +135,7 @@ users:x:999:
 nogroup:x:65534:
 EOF
 
-cat > /etc/nsswitch.conf << "EOF"
+cat >/etc/nsswitch.conf <<"EOF"
 # Begin /etc/nsswitch.conf
 
 passwd: files
@@ -389,9 +389,12 @@ make install
 sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
 
 # Add ld.so.conf
-cat > /etc/ld.so.conf << "EOF"
+cat >/etc/ld.so.conf <<"EOF"
 # Begin /etc/ld.so.conf
 /usr/local/lib
 /opt/lib
 
+# Add an include directory
+include /etc/ld.so.conf.d/*.conf
+# End /etc/ld.so.conf
 EOF
