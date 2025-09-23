@@ -18,6 +18,7 @@ PERL_VER="5.42.0"
 PYTHON_VER="3.13.7"
 TEXINFO_VER="7.2"
 UTIL_LINUX_VER="2.41.1"
+GLIBC_VER="2.42"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -132,6 +133,24 @@ uuidd:x:80:
 wheel:x:97:
 users:x:999:
 nogroup:x:65534:
+EOF
+
+cat > /etc/nsswitch.conf << "EOF"
+# Begin /etc/nsswitch.conf
+
+passwd: files
+group: files
+shadow: files
+
+hosts: files dns
+networks: files
+
+protocols: files
+services: files
+ethers: files
+rpc: files
+
+# End /etc/nsswitch.conf
 EOF
 
 cat >/etc/os-release <<"EOF"
@@ -319,3 +338,60 @@ msg "Cleaning up unnecessary files..."
 rm -rf /usr/share/{info,man,doc}/*
 
 find /usr/{lib,libexec} -name \*.la -delete
+
+##
+# glibc Step
+##
+
+extract_file "${SOURCES}/glibc-${GLIBC_VER}.tar.xz" "${WORK}/glibc-${GLIBC_VER}"
+
+cd "${WORK}/glibc-${GLIBC_VER}"
+
+msg "Patching glibc..."
+
+patch -Np1 -i "${SOURCES}/glibc-${GLIBC_VER}-fhs-1.patch"
+
+msg "Configuring glibc..."
+
+mkdir -v build
+
+cd build
+
+echo "rootsbindir=/usr/sbin" >configparms
+
+../configure \
+	--prefix=/usr \
+	--disable-werror \
+	--disable-nscd \
+	libc_cv_slibdir=/usr/lib \
+	--enable-stack-protector=strong \
+	--enable-kernel=5.4
+
+msg "Building glibc..."
+
+make
+
+msg "Testing glibc..."
+
+# Disable io/tst-lchmod test as its known to fail in a chroot.
+sed -i 's#^TESTS = .*#TESTS = io/tst-lchmod#' Makefile
+
+make check
+
+# Disable outdated sanity check.
+sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
+
+msg "Installing glibc..."
+
+make install
+
+#  Fix a hardcoded path to the executable loader in the ldd script
+sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
+
+# Add ld.so.conf
+cat > /etc/ld.so.conf << "EOF"
+# Begin /etc/ld.so.conf
+/usr/local/lib
+/opt/lib
+
+EOF
