@@ -343,7 +343,7 @@ find /usr/{lib,libexec} -name \*.la -delete
 # glibc Step
 ##
 
-extract_file "${SOURCES}/glibc-${GLIBC_VER}.tar.xz" "${WORK}/glibc-${GLIBC_VER}"
+extract_file "${SOURCES}/glibc-${GLIBC_VER}.tar.gz" "${WORK}/glibc-${GLIBC_VER}"
 
 cd "${WORK}/glibc-${GLIBC_VER}"
 
