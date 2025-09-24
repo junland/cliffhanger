@@ -374,9 +374,9 @@ make
 msg "Testing glibc..."
 
 # Disable io/tst-lchmod test as its known to fail in a chroot.
-sed -i 's#^TESTS = .*#TESTS = io/tst-lchmod#' Makefile
+TEST_CASES=$(make print-TESTS | grep -v io/tst-lchmod)
 
-make check
+make check TESTS="$TEST_CASES"
 
 # Disable outdated sanity check.
 sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
