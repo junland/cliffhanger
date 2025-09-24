@@ -48,27 +48,6 @@ jobs:
         sudo dpkg-reconfigure dash
         sudo ln -sf bash /bin/sh
 
-    - name: Grab, unpack, & install the scratchpkg package
-      run: |
-        wget https://github.com/junland/scratchpkg-ng/archive/refs/heads/dev.zip -O scratchpkg-ng-dev.zip
-        unzip scratchpkg-ng-dev.zip
-        cd scratchpkg-ng-dev
-        chmod +x INSTALL.sh
-        sudo ./INSTALL.sh
-
-    - name: Remove scratchpkg source files
-      run: rm -rf scratchpkg-ng-dev.zip scratchpkg-ng-dev
-
-    - name: Verify directories
-      run: |
-        tree /var/cache/scratchpkg
-        tree /usr/ports
-        tree /etc/revdep.d
-
-    - name: Verify scratchpkg installation
-      run: |
-        scratch installed
-
     - uses: actions/checkout@v4
 
     - name: Allow scripts to run
@@ -77,34 +56,11 @@ jobs:
     - name: Run version check script
       run: ./scripts/version_check.sh
 
-    - name: Execute the bootstrap toolchain script
-      id: bootstrap-toolchain
-      run: |
-        set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap_toolchain.sh
-
-    - name: Upload toolchain
-      uses: actions/upload-artifact@v4
-      with:
-        name: toolchain
-        path: toolchain-${{ matrix.TARGET_ARCH }}
-
     - name: Execute the bootstrap script
       id: bootstrap
       run: |
         set -o pipefail
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log
-
-    - name: Grab last 100 lines and put it to summary
-      if: always()
-      run: |
-        # If scripts log doesnt exist exit cleanly.
-        if [ ! -f ./scripts/bootstrap.log ]; then
-          echo "Error: ./scripts/bootstrap.log not found!"
-          exit 0
-        fi
-        # Put the text into github summary
-        echo -e "\`\`\`\n$(tail -n 100 ./scripts/bootstrap.log)\n\`\`\`" >> $GITHUB_STEP_SUMMARY
 
     - name: Upload bootstrap rootfs
       uses: actions/upload-artifact@v4
