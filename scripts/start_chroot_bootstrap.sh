@@ -26,6 +26,7 @@ CURL_OPTS="-L -s"
 ROOTFS="${CHROOT_PATH}"
 WORK="${ROOTFS}/tmp/work"
 SOURCES="${ROOTFS}/tmp/sources"
+ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 
 # Version variables
 GETTEXT_VER="0.26"
@@ -116,13 +117,24 @@ trap cleanup EXIT INT TERM
 
 echo "Entering chroot and starting bootstraping process..."
 
-chroot "$CHROOT_PATH" /usr/bin/env -i \
-	HOME=/root \
-	TERM="$TERM" \
-	PS1='\u:\w\$ ' \
-	PATH=/usr/bin:/usr/sbin \
-	LC_ALL="$LC_ALL" \
-	/bin/bash --login +h \
-	-c "sh /tmp/chroot_bootstrap.sh"
+if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
+	msg "Entering chroot in standalone mode..."
+	chroot "$CHROOT_PATH" /usr/bin/env -i \
+		HOME=/root \
+		TERM="$TERM" \
+		PS1='\u:\w\$ ' \
+		PATH=/usr/bin:/usr/sbin \
+		LC_ALL="$LC_ALL" \
+		/bin/bash --login +h
+else
+	msg "Running bootstrap script inside chroot..."
+	chroot "$CHROOT_PATH" /usr/bin/env -i \
+		HOME=/root \
+		TERM="$TERM" \
+		PS1='\u:\w\$ ' \
+		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
+		LC_ALL="$LC_ALL" \
+		/bin/bash --login +h -c "/tmp/work/bootstrap_chroot.sh"
+fi
 
 # Cleanup will be called automatically by the trap
