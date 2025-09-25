@@ -134,7 +134,7 @@ else
 		PS1='\u:\w\$ ' \
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		LC_ALL="$LC_ALL" \
-		/bin/bash --login +h -c "/tmp/work/bootstrap_chroot.sh"
+		/bin/bash --login +h -c "/tmp/work/chroot_bootstrap.sh"
 fi
 
 # Cleanup will be called automatically by the trap
