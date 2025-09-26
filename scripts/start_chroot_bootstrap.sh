@@ -20,9 +20,9 @@ if [ ! -d "$1" ]; then
 	exit 1
 fi
 
-# Make sure "/tmp/work/chroot_bootstrap.sh" exists
-if [ ! -f "$1/tmp/work/chroot_bootstrap.sh" ]; then
-	echo "Error: $1/tmp/work/chroot_bootstrap.sh is needed but does not exist"
+# Make sure "/tmp/chroot_bootstrap.sh" exists
+if [ ! -f "$1/tmp/chroot_bootstrap.sh" ]; then
+	echo "Error: $1/tmp/chroot_bootstrap.sh is needed but does not exist"
 	exit 1
 fi
 
@@ -140,7 +140,7 @@ else
 		PS1='\u:\w\$ ' \
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		LC_ALL="$LC_ALL" \
-		/bin/bash --login +h -c "/tmp/work/chroot_bootstrap.sh"
+		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh"
 fi
 
 # Cleanup will be called automatically by the trap
