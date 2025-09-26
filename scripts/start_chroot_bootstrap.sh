@@ -20,6 +20,12 @@ if [ ! -d "$1" ]; then
 	exit 1
 fi
 
+# Make sure "/tmp/work/chroot_bootstrap.sh" exists
+if [ ! -f "$1/tmp/work/chroot_bootstrap.sh" ]; then
+	echo "Error: $1/tmp/work/chroot_bootstrap.sh is needed but does not exist"
+	exit 1
+fi
+
 # Script variables
 CHROOT_PATH="$1"
 CURL_OPTS="-L -s"
