@@ -12,13 +12,15 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Version variables
-GETTEXT_VER="0.26"
 BISON_VER="3.8.2"
+GETTEXT_VER="0.26"
+GLIBC_VER="2.42"
 PERL_VER="5.42.0"
 PYTHON_VER="3.13.7"
 TEXINFO_VER="7.2"
+TZ_DATA_VER="2025b"
 UTIL_LINUX_VER="2.41.1"
-GLIBC_VER="2.42"
+ZLIB_VER="1.3.1"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -398,3 +400,63 @@ cat >/etc/ld.so.conf <<"EOF"
 include /etc/ld.so.conf.d/*.conf
 # End /etc/ld.so.conf
 EOF
+
+##
+# Timezone Data Step
+##
+
+extract_file "${SOURCES}/tzcode${TZ_DATA_VER}.tar.gz" "${WORK}/tzcode${TZ_DATA_VER}"
+
+cd "${WORK}/tzcode${TZ_DATA_VER}"
+
+msg "Configuring timezone data..."
+
+ZONE_INFO=/usr/share/zoneinfo
+ZONES="etcetera southamerica northamerica europe africa antarctica asia australasia backward"
+ZONE_DEFAULT="America/New_York"
+mkdir -pv $ZONE_INFO/{posix,right}
+
+for tz in $ZONES; do
+	msg "Installing timezone data for $tz..."
+	zic -L /dev/null -d $ZONE_INFO ${tz}
+	zic -L /dev/null -d $ZONE_INFO/posix ${tz}
+	zic -L leapseconds -d $ZONEZONE_INFOINFO/right ${tz}
+done
+
+cp -v zone.tab zone1970.tab iso3166.tab $ZONE_INFO
+
+zic -d $ZONE_INFO -p $ZONE_DEFAULT
+
+ln -sfv /usr/share/zoneinfo/$ZONE_DEFAULT /etc/localtime
+
+unset ZONE_INFO tz ZONE_DEFAULT ZONES
+
+clean_work_dir
+
+##
+# zlib Step
+##
+
+extract_file "${SOURCES}/zlib-${ZLIB_VER}.tar.xz" "${WORK}/zlib-${ZLIB_VER}"
+
+cd "${WORK}/zlib-${ZLIB_VER}"
+
+msg "Configuring zlib..."
+
+./configure --prefix=/usr
+
+msg "Building zlib..."
+
+make
+
+msg "Checking zlib..."
+
+make test
+
+msg "Installing zlib..."
+
+make install
+
+rm -fv /usr/lib/libz.a
+
+clean_work_dir
