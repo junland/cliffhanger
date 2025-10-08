@@ -38,16 +38,33 @@ clean_work_dir() {
 extract_file() {
 	local archive_file=$1
 	local dest_dir=$2
-	local strip_components=${3:-1}
+
+	# Use environment variables with defaults
+	local strip_components=${EXTRACT_FILE_STRIP_COMPONENTS:-1}
+	local verbose=${EXTRACT_FILE_VERBOSE_EXTRACT:-false}
 
 	mkdir -vp "${dest_dir}"
 
 	msg "Extracting to ${dest_dir}..."
+
+	local verbose_flag=""
+	if [ "${verbose}" = true ] || [ "${verbose}" = "true" ]; then
+		verbose_flag="-v"
+	fi
+
 	case ${archive_file} in
-	*.tar.bz2 | *.tbz2) tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.xz) tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.tar.gz | *.tgz) tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ;;
-	*.zip) unzip -q "${archive_file}" -d "${dest_dir}" ;;
+	*.tar.bz2 | *.tbz2)
+		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		;;
+	*.tar.xz | *.txz)
+		tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		;;
+	*.tar.gz | *.tgz)
+		tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		;;
+	*.zip)
+		unzip -q "${archive_file}" -d "${dest_dir}"
+		;;
 	*)
 		echo "Unknown archive format: ${archive_file}"
 		exit 1
@@ -404,6 +421,8 @@ EOF
 ##
 # Timezone Data Step
 ##
+
+EXTRACT_FILE_VERBOSE_EXTRACT=true
 
 extract_file "${SOURCES}/tzcode${TZ_DATA_VER}.tar.gz" "${WORK}/tzcode${TZ_DATA_VER}"
 
