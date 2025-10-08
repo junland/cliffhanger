@@ -416,8 +416,6 @@ ZONES="etcetera southamerica northamerica europe africa antarctica asia australa
 ZONE_DEFAULT="America/New_York"
 mkdir -pv $ZONE_INFO/{posix,right}
 
-ls -la $ZONE_INFO
-
 for tz in $ZONES; do
 	msg "Installing timezone data for $tz..."
 	zic -L /dev/null -d $ZONE_INFO ${tz}

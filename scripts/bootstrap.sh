@@ -63,21 +63,6 @@ clean_work_dir() {
 	rm -rf "${WORK}"/*
 }
 
-# Downloads a file from a URL
-download_file() {
-	local url=$1
-	local dest_file=$2
-
-	# Make sure we haven't already downloaded the file
-	if [ -f "${dest_file}" ]; then
-		msg "File ${dest_file} already exists, skipping download."
-		return
-	fi
-
-	msg "Downloading ${url}..."
-	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
-}
-
 # Extracts an archive file to a destination directory
 extract_file() {
 	local archive_file=$1
@@ -131,9 +116,6 @@ esac
 # binutils Step
 ##
 
-msg "Downloading binutils..."
-
-download_file "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
@@ -167,11 +149,6 @@ clean_work_dir
 ##
 # gcc Step (1st Pass - Part A)
 ##
-
-download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz"
-download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
@@ -231,7 +208,6 @@ clean_work_dir
 # linux-headers Step
 ##
 
-download_file "https://cdn.kernel.org/pub/linux/kernel/v${LINUX_VER%.*.*}.x/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 
 msg "Confirming files..."
@@ -258,7 +234,6 @@ clean_work_dir
 # glibc Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/libc/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
 msg "Configuring glibc..."
@@ -330,8 +305,6 @@ clean_work_dir
 # gcc - libstdc++ Step (1st Pass - Part B)
 ##
 
-msg "Setting up gcc for libstdc++..."
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/mpc"
@@ -378,10 +351,6 @@ clean_work_dir
 # m4 Step
 ##
 
-msg "Downloading m4..."
-
-download_file "https://ftp.gnu.org/gnu/m4/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.gz"
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
 msg "Preparing m4 build environment..."
@@ -408,8 +377,6 @@ clean_work_dir
 ##
 # ncurses Step
 ##
-
-download_file "https://invisible-mirror.net/archives/ncurses/current/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}.tgz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}"
 
@@ -465,8 +432,6 @@ clean_work_dir
 # bash Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/bash/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz"
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 
 msg "Configuring bash..."
@@ -494,8 +459,6 @@ clean_work_dir
 ##
 # coreutils Step
 ##
-
-download_file "https://ftp.gnu.org/gnu/coreutils/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 
@@ -532,8 +495,6 @@ clean_work_dir
 # diffutils
 ##
 
-download_file "https://ftp.gnu.org/gnu/diffutils/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}.tar.xz"
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/diffutils-${DIFFUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/diffutils-${DIFFUTILS_VER}"
 
 msg "Configuring diffutils..."
@@ -563,8 +524,6 @@ clean_work_dir
 ##
 # file Step
 ##
-
-download_file "https://astron.com/pub/file/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}.tar.gz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 
@@ -611,8 +570,6 @@ clean_work_dir
 # findutils Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/findutils/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}.tar.xz"
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
 
 msg "Configuring findutils..."
@@ -641,8 +598,6 @@ clean_work_dir
 ##
 # gawk Step
 ##
-
-download_file "https://ftp.gnu.org/gnu/gawk/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
 
@@ -674,8 +629,6 @@ clean_work_dir
 # grep Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/grep/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}.tar.xz"
-
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 
 msg "Configuring grep..."
@@ -704,7 +657,6 @@ clean_work_dir
 # gzip Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/gzip/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 
 msg "Configuring gzip..."
@@ -732,7 +684,6 @@ clean_work_dir
 # make Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/make/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}.tar.gz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 
 msg "Configuring make..."
@@ -762,7 +713,6 @@ clean_work_dir
 # patch Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/patch/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
 
 msg "Configuring patch..."
@@ -791,7 +741,6 @@ clean_work_dir
 # sed Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/sed/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 
 msg "Configuring sed..."
@@ -820,7 +769,6 @@ clean_work_dir
 # tar Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/tar/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 
 msg "Configuring tar..."
@@ -849,7 +797,6 @@ clean_work_dir
 # xz Step
 ##
 
-download_file "https://github.com/tukaani-project/xz/releases/download/v${XZ_VER}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
 
 msg "Configuring xz..."
@@ -882,7 +829,6 @@ clean_work_dir
 # binutils Step
 ##
 
-download_file "https://ftp.gnu.org/gnu/binutils/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
 msg "Configuring binutils..."
@@ -922,11 +868,6 @@ clean_work_dir
 ##
 # gcc Step
 ##
-
-download_file "https://ftp.gnu.org/gnu/gcc/gcc-${GCC_VER}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/gmp/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz"
-download_file "https://ftp.gnu.org/gnu/mpc/mpc-${MPC_VER}.tar.gz" "${TARGET_ROOTFS_SOURCES_PATH}/mpc-${MPC_VER}.tar.gz"
-download_file "https://ftp.gnu.org/gnu/mpfr/mpfr-${MPFR_VER}.tar.xz" "${TARGET_ROOTFS_SOURCES_PATH}/mpfr-${MPFR_VER}.tar.xz"
 
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
