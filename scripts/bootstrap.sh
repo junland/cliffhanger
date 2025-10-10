@@ -368,7 +368,7 @@ clean_work_dir
 # m4 Step
 ##
 
-extract_file "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
+extract_file "${TARGET_ROOTFS_SOURCES_PATH}/m4-${M4_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/m4-${M4_VER}"
 
 msg "Preparing m4 build environment..."
 
