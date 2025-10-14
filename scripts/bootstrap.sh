@@ -81,6 +81,15 @@ extract_file() {
 		verbose_flag="-v"
 	fi
 
+	# Check to see if we have to strip components based on the archive file has a parent directory
+	if [ "${strip_components}" -eq 0 ]; then
+		if tar -tf "${archive_file}" | head -1 | grep -q '/'; then
+			strip_components=1
+		else
+			strip_components=0
+		fi
+	fi
+
 	case ${archive_file} in
 	*.tar.bz2 | *.tbz2)
 		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
