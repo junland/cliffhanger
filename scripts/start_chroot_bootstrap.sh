@@ -39,21 +39,6 @@ msg() {
 	echo " ==> $*"
 }
 
-# Downloads a file from a URL
-download_file() {
-	local url=$1
-	local dest_file=$2
-
-	# Make sure we haven't already downloaded the file
-	if [ -f "${dest_file}" ]; then
-		msg "File ${dest_file} already exists, skipping download."
-		return
-	fi
-
-	msg "Downloading ${url}..."
-	curl ${CURL_OPTS} -o "${dest_file}" "${url}"
-}
-
 # Set locale
 LC_ALL=POSIX
 
