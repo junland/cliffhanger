@@ -90,10 +90,10 @@ extract_file() {
 	# Check to see if we have to strip components based on the archive file has a parent directory
 	if [ "${strip_components}" -eq 0 ]; then
 		if tar -tf "${archive_file}" | head -1 | grep -q '/'; then
-		    echo "Archive has a parent directory, setting strip_components to 1"
+			echo "Archive has a parent directory, setting strip_components to 1"
 			strip_components=1
 		else
-		    echo "Archive does not have a parent directory, setting strip_components to 0"
+			echo "Archive does not have a parent directory, setting strip_components to 0"
 			strip_components=0
 		fi
 	fi
@@ -359,7 +359,7 @@ cd build
 ../libstdc++-v3/configure \
 	--host="${TARGET_TRIPLET}" \
 	--build="$(../config.guess)" \
- --prefix=/usr \
+	--prefix=/usr \
 	--disable-multilib \
 	--disable-nls \
 	--disable-libstdcxx-pch \
