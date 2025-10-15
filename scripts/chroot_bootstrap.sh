@@ -43,6 +43,12 @@ extract_file() {
 	local strip_components=${EXTRACT_FILE_STRIP_COMPONENTS:-1}
 	local verbose=${EXTRACT_FILE_VERBOSE_EXTRACT:-false}
 
+	# Make sure the archive file exists
+	if [ ! -f "${archive_file}" ]; then
+		echo "Error: Archive file ${archive_file} does not exist."
+		exit 1
+	fi
+
 	mkdir -vp "${dest_dir}"
 
 	msg "Extracting to ${dest_dir}..."
@@ -55,8 +61,10 @@ extract_file() {
 	# Check to see if we have to strip components based on the archive file has a parent directory
 	if [ "${strip_components}" -eq 0 ]; then
 		if tar -tf "${archive_file}" | head -1 | grep -q '/'; then
+		    echo "Archive has a parent directory, setting strip_components to 1"
 			strip_components=1
 		else
+		    echo "Archive does not have a parent directory, setting strip_components to 0"
 			strip_components=0
 		fi
 	fi
