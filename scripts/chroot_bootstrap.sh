@@ -439,11 +439,9 @@ EOF
 # Timezone Data Step
 ##
 
-EXTRACT_FILE_VERBOSE_EXTRACT=true
+extract_file "${SOURCES}/tzdata${TZ_DATA_VER}.tar.gz" "${WORK}/tzdata${TZ_DATA_VER}"
 
-extract_file "${SOURCES}/tzcode${TZ_DATA_VER}.tar.gz" "${WORK}/tzcode${TZ_DATA_VER}"
-
-cd "${WORK}/tzcode${TZ_DATA_VER}"
+cd "${WORK}/tzdata${TZ_DATA_VER}"
 
 msg "Configuring timezone data..."
 
