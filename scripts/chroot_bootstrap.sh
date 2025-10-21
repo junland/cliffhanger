@@ -12,15 +12,24 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Version variables
+BINUTILS_VER="2.45"
 BISON_VER="3.8.2"
+BZIP2_VER="1.0.8"
+COREUTILS_VER="9.7"
+FILE_VER="5.42"
+FLEX_VER="2.6.4"
 GETTEXT_VER="0.26"
 GLIBC_VER="2.42"
+M4_VER="1.4.20"
 PERL_VER="5.42.0"
 PYTHON_VER="3.13.7"
+READLINE_VER="8.3"
 TEXINFO_VER="7.2"
 TZ_DATA_VER="2025b"
 UTIL_LINUX_VER="2.41.1"
+XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
+ZSTD_VER="1.5.7"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -43,10 +52,15 @@ extract_file() {
 	local strip_components=${EXTRACT_FILE_STRIP_COMPONENTS:-0}
 	local verbose=${EXTRACT_FILE_VERBOSE_EXTRACT:-false}
 
-	# Make sure the archive file exists
+	# Make sure the archive file exists, if not find another archive file with a different extension.
 	if [ ! -f "${archive_file}" ]; then
-		echo "Error: Archive file ${archive_file} does not exist."
-		exit 1
+		msg "Archive file ${archive_file} does not exist, searching for alternative..."
+		archive_file=$(find "${SOURCES}" -name "$(basename "${archive_file}" | sed 's/\.[^.]*$//').*")
+		if [ ! -f "${archive_file}" ]; then
+			echo "Error: Archive file ${archive_file} does not exist."
+			exit 1
+		fi
+		msg "Found alternative archive file: ${archive_file}"
 	fi
 
 	mkdir -vp "${dest_dir}"
@@ -492,5 +506,205 @@ msg "Installing zlib..."
 make install
 
 rm -fv /usr/lib/libz.a
+
+clean_work_dir
+
+##
+# bzip2 Step
+##
+
+extract_file "${SOURCES}/bzip2-${BZIP2_VER}.tar.gz" "${WORK}/bzip2-${BZIP2_VER}"
+
+cd "${WORK}/bzip2-${BZIP2_VER}"
+
+msg "Configuring bzip2..."
+
+sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+
+make -f Makefile-libbz2_so
+
+make clean
+
+msg "Building bzip2..."
+
+make
+
+msg "Installing bzip2..."
+
+make install PREFIX=/usr
+
+cp -av libbz2.so.* /usr/lib
+cp -v bzip2-shared /usr/bin/bzip2
+ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so
+
+for i in /usr/bin/{bzcat,bunzip2}; do
+	ln -sfv bzip2 $i
+done
+
+rm -fv /usr/lib/libbz2.a
+
+clean_work_dir
+
+##
+# xz Step
+##
+
+extract_file "${SOURCES}/xz-${XZ_VER}.tar.xz" "${WORK}/xz-${XZ_VER}"
+
+cd "${WORK}/xz-${XZ_VER}"
+
+msg "Configuring xz..."
+
+./configure --prefix=/usr \
+	--disable-static \
+	--docdir=/usr/share/doc/xz-${XZ_VER}
+
+msg "Building xz..."
+
+make
+
+msg "Checking xz..."
+
+make check
+
+msg "Installing xz..."
+
+make install
+
+clean_work_dir
+
+##
+# zstd Step
+##
+
+extract_file "${SOURCES}/zstd-${ZSTD_VER}.tar.gz" "${WORK}/zstd-${ZSTD_VER}"
+
+cd "${WORK}/zstd-${ZSTD_VER}"
+
+msg "Building zstd..."
+
+make prefix=/usr
+
+msg "Checking zstd..."
+
+make check
+
+msg "Installing zstd..."
+
+make prefix=/usr install
+
+rm -v /usr/lib/libzstd.a
+
+clean_work_dir
+
+##
+# file Step
+##
+
+extract_file "${SOURCES}/file-${FILE_VER}.tar.gz" "${WORK}/file-${FILE_VER}"
+
+cd "${WORK}/file-${FILE_VER}"
+
+msg "Configuring file..."
+
+./configure --prefix=/usr
+
+msg "Building file..."
+
+make
+
+msg "Checking file..."
+
+make check
+
+msg "Installing file..."
+
+make install
+
+clean_work_dir
+
+##
+# readline Step
+##
+
+extract_file "${SOURCES}/readline-${READLINE_VER}.tar.gz" "${WORK}/readline-${READLINE_VER}"
+
+cd "${WORK}/readline-${READLINE_VER}"
+
+msg "Configuring readline..."
+
+sed -i '/MV.*old/d' Makefile.in
+sed -i '/{OLDSUFF}/c:' support/shlib-install
+sed -i 's/-Wl,-rpath,[^ ]*//' support/shobj-conf
+
+./configure --prefix=/usr \
+	--disable-static \
+	--with-curses \
+	--docdir=/usr/share/doc/readline-${READLINE_VER}
+
+msg "Building readline..."
+
+make SHLIB_LIBS="-lncursesw"
+
+msg "Installing readline..."
+
+make install
+
+clean_work_dir
+
+##
+# m4 Step
+##
+
+extract_file "${SOURCES}/m4-${M4_VER}.tar.xz" "${WORK}/m4-${M4_VER}"
+
+cd "${WORK}/m4-${M4_VER}"
+
+msg "Configuring m4..."
+
+./configure --prefix=/usr
+
+msg "Building m4..."
+
+make
+
+msg "Checking m4..."
+
+make check
+
+msg "Installing m4..."
+
+make install
+
+clean_work_dir
+
+##
+# flex Step
+##
+
+extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
+
+cd "${WORK}/flex-${FLEX_VER}"
+
+msg "Configuring flex..."
+
+./configure \
+	--prefix=/usr \
+	--docdir=/usr/share/doc/flex-${FLEX_VER} \
+	--disable-static
+
+msg "Building flex..."
+
+make
+
+msg "Checking flex..."
+
+make check
+
+msg "Installing flex..."
+
+make install
+
+ln -sv flex /usr/bin/lex
 
 clean_work_dir
