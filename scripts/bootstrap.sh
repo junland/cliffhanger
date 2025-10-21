@@ -47,7 +47,7 @@ NCURSES_VER="6.5-20250809"
 PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
-XZ_VER="5.6.2"
+XZ_VER="5.8.1"
 
 GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-${GLIBC_VER}-fhs-1.patch"
 
@@ -72,10 +72,15 @@ extract_file() {
 	local strip_components=${EXTRACT_FILE_STRIP_COMPONENTS:-0}
 	local verbose=${EXTRACT_FILE_VERBOSE_EXTRACT:-false}
 
-	# Make sure the archive file exists
+	# Make sure the archive file exists, if not find another archive file with a different extension.
 	if [ ! -f "${archive_file}" ]; then
-		echo "Error: Archive file ${archive_file} does not exist."
-		exit 1
+		msg "Archive file ${archive_file} does not exist, searching for alternative..."
+		archive_file=$(find "${SOURCES}" -name "$(basename "${archive_file}" | sed 's/\.[^.]*$//').*")
+		if [ ! -f "${archive_file}" ]; then
+			echo "Error: Archive file ${archive_file} does not exist."
+			exit 1
+		fi
+		msg "Found alternative archive file: ${archive_file}"
 	fi
 
 	mkdir -vp "${dest_dir}"
