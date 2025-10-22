@@ -69,6 +69,10 @@ jobs:
         set -o pipefail
         TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log
 
+    - name: Remove toolchain in rootfs
+      run: |
+        rm -rf rootfs/toolchain
+
     - name: Upload bootstrap rootfs
       uses: actions/upload-artifact@v4
       with:
