@@ -60,6 +60,10 @@ jobs:
     - name: Get the sources
       run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
 
+    - name: Verify the sources sums
+      run: sha512sum -c scripts/data/bootstrap-sources.list.sha512sum
+      working-directory: rootfs/tmp/sources
+
     - name: Display the sources
       run: ls -lah rootfs/tmp/sources
 
