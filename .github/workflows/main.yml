@@ -21,6 +21,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           autoconf \
+          autoconf2.69 \
           automake \
           autopoint \
           bison \
@@ -67,7 +68,15 @@ jobs:
       id: bootstrap
       run: |
         set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log | grep "==>"
+
+        # Check if the bootstrap script completed successfully
+        if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+          echo "Bootstrap script failed"
+          # display the last 20 lines of the log for debugging
+          tail -n 20 ./scripts/bootstrap.log
+          exit 1
+        fi
 
     - name: Remove toolchain in rootfs
       run: |
