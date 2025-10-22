@@ -77,7 +77,7 @@ extract_file() {
 		msg "Archive file ${archive_file} does not exist, searching for alternative..."
 		archive_file=$(find "${SOURCES}" -name "$(basename "${archive_file}" | sed 's/\.[^.]*$//').*")
 		if [ ! -f "${archive_file}" ]; then
-			echo "Error: Archive file ${archive_file} does not exist."
+			msg "Error: Archive file ${archive_file} does not exist."
 			exit 1
 		fi
 		msg "Found alternative archive file: ${archive_file}"
@@ -95,10 +95,10 @@ extract_file() {
 	# Check to see if we have to strip components based on the archive file has a parent directory
 	if [ "${strip_components}" -eq 0 ]; then
 		if tar -tf "${archive_file}" | head -1 | grep -q '/'; then
-			echo "Archive has a parent directory, setting strip_components to 1"
+			msg "Archive has a parent directory, setting strip_components to 1"
 			strip_components=1
 		else
-			echo "Archive does not have a parent directory, setting strip_components to 0"
+			msg "Archive does not have a parent directory, setting strip_components to 0"
 			strip_components=0
 		fi
 	fi
@@ -117,7 +117,7 @@ extract_file() {
 		unzip -q "${archive_file}" -d "${dest_dir}"
 		;;
 	*)
-		echo "Unknown archive format: ${archive_file}"
+		msg "Unknown archive format: ${archive_file}"
 		exit 1
 		;;
 	esac
