@@ -1,16 +1,12 @@
-name: Build on GitHub Hosted Runner
+name: Build on Self-Hosted Runner
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     name: Run Build
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu]
     strategy:
       matrix:
         include:
@@ -55,13 +51,6 @@ jobs:
 
     - name: Run version check script
       run: ./scripts/version_check.sh
-
-    - name: Create rootfs directories
-      run: |
-        mkdir -p rootfs/tmp/sources
-
-    - name: Get the sources
-      run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
 
     - name: Execute the bootstrap script
       id: bootstrap
