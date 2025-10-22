@@ -75,7 +75,7 @@ jobs:
       id: bootstrap
       run: |
         set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep "==>"
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered "==>"
 
         # Check if the bootstrap script completed successfully
         if [ "${PIPESTATUS[0]}" -ne 0 ]; then
