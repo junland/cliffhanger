@@ -316,7 +316,6 @@ echo "rootsbindir=/usr/sbin" >configparms
 	--host="${TARGET_TRIPLET}" \
 	--build=$(../scripts/config.guess) \
 	--enable-kernel=5.4 \
-	--with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
 	--disable-nscd \
 	libc_cv_slibdir=/usr/lib
 
