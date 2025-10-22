@@ -53,6 +53,16 @@ jobs:
     - name: Run version check script
       run: ./scripts/version_check.sh
 
+    - name: Create rootfs directories
+      run: |
+        mkdir -p rootfs/tmp/sources
+
+    - name: Get the sources
+      run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
+
+    - name: Display the sources
+      run: ls -lah rootfs/tmp/sources
+
     - name: Execute the bootstrap script
       id: bootstrap
       run: |
@@ -66,6 +76,17 @@ jobs:
           tail -n 20 ./scripts/bootstrap.log
           exit 1
         fi
+
+    - name: Upload bootstrap log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: bootstrap-log
+        path: ./scripts/bootstrap.log
+
+    - name: Remove toolchain in rootfs
+      run: |
+        rm -rf rootfs/toolchain
 
     - name: Upload bootstrap rootfs
       uses: actions/upload-artifact@v4
