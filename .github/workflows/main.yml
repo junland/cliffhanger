@@ -75,7 +75,7 @@ jobs:
       id: bootstrap
       run: |
         set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log | grep "==>"
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep "==>"
 
         # Check if the bootstrap script completed successfully
         if [ "${PIPESTATUS[0]}" -ne 0 ]; then
@@ -90,7 +90,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: bootstrap-log
-        path: ./scripts/bootstrap.log
+        path: ${{ github.workspace }}/scripts/bootstrap.log
 
     - name: Remove toolchain in rootfs
       run: |

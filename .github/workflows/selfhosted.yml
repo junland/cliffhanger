@@ -61,8 +61,8 @@ jobs:
       run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
 
     - name: Verify the sources sums
-      run: sha512sum -c scripts/data/bootstrap-sources.list.sha512sum
-      working-directory: rootfs/tmp/sources
+      run: sha512sum -c ${{ github.workspace }}/scripts/data/bootstrap-sources.list.sha512sum
+      working-directory: ${{ github.workspace }}/rootfs/tmp/sources
 
     - name: Display the sources
       run: ls -lah rootfs/tmp/sources
@@ -71,7 +71,7 @@ jobs:
       id: bootstrap
       run: |
         set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ./scripts/bootstrap.sh | tee ./scripts/bootstrap.log | grep "==>"
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep "==>"
 
         # Check if the bootstrap script completed successfully
         if [ "${PIPESTATUS[0]}" -ne 0 ]; then
@@ -86,7 +86,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: bootstrap-log
-        path: ./scripts/bootstrap.log
+        path: ${{ github.workspace }}/scripts/bootstrap.log
 
     - name: Remove toolchain in rootfs
       run: |
