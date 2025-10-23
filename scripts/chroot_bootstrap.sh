@@ -30,6 +30,7 @@ UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
+PKGCONF="2.5.1"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -708,3 +709,128 @@ make install
 ln -sv flex /usr/bin/lex
 
 clean_work_dir
+
+##
+# m4 Step
+##
+
+extract_file "${SOURCES}/m4-${M4_VER}.tar.xz" "${WORK}/m4-${M4_VER}"
+
+cd "${WORK}/m4-${M4_VER}"
+
+msg "Configuring m4..."
+
+./configure --prefix=/usr
+
+msg "Building m4..."
+
+make
+
+msg "Checking m4..."
+
+make check
+
+msg "Installing m4..."
+
+make install
+
+clean_work_dir
+
+##
+# flex Step
+##
+
+extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
+
+cd "${WORK}/flex-${FLEX_VER}"
+
+msg "Configuring flex..."
+
+./configure \
+	--prefix=/usr \
+	--docdir=/usr/share/doc/flex-${FLEX_VER} \
+	--disable-static
+
+msg "Building flex..."
+
+make
+
+msg "Checking flex..."
+
+make check
+
+msg "Installing flex..."
+
+make install
+
+ln -sv flex /usr/bin/lex
+
+clean_work_dir
+
+##
+# pkgconf Step
+##
+
+extract_file "${SOURCES}/pkgconf-${PKGCONF}.tar.gz" "${WORK}/pkgconf-${PKGCONF}"
+
+cd "${WORK}/pkgconf-${PKGCONF}"
+
+msg "Configuring pkgconf..."
+
+./configure --prefix=/usr
+
+msg "Building pkgconf..."
+
+make
+
+msg "Checking pkgconf..."
+
+make check
+
+msg "Installing pkgconf..."
+
+make install
+
+ln -sv pkgconf /usr/bin/pkg-config
+
+clean_work_dir
+
+##
+# binutils Step
+##
+
+extract_file "${SOURCES}/binutils-${BINUTILS_VER}.tar.xz" "${WORK}/binutils-${BINUTILS_VER}"
+
+cd "${WORK}/binutils-${BINUTILS_VER}"
+
+msg "Configuring binutils..."
+
+mkdir -v build
+
+cd build
+
+../configure \
+	--prefix=/usr \
+	--sysconfdir=/etc \
+	--enable-ld=default \
+	--enable-plugins \
+	--enable-shared \
+	--disable-werror \
+	--enable-64-bit-bfd \
+	--enable-new-dtags \
+	--with-system-zlib \
+	--enable-default-hash-style=gnu
+
+msg "Building binutils..."
+
+make tooldir=/usr
+
+grep '^FAIL:' $(find -name '*.log')
+
+make -k check
+
+msg "Installing binutils..."
+
+make tooldir=/usr install
+
+rm -rfv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a /usr/share/doc/gprofng/
