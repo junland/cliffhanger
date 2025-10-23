@@ -763,6 +763,8 @@ msg "Installing flex..."
 
 make install
 
+ls -la /usr/bin
+
 ln -sv flex /usr/bin/lex
 
 clean_work_dir
