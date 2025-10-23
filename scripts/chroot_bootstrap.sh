@@ -711,65 +711,6 @@ ln -sv flex /usr/bin/lex
 clean_work_dir
 
 ##
-# m4 Step
-##
-
-extract_file "${SOURCES}/m4-${M4_VER}.tar.xz" "${WORK}/m4-${M4_VER}"
-
-cd "${WORK}/m4-${M4_VER}"
-
-msg "Configuring m4..."
-
-./configure --prefix=/usr
-
-msg "Building m4..."
-
-make
-
-msg "Checking m4..."
-
-make check
-
-msg "Installing m4..."
-
-make install
-
-clean_work_dir
-
-##
-# flex Step
-##
-
-extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
-
-cd "${WORK}/flex-${FLEX_VER}"
-
-msg "Configuring flex..."
-
-./configure \
-	--prefix=/usr \
-	--docdir=/usr/share/doc/flex-${FLEX_VER} \
-	--disable-static
-
-msg "Building flex..."
-
-make
-
-msg "Checking flex..."
-
-make check
-
-msg "Installing flex..."
-
-make install
-
-ls -la /usr/bin
-
-ln -sv flex /usr/bin/lex
-
-clean_work_dir
-
-##
 # pkgconf Step
 ##
 
