@@ -75,13 +75,16 @@ jobs:
       id: bootstrap
       run: |
         set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered "==>"
+        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh > ${{ github.workspace }}/scripts/bootstrap.log 2>&1 &
 
-        # Check if the bootstrap script completed successfully
-        if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-          echo "Bootstrap script failed"
-          # display the last 20 lines of the log for debugging
-          tail -n 20 ./scripts/bootstrap.log
+        tail -F ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered "==>" &
+
+        wait $!
+
+        # If it failed, print the last 50 lines of the log for debugging
+        if [ $? -ne 0 ]; then
+          echo "❌ Build failed! Showing last 50 lines:"
+          tail -n 50 ${{ github.workspace }}/scripts/bootstrap.log
           exit 1
         fi
 
