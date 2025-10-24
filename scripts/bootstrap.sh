@@ -37,7 +37,6 @@ GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 GREP_VER="3.12"
 GZIP_VER="1.13"
-LFS_BOOK_VER="12.4"
 LINUX_VER="6.16.1"
 M4_VER="1.4.20"
 MAKE_VER="4.4.1"
@@ -48,8 +47,6 @@ PATCH_VER="2.7.6"
 SED_VER="4.9"
 TAR_VER="1.35"
 XZ_VER="5.8.1"
-
-GLIBC_PATCH_URL="https://www.linuxfromscratch.org/patches/lfs/${LFS_BOOK_VER}/glibc-${GLIBC_VER}-fhs-1.patch"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -300,8 +297,6 @@ riscv64)
 	exit 1
 	;;
 esac
-
-curl ${CURL_OPTS} -o "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch" "${GLIBC_PATCH_URL}"
 
 patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch"
 
