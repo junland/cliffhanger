@@ -767,9 +767,15 @@ msg "Building binutils..."
 
 make tooldir=/usr
 
-grep '^FAIL:' $(find -name '*.log')
+msg "Checking binutils..."
 
 make -k check
+
+# Check for build errors and exit failures are found in the files
+grep '^FAIL:' $(find -name '*.log')  && {
+	msg "Error: Some binutils tests failed."
+	exit 1
+}
 
 msg "Installing binutils..."
 
