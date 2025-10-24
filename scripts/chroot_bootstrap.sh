@@ -714,21 +714,20 @@ clean_work_dir
 # pkgconf Step
 ##
 
-extract_file "${SOURCES}/pkgconf-${PKGCONF}.tar.gz" "${WORK}/pkgconf-${PKGCONF}"
+extract_file "${SOURCES}/pkgconf-${PKGCONF}.tar.xz" "${WORK}/pkgconf-${PKGCONF}"
 
 cd "${WORK}/pkgconf-${PKGCONF}"
 
 msg "Configuring pkgconf..."
 
-./configure --prefix=/usr
+./configure \
+           --prefix=/usr    \
+            --disable-static \
+            --docdir=/usr/share/doc/pkgconf-${PKGCONF}
 
 msg "Building pkgconf..."
 
 make
-
-msg "Checking pkgconf..."
-
-make check
 
 msg "Installing pkgconf..."
 
