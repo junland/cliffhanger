@@ -469,7 +469,7 @@ for tz in $ZONES; do
 	msg "Installing timezone data for $tz..."
 	zic -L /dev/null -d $ZONE_INFO ${tz}
 	zic -L /dev/null -d $ZONE_INFO/posix ${tz}
-	zic -L leapseconds -d $ZONEZONE_INFOINFO/right ${tz}
+	zic -L leapseconds -d $ZONE_INFO/right ${tz}
 done
 
 cp -v zone.tab zone1970.tab iso3166.tab $ZONE_INFO
@@ -721,9 +721,9 @@ cd "${WORK}/pkgconf-${PKGCONF}"
 msg "Configuring pkgconf..."
 
 ./configure \
-           --prefix=/usr    \
-            --disable-static \
-            --docdir=/usr/share/doc/pkgconf-${PKGCONF}
+	--prefix=/usr \
+	--disable-static \
+	--docdir=/usr/share/doc/pkgconf-${PKGCONF}
 
 msg "Building pkgconf..."
 
