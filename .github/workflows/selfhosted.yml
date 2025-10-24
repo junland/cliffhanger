@@ -12,88 +12,88 @@ jobs:
         include:
           - TARGET_ARCH: x86_64
     steps:
-    - name: Install dependencies (Ubuntu/Debian)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y \
-          autoconf \
-          autoconf2.69 \
-          automake \
-          autopoint \
-          bison \
-          build-essential \
-          byacc \
-          flex \
-          gawk \
-          gettext \
-          gperf \
-          help2man \
-          libssl-dev \
-          libtool \
-          m4 \
-          make \
-          meson \
-          ninja-build \
-          perl \
-          pkg-config \
-          tree \
-          unzip \
-          zlib1g-dev
+      - name: Install dependencies (Ubuntu/Debian)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf \
+            autoconf2.69 \
+            automake \
+            autopoint \
+            bison \
+            build-essential \
+            byacc \
+            flex \
+            gawk \
+            gettext \
+            gperf \
+            help2man \
+            libssl-dev \
+            libtool \
+            m4 \
+            make \
+            meson \
+            ninja-build \
+            perl \
+            pkg-config \
+            tree \
+            unzip \
+            zlib1g-dev
 
-    - name: Reconfigure sh to use bash
-      run: |
-        sudo dpkg-reconfigure dash
-        sudo ln -sf bash /bin/sh
+      - name: Reconfigure sh to use bash
+        run: |
+          sudo dpkg-reconfigure dash
+          sudo ln -sf bash /bin/sh
 
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Allow scripts to run
-      run: chmod +x ./scripts/*.sh
+      - name: Allow scripts to run
+        run: chmod +x ./scripts/*.sh
 
-    - name: Run version check script
-      run: ./scripts/version_check.sh
+      - name: Run version check script
+        run: ./scripts/version_check.sh
 
-    - name: Create rootfs directories
-      run: |
-        mkdir -p rootfs/tmp/sources
+      - name: Create rootfs directories
+        run: |
+          mkdir -p rootfs/tmp/sources
 
-    - name: Get the sources
-      run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
+      - name: Get the sources
+        run: wget -nv --tries=15 --waitretry=15 -i scripts/data/bootstrap-sources.list -P rootfs/tmp/sources
 
-    - name: Verify the sources sums
-      run: sha512sum -c ${{ github.workspace }}/scripts/data/bootstrap-sources.list.sha512sum
-      working-directory: ${{ github.workspace }}/rootfs/tmp/sources
+      - name: Verify the sources sums
+        run: sha512sum -c ${{ github.workspace }}/scripts/data/bootstrap-sources.list.sha512sum
+        working-directory: ${{ github.workspace }}/rootfs/tmp/sources
 
-    - name: Display the sources
-      run: ls -lah rootfs/tmp/sources
+      - name: Display the sources
+        run: ls -lah rootfs/tmp/sources
 
-    - name: Execute the bootstrap script
-      id: bootstrap
-      run: |
-        set -o pipefail
-        TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered "==>"
+      - name: Execute the bootstrap script
+        id: bootstrap
+        run: |
+          set -o pipefail
+          TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh | tee ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered "==>"
 
-        # Check if the bootstrap script completed successfully
-        if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-          echo "Bootstrap script failed"
-          # display the last 20 lines of the log for debugging
-          tail -n 20 ./scripts/bootstrap.log
-          exit 1
-        fi
+          # Check if the bootstrap script completed successfully
+          if [ "${PIPESTATUS[0]}" -ne 0 ]; then
+            echo "Bootstrap script failed"
+            # display the last 20 lines of the log for debugging
+            tail -n 20 ./scripts/bootstrap.log
+            exit 1
+          fi
 
-    - name: Upload bootstrap log
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: bootstrap-log
-        path: ${{ github.workspace }}/scripts/bootstrap.log
+      - name: Upload bootstrap log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-log
+          path: ${{ github.workspace }}/scripts/bootstrap.log
 
-    - name: Remove toolchain in rootfs
-      run: |
-        rm -rf rootfs/toolchain
+      - name: Remove toolchain in rootfs
+        run: |
+          rm -rf rootfs/toolchain
 
-    - name: Upload bootstrap rootfs
-      uses: actions/upload-artifact@v4
-      with:
-        name: bootstrap-rootfs
-        path: rootfs/*
+      - name: Upload bootstrap rootfs
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-rootfs
+          path: rootfs/*
