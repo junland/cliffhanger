@@ -18,10 +18,16 @@ BZIP2_VER="1.0.8"
 COREUTILS_VER="9.7"
 FILE_VER="5.46"
 FLEX_VER="2.6.4"
+GAWK_VER="5.3.2"
+GCC_VER="15.2.0"
 GETTEXT_VER="0.26"
 GLIBC_VER="2.42"
+GMP_VER="6.3.0"
+GREP_VER="3.12"
+GZIP_VER="1.13"
 M4_VER="1.4.20"
 PERL_VER="5.42.0"
+PKGCONF="2.5.1"
 PYTHON_VER="3.13.7"
 READLINE_VER="8.3"
 TEXINFO_VER="7.2"
@@ -30,8 +36,6 @@ UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
-PKGCONF="2.5.1"
-
 # msg function that will make echo's pretty.
 msg() {
 	echo " ==> $*"
@@ -772,7 +776,7 @@ msg "Checking binutils..."
 make -k check
 
 # Check for build errors and exit failures are found in the files
-grep '^FAIL:' $(find -name '*.log')  && {
+grep '^FAIL:' $(find -name '*.log') && {
 	msg "Error: Some binutils tests failed."
 	exit 1
 }
@@ -782,3 +786,175 @@ msg "Installing binutils..."
 make tooldir=/usr install
 
 rm -rfv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a /usr/share/doc/gprofng/
+
+clean_work_dir
+
+##
+# gmp Step
+##
+
+extract_file "${SOURCES}/gmp-${GMP_VER}.tar.xz" "${WORK}/gmp-${GMP_VER}"
+
+cd "${WORK}/gmp-${GMP_VER}"
+
+msg "Configuring gmp..."
+
+sed -i '/long long t1;/,+1s/()/(...)/' configure
+
+./configure \
+	--prefix=/usr \
+	--enable-cxx \
+	--disable-static \
+	--docdir=/usr/share/doc/gmp-${GMP_VER}
+
+msg "Building gmp..."
+
+make
+
+msg "Checking gmp..."
+
+make check 2>&1 | tee gmp-check-log
+
+# Also make sure 199 tests passed
+if awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log; then
+	msg "All gmp tests passed."
+else
+	msg "Error: Some gmp tests failed."
+	exit 1
+fi
+
+msg "Installing gmp..."
+
+make install
+
+clean_work_dir
+
+##
+# mpfr Step
+##
+
+extract_file "${SOURCES}/mpfr-4.2.1.tar.xz" "${WORK}/mpfr-4.2.1"
+
+cd "${WORK}/mpfr-4.2.1"
+
+msg "Configuring mpfr..."
+
+./configure \
+	--prefix=/usr \
+	--disable-static \
+	--enable-thread-safe \
+	--docdir=/usr/share/doc/mpfr-${MPFR_VER}
+
+msg "Building mpfr..."
+
+make
+
+msg "Checking mpfr..."
+
+make check
+
+msg "Installing mpfr..."
+
+make install
+
+clean_work_dir
+
+##
+# mpc Step
+##
+
+extract_file "${SOURCES}/mpc-1.3.1.tar.gz" "${WORK}/mpc-1.3.1"
+
+cd "${WORK}/mpc-1.3.1"
+
+msg "Configuring mpc..."
+
+./configure \
+	--prefix=/usr \
+	--disable-static \
+	--docdir=/usr/share/doc/mpc-${MPC_VER}
+
+msg "Building mpc..."
+
+make
+
+msg "Checking mpc..."
+
+make check
+
+msg "Installing mpc..."
+
+make install
+
+clean_work_dir
+
+##
+# gcc Step
+##
+
+extract_file "${SOURCES}/gcc-${GCC_VER}.tar.xz" "${WORK}/gcc-${GCC_VER}"
+
+cd "${WORK}/gcc-${GCC_VER}"
+
+msg "Configuring gcc..."
+
+case $(uname -m) in
+x86_64)
+	sed -e '/m64=/s/lib64/lib/' \
+		-i.orig gcc/config/i386/t-linux64
+	;;
+aarch64)
+	sed -e '/m64=/s/lib64/lib/' \
+		-i.orig gcc/config/aarch64/t-linux64
+	;;
+esac
+
+mkdir -v build
+
+cd build
+
+LD=ld \
+	../configure \
+	--prefix=/usr \
+	--enable-languages=c,c++ \
+	--enable-default-pie \
+	--enable-default-ssp \
+	--enable-host-pie \
+	--disable-multilib \
+	--disable-bootstrap \
+	--disable-fixincludes \
+	--with-system-zlib
+
+msg "Building gcc..."
+
+make
+
+msg "Setting up for gcc checks..."
+
+ulimit -s -H unlimited
+
+sed -e '/cpython/d' -i ../gcc/testsuite/gcc.dg/plugin/plugin.exp
+
+msg "Checking gcc..."
+
+chown -R tester .
+
+su tester -c "PATH=$PATH make -k check"
+
+msg "Extractring gcc check results..."
+
+../contrib/test_summary
+
+msg "Installing gcc..."
+
+make install
+
+chown -v -R root:root /usr/lib/gcc/$(gcc -dumpmachine)/15.2.0/include{,-fixed}
+
+ln -svr /usr/bin/cpp /usr/lib
+
+ln -svf ../../libexec/gcc/$(gcc -dumpmachine)/15.2.0/liblto_plugin.so /usr/lib/bfd-plugins/
+
+mkdir -pv /usr/share/gdb/auto-load/usr/lib
+
+mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
