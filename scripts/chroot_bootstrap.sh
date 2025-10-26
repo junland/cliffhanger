@@ -26,6 +26,8 @@ GMP_VER="6.3.0"
 GREP_VER="3.12"
 GZIP_VER="1.13"
 M4_VER="1.4.20"
+MPFR_VER="4.2.2"
+MPC_VER="1.3.1"
 PERL_VER="5.42.0"
 PKGCONF="2.5.1"
 PYTHON_VER="3.13.7"
@@ -36,6 +38,7 @@ UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
+
 # msg function that will make echo's pretty.
 msg() {
 	echo " ==> $*"
@@ -833,9 +836,9 @@ clean_work_dir
 # mpfr Step
 ##
 
-extract_file "${SOURCES}/mpfr-4.2.1.tar.xz" "${WORK}/mpfr-4.2.1"
+extract_file "${SOURCES}/mpfr-${MPFR_VER}.tar.xz" "${WORK}/mpfr-${MPFR_VER}"
 
-cd "${WORK}/mpfr-4.2.1"
+cd "${WORK}/mpfr-${MPFR_VER}"
 
 msg "Configuring mpfr..."
 
@@ -863,9 +866,9 @@ clean_work_dir
 # mpc Step
 ##
 
-extract_file "${SOURCES}/mpc-1.3.1.tar.gz" "${WORK}/mpc-1.3.1"
+extract_file "${SOURCES}/mpc-${MPC_VER}.tar.gz" "${WORK}/mpc-${MPC_VER}"
 
-cd "${WORK}/mpc-1.3.1"
+cd "${WORK}/mpc-${MPC_VER}"
 
 msg "Configuring mpc..."
 
