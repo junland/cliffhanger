@@ -142,6 +142,8 @@ install -vdm 755 /usr/libexec
 install -vdm 755 /etc/profile.d
 install -vdm 755 /usr/lib/debug/{lib,bin,sbin,usr}
 
+install -o tester -d /home/tester
+
 msg "Creating essential symlinks..."
 
 ln -sfv /run /var/run
@@ -163,6 +165,7 @@ daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
 messagebus:x:18:18:D-Bus Message Daemon User:/run/dbus:/usr/bin/false
 uuidd:x:80:80:UUID Generation Daemon User:/dev/null:/usr/bin/false
 nobody:x:65534:65534:Unprivileged User:/dev/null:/usr/bin/false
+tester:x:101:101::/home/tester:/bin/bash
 EOF
 
 cat >/etc/group <<"EOF"
@@ -191,6 +194,7 @@ uuidd:x:80:
 wheel:x:97:
 users:x:999:
 nogroup:x:65534:
+tester:x:101:
 EOF
 
 cat >/etc/nsswitch.conf <<"EOF"
@@ -361,20 +365,20 @@ cd "${WORK}/util-linux-${UTIL_LINUX_VER}"
 
 msg "Configuring util-linux..."
 
-./configure \
+ADJTIME_PATH=/var/lib/hwclock/adjtime \
+	./configure \
+	--disable-chfn-chsh \
+	--disable-liblastlog2 \
+	--disable-nologin \
+	--disable-pylibmount \
+	--disable-runuser \
+	--disable-setpriv \
+	--disable-static \
+	--disable-su \
 	--libdir=/usr/lib \
 	--runstatedir=/run \
-	--disable-chfn-chsh \
-	--disable-login \
-	--disable-nologin \
-	--disable-su \
-	--disable-setpriv \
-	--disable-runuser \
-	--disable-pylibmount \
-	--disable-static \
-	--disable-liblastlog2 \
 	--without-python \
-	ADJTIME_PATH=/var/lib/hwclock/adjtime \
+	--disable-login \
 	--docdir=/usr/share/doc/util-linux-${UTIL_LINUX_VER}
 
 msg "Building util-linux..."
