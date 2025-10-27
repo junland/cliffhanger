@@ -138,15 +138,14 @@ mkdir -vp "${TARGET_ROOTFS_PATH}"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}"
 mkdir -vp "${TARGET_ROOTFS_SOURCES_PATH}"
 mkdir -vp "${TOOLCHAIN_PATH}"
-mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,sbin}
+mkdir -vp "$TARGET_ROOTFS_PATH"/{etc,var} "$TARGET_ROOTFS_PATH"/usr/{bin,lib,lib64,sbin}
 
-for i in bin lib sbin; do
+for i in bin lib lib64 sbin; do
 	ln -sv usr/$i "$TARGET_ROOTFS_PATH"/$i
 done
 
-case $(uname -m) in
-x86_64) mkdir -vp "$TARGET_ROOTFS_PATH"/lib64 ;;
-esac
+# Clean work directory before starting, just in case
+clean_work_dir
 
 ##
 # binutils Step
@@ -167,10 +166,10 @@ cd build
 	--target="${TARGET_TRIPLET}" \
 	--with-sysroot="${TARGET_ROOTFS_PATH}" \
 	--disable-nls \
-	--enable-gprofng=no \
 	--disable-werror \
-	--enable-new-dtags \
-	--enable-default-hash-style=gnu
+	--enable-default-hash-style=gnu \
+	--enable-gprofng=no \
+	--enable-new-dtags
 
 msg "Building binutils..."
 
@@ -210,21 +209,21 @@ cd build
 	--target="${TARGET_TRIPLET}" \
 	--with-glibc-version="${GLIBC_VER}" \
 	--with-sysroot="${TARGET_ROOTFS_PATH}" \
-	--with-newlib \
-	--without-headers \
-	--enable-default-pie \
-	--enable-default-ssp \
-	--disable-nls \
-	--disable-shared \
-	--disable-multilib \
-	--disable-threads \
 	--disable-libatomic \
 	--disable-libgomp \
 	--disable-libquadmath \
 	--disable-libssp \
-	--disable-libvtv \
 	--disable-libstdcxx \
-	--enable-languages=c,c++
+	--disable-libvtv \
+	--disable-multilib \
+	--disable-nls \
+	--disable-shared \
+	--disable-threads \
+	--enable-default-pie \
+	--enable-default-ssp \
+	--enable-languages=c,c++ \
+	--with-newlib \
+	--without-headers
 
 msg "Building gcc..."
 
