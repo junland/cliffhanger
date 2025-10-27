@@ -142,8 +142,6 @@ install -vdm 755 /usr/libexec
 install -vdm 755 /etc/profile.d
 install -vdm 755 /usr/lib/debug/{lib,bin,sbin,usr}
 
-install -o tester -d /home/tester
-
 msg "Creating essential symlinks..."
 
 ln -sfv /run /var/run
@@ -231,6 +229,8 @@ touch /var/log/{btmp,lastlog,faillog,wtmp}
 chgrp -v utmp /var/log/lastlog
 chmod -v 664 /var/log/lastlog
 chmod -v 600 /var/log/btmp
+
+install -o tester -d /home/tester
 
 ##
 # gettext Step
