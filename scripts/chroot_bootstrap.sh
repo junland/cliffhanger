@@ -26,12 +26,13 @@ GMP_VER="6.3.0"
 GREP_VER="3.12"
 GZIP_VER="1.13"
 M4_VER="1.4.20"
-MPFR_VER="4.2.2"
 MPC_VER="1.3.1"
+MPFR_VER="4.2.2"
 PERL_VER="5.42.0"
 PKGCONF="2.5.1"
 PYTHON_VER="3.13.7"
 READLINE_VER="8.3"
+SHADOW_VER="4.18"
 TEXINFO_VER="7.2"
 TZ_DATA_VER="2025b"
 UTIL_LINUX_VER="2.41.1"
@@ -369,6 +370,7 @@ ADJTIME_PATH=/var/lib/hwclock/adjtime \
 	./configure \
 	--disable-chfn-chsh \
 	--disable-liblastlog2 \
+	--disable-login \
 	--disable-nologin \
 	--disable-pylibmount \
 	--disable-runuser \
@@ -377,9 +379,7 @@ ADJTIME_PATH=/var/lib/hwclock/adjtime \
 	--disable-su \
 	--libdir=/usr/lib \
 	--runstatedir=/run \
-	--without-python \
-	--disable-login \
-	--docdir=/usr/share/doc/util-linux-${UTIL_LINUX_VER}
+	--without-python
 
 msg "Building util-linux..."
 
