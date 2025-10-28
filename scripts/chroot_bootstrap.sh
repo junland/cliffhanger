@@ -12,6 +12,8 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Version variables
+ACL_VER="2.3.2"
+ATTR_VER="2.5.2"
 BINUTILS_VER="2.45"
 BISON_VER="3.8.2"
 BZIP2_VER="1.0.8"
@@ -25,6 +27,8 @@ GLIBC_VER="2.42"
 GMP_VER="6.3.0"
 GREP_VER="3.12"
 GZIP_VER="1.13"
+LIBCAP_VER="2.76"
+LIBXCRPT_VER="4.4.38"
 M4_VER="1.4.20"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
@@ -892,6 +896,159 @@ make check
 msg "Installing mpc..."
 
 make install
+
+clean_work_dir
+
+##
+# attr Step
+##
+
+extract_file "${SOURCES}/attr-${ATTR_VER}.tar.gz" "${WORK}/attr-${ATTR_VER}"
+
+cd "${WORK}/attr-${ATTR_VER}"
+
+msg "Configuring attr..."
+
+./configure \
+	--prefix=/usr \
+	--disable-static \
+	--docdir=/usr/share/doc/attr-${ATTR_VER}
+
+msg "Building attr..."
+
+make
+
+msg "Checking attr..."
+
+make check
+
+msg "Installing attr..."
+
+make install
+
+clean_work_dir
+
+##
+# acl Step
+##
+
+extract_file "${SOURCES}/acl-${ACL_VER}.tar.xz" "${WORK}/acl-${ACL_VER}"
+
+cd "${WORK}/acl-${ACL_VER}"
+
+msg "Configuring acl..."
+
+./configure \
+	--prefix=/usr \
+	--disable-static \
+	--docdir=/usr/share/doc/acl-${ACL_VER}
+
+msg "Building acl..."
+
+make
+
+msg "Checking acl..."
+
+make check
+
+msg "Installing acl..."
+
+make install
+
+clean_work_dir
+
+##
+# libcap Step
+##
+
+extract_file "${SOURCES}/libcap-${LIBCAP_VER}.tar.xz" "${WORK}/libcap-${LIBCAP_VER}"
+
+cd "${WORK}/libcap-${LIBCAP_VER}"
+
+msg "Configuring libcap..."
+
+sed -i '/install -m.*STA/d' libcap/Makefile
+
+msg "Building libcap..."
+
+make prefix=/usr lib=lib
+
+msg "Checking libcap..."
+
+make test
+
+msg "Installing libcap..."
+
+make prefix=/usr lib=lib install
+
+clean_work_dir
+
+##
+# libxcrypt Step
+##
+
+extract_file "${SOURCES}/libxcrypt-${LIBXCRPT_VER}.tar.xz" "${WORK}/libxcrypt-${LIBXCRPT_VER}"
+
+cd "${WORK}/libxcrypt-${LIBXCRPT_VER}"
+
+msg "Configuring libxcrypt..."
+
+./configure --prefix=/usr \
+	--enable-hashes=strong,glibc \
+	--enable-obsolete-api=no \
+	--disable-static \
+	--disable-failure-tokens
+
+msg "Building libxcrypt..."
+
+make
+
+msg "Checking libxcrypt..."
+
+make check
+
+msg "Installing libxcrypt..."
+
+make install
+
+clean_work_dir
+
+##
+# shadow Step
+##
+
+extract_file "${SOURCES}/shadow-${SHADOW_VER}.tar.xz" "${WORK}/shadow-${SHADOW_VER}"
+
+cd "${WORK}/shadow-${SHADOW_VER}"
+
+msg "Configuring shadow..."
+
+sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
+find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
+find man -name Makefile.in -exec sed -i 's/passwd\.5 / /' {} \;
+
+sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD YESCRYPT:' \
+	-e 's:/var/spool/mail:/var/mail:' \
+	-e '/PATH=/{s@/sbin:@@;s@/bin:@@}' \
+	-i etc/login.defs
+
+touch /usr/bin/passwd
+
+./configure \
+	--sysconfdir=/etc \
+	--disable-static \
+	--with-{b,yes}crypt \
+	--without-libbsd \
+	--with-group-name-max-length=32
+
+msg "Building shadow..."
+
+make
+
+msg "Installing shadow..."
+
+make exec_prefix=/usr install
 
 clean_work_dir
 
