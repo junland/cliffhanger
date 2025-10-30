@@ -32,10 +32,12 @@ LIBXCRPT_VER="4.4.38"
 M4_VER="1.4.20"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
+NCURSES_VER="6.5-20250809"
 PERL_VER="5.42.0"
-PKGCONF="2.5.1"
+PKGCONF_VER="2.5.1"
 PYTHON_VER="3.13.7"
 READLINE_VER="8.3"
+SED_VER="4.9"
 SHADOW_VER="4.18.0"
 TEXINFO_VER="7.2"
 TZ_DATA_VER="2025b"
@@ -729,16 +731,16 @@ clean_work_dir
 # pkgconf Step
 ##
 
-extract_file "${SOURCES}/pkgconf-${PKGCONF}.tar.xz" "${WORK}/pkgconf-${PKGCONF}"
+extract_file "${SOURCES}/pkgconf-${PKGCONF_VER}.tar.xz" "${WORK}/pkgconf-${PKGCONF_VER}"
 
-cd "${WORK}/pkgconf-${PKGCONF}"
+cd "${WORK}/pkgconf-${PKGCONF_VER}"
 
 msg "Configuring pkgconf..."
 
 ./configure \
 	--prefix=/usr \
 	--disable-static \
-	--docdir=/usr/share/doc/pkgconf-${PKGCONF}
+	--docdir=/usr/share/doc/pkgconf-${PKGCONF_VER}
 
 msg "Building pkgconf..."
 
@@ -1125,3 +1127,73 @@ ln -svf ../../libexec/gcc/$(gcc -dumpmachine)/15.2.0/liblto_plugin.so /usr/lib/b
 mkdir -pv /usr/share/gdb/auto-load/usr/lib
 
 mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+
+clean_work_dir
+
+##
+# ncurses Step
+##
+
+extract_file "${SOURCES}/ncurses-${NCURSES_VER}.tar.gz" "${WORK}/ncurses-${NCURSES_VER}"
+
+cd "${WORK}/ncurses-${NCURSES_VER}"
+
+msg "Configuring ncurses..."
+
+./configure \
+	--prefix=/usr \
+	--mandir=/usr/share/man \
+	--with-shared \
+	--without-debug \
+	--without-normal \
+	--with-cxx-shared \
+	--enable-pc-files \
+	--with-pkg-config-libdir=/usr/lib/pkgconfig
+
+msg "Building ncurses..."
+
+make
+
+msg "Installing ncurses..."
+
+make DESTDIR=$PWD/dest install
+
+install -vm755 $PWD/dest/usr/lib/libncursesw.so.6.5 /usr/lib
+
+rm -v $PWD/dest/usr/lib/libncursesw.so.6.5
+
+sed -e 's/^#if.*XOPEN.*$/#if 1/' -i dest/usr/include/curses.h
+
+cp -av dest/* /
+
+ln -sfv libncursesw.so /usr/lib/libcurses.so
+
+clean_work_dir
+
+##
+# sed Step
+##
+
+extract_file "${SOURCES}/sed-${SED_VER}.tar.xz" "${WORK}/sed-${SED_VER}"
+
+cd "${WORK}/sed-${SED_VER}"
+
+msg "Configuring sed..."
+
+./configure --prefix=/usr
+
+msg "Building sed..."
+
+make
+
+msg "Checking sed..."
+
+chown -R tester .
+
+su tester -c "PATH=$PATH make -k check"
+
+msg "Installing sed..."
+
+make install
+
+clean_work_dir
