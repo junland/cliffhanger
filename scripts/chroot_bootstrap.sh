@@ -14,11 +14,14 @@ SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 # Version variables
 ACL_VER="2.3.2"
 ATTR_VER="2.5.2"
+BASH_VER="5.3"
 BINUTILS_VER="2.45"
 BISON_VER="3.8.2"
 BZIP2_VER="1.0.8"
 COREUTILS_VER="9.7"
+DIFFUTILS_VER="3.12"
 FILE_VER="5.46"
+FINDUTILS_VER="4.10.0"
 FLEX_VER="2.6.4"
 GAWK_VER="5.3.2"
 GCC_VER="15.2.0"
@@ -29,22 +32,27 @@ GREP_VER="3.12"
 GZIP_VER="1.13"
 LIBCAP_VER="2.76"
 LIBXCRPT_VER="4.4.38"
+LINUX_VER="6.16.1"
 M4_VER="1.4.20"
+MAKE_VER="4.4.1"
 MPC_VER="1.3.1"
 MPFR_VER="4.2.2"
 NCURSES_VER="6.5-20250809"
+PATCH_VER="2.7.6"
 PERL_VER="5.42.0"
 PKGCONF_VER="2.5.1"
 PYTHON_VER="3.13.7"
 READLINE_VER="8.3"
 SED_VER="4.9"
 SHADOW_VER="4.18.0"
+TAR_VER="1.35"
 TEXINFO_VER="7.2"
 TZ_DATA_VER="2025b"
 UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
+LIBTOOL_VER="2.5.4"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -439,7 +447,7 @@ msg "Building glibc..."
 
 make
 
-msg "Testing glibc..."
+msg "Checking glibc..."
 
 # Disable io/tst-lchmod test as its known to fail in a chroot.
 sed -i "/\btst-lchmod /d" "${WORK}/glibc-${GLIBC_VER}/io/Makefile"
@@ -1193,6 +1201,62 @@ chown -R tester .
 su tester -c "PATH=$PATH make -k check"
 
 msg "Installing sed..."
+
+make install
+
+clean_work_dir
+
+##
+# bash Step
+##
+
+extract_file "${SOURCES}/bash-$BASH_VER.tar.gz" "${WORK}/bash-$BASH_VER"
+
+cd "${WORK}/bash-$BASH_VER"
+
+msg "Configuring bash..."
+
+./configure \
+	--prefix=/usr \
+	--without-bash-malloc \
+	--with-installed-readline \
+	--docdir=/usr/share/doc/bash-${BASH_VER}
+
+msg "Building bash..."
+
+make
+
+msg "Checking bash..."
+
+chown -R tester .
+
+msg "Installing bash..."
+
+make install
+
+clean_work_dir
+
+##
+# libtool Step
+##
+
+extract_file "${SOURCES}/libtool-${LIBTOOL_VER}.tar.xz" "${WORK}/libtool-${LIBTOOL_VER}"
+
+cd "${WORK}/libtool-${LIBTOOL_VER}"
+
+msg "Configuring libtool..."
+
+./configure --prefix=/usr
+
+msg "Building libtool..."
+
+make
+
+msg "Checking libtool..."
+
+make check
+
+msg "Installing libtool..."
 
 make install
 
