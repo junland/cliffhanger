@@ -1134,7 +1134,7 @@ clean_work_dir
 # ncurses Step
 ##
 
-extract_file "${SOURCES}/ncurses-${NCURSES_VER}.tar.gz" "${WORK}/ncurses-${NCURSES_VER}"
+extract_file "${SOURCES}/ncurses-${NCURSES_VER}.tgz" "${WORK}/ncurses-${NCURSES_VER}"
 
 cd "${WORK}/ncurses-${NCURSES_VER}"
 
