@@ -97,19 +97,19 @@ if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 	msg "Entering chroot in standalone mode..."
 	chroot "$CHROOT_PATH" /usr/bin/env -i \
 		HOME=/root \
-		TERM="$TERM" \
-		PS1='\u:\w\$ ' \
-		PATH=/usr/bin:/usr/sbin \
 		LC_ALL="$LC_ALL" \
+		PATH=/usr/bin:/usr/sbin \
+		PS1='\u:\w\$ ' \
+		TERM="$TERM" \
 		/bin/bash --login +h
 else
 	msg "Running bootstrap script inside chroot..."
 	chroot "$CHROOT_PATH" /usr/bin/env -i \
 		HOME=/root \
-		TERM="$TERM" \
-		PS1='\u:\w\$ ' \
-		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		LC_ALL="$LC_ALL" \
+		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
+		PS1='\u:\w\$ ' \
+		TERM="$TERM" \
 		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh"
 fi
 
