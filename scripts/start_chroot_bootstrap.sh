@@ -31,6 +31,7 @@ CHROOT_PATH="$1"
 CURL_OPTS="-L -s"
 ROOTFS="${CHROOT_PATH}"
 WORK="${ROOTFS}/tmp/work"
+STAGE="${2:-1}"
 SOURCES="${ROOTFS}/tmp/sources"
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 
@@ -110,7 +111,7 @@ else
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
-		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh"
+		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh ${STAGE}"
 fi
 
 # Cleanup will be called automatically by the trap

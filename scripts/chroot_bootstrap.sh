@@ -31,6 +31,7 @@ GMP_VER="6.3.0"
 GREP_VER="3.12"
 GZIP_VER="1.13"
 LIBCAP_VER="2.76"
+LIBTOOL_VER="2.5.4"
 LIBXCRPT_VER="4.4.38"
 LINUX_VER="6.16.1"
 M4_VER="1.4.20"
@@ -52,7 +53,6 @@ UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
-LIBTOOL_VER="2.5.4"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -134,44 +134,46 @@ export LC_ALL
 
 clean_work_dir
 
-msg "Creating standard directory tree in chroot..."
+bootstrap_stage_1() {
 
-mkdir -pv /{boot,home,mnt,opt,srv}
-mkdir -pv /etc/{opt,sysconfig,ld.so.conf.d}
-mkdir -pv /lib/firmware
-mkdir -pv /media/{floppy,cdrom}
-mkdir -pv /usr/{,local/}{include,src}
-mkdir -pv /usr/local/{bin,lib,sbin}
-mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
-mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}
-mkdir -pv /usr/{,local/}share/man/man{1..8}
-mkdir -pv /var/{cache,local,log,mail,opt,spool}
-mkdir -pv /var/lib/{color,misc,locate,hwclock}
+	msg "Creating standard directory tree in chroot..."
 
-install -dv -m 0750 /root
-install -dv -m 1777 /tmp /var/tmp
-install -vdm 755 /{dev,proc,run/{media/{floppy,cdrom},lock},sys}
-install -vdm 755 /{boot,etc/{opt,sysconfig},home,mnt}
-install -vdm 755 /usr/{,local/}{bin,include,lib,sbin,src}
-install -vdm 755 /usr/libexec
-install -vdm 755 /etc/profile.d
-install -vdm 755 /usr/lib/debug/{lib,bin,sbin,usr}
+	mkdir -pv /{boot,home,mnt,opt,srv}
+	mkdir -pv /etc/{opt,sysconfig,ld.so.conf.d}
+	mkdir -pv /lib/firmware
+	mkdir -pv /media/{floppy,cdrom}
+	mkdir -pv /usr/{,local/}{include,src}
+	mkdir -pv /usr/local/{bin,lib,sbin}
+	mkdir -pv /usr/{,local/}share/{color,dict,doc,info,locale,man}
+	mkdir -pv /usr/{,local/}share/{misc,terminfo,zoneinfo}
+	mkdir -pv /usr/{,local/}share/man/man{1..8}
+	mkdir -pv /var/{cache,local,log,mail,opt,spool}
+	mkdir -pv /var/lib/{color,misc,locate,hwclock}
 
-msg "Creating essential symlinks..."
+	install -dv -m 0750 /root
+	install -dv -m 1777 /tmp /var/tmp
+	install -vdm 755 /{dev,proc,run/{media/{floppy,cdrom},lock},sys}
+	install -vdm 755 /{boot,etc/{opt,sysconfig},home,mnt}
+	install -vdm 755 /usr/{,local/}{bin,include,lib,sbin,src}
+	install -vdm 755 /usr/libexec
+	install -vdm 755 /etc/profile.d
+	install -vdm 755 /usr/lib/debug/{lib,bin,sbin,usr}
 
-ln -sfv /run /var/run
-ln -sfv /run/lock /var/lock
-ln -sfv bash /bin/sh
-ln -sv /proc/self/mounts /etc/mtab
+	msg "Creating essential symlinks..."
 
-msg "Creating essential files..."
+	ln -sfv /run /var/run
+	ln -sfv /run/lock /var/lock
+	ln -sfv bash /bin/sh
+	ln -sv /proc/self/mounts /etc/mtab
 
-cat >/etc/hosts <<EOF
+	msg "Creating essential files..."
+
+	cat >/etc/hosts <<EOF
 127.0.0.1  localhost $(hostname)
 ::1        localhost
 EOF
 
-cat >/etc/passwd <<"EOF"
+	cat >/etc/passwd <<"EOF"
 root:x:0:0:root:/root:/bin/bash
 bin:x:1:1:bin:/dev/null:/usr/bin/false
 daemon:x:6:6:Daemon User:/dev/null:/usr/bin/false
@@ -181,7 +183,7 @@ nobody:x:65534:65534:Unprivileged User:/dev/null:/usr/bin/false
 tester:x:101:101::/home/tester:/bin/bash
 EOF
 
-cat >/etc/group <<"EOF"
+	cat >/etc/group <<"EOF"
 root:x:0:
 bin:x:1:daemon
 sys:x:2:
@@ -210,7 +212,7 @@ nogroup:x:65534:
 tester:x:101:
 EOF
 
-cat >/etc/nsswitch.conf <<"EOF"
+	cat >/etc/nsswitch.conf <<"EOF"
 # Begin /etc/nsswitch.conf
 
 passwd: files
@@ -228,7 +230,7 @@ rpc: files
 # End /etc/nsswitch.conf
 EOF
 
-cat >/etc/os-release <<"EOF"
+	cat >/etc/os-release <<"EOF"
 NAME="Bootstrap Linux Toolchain"
 VERSION="0.0.0"
 ID=bootstraplinux
@@ -240,232 +242,232 @@ BUG_REPORT_URL="https://www.linuxfromscratch.org/bugreport.html"
 SUPPORT_URL="https://www.linuxfromscratch.org/mail.html"
 EOF
 
-touch /var/log/{btmp,lastlog,faillog,wtmp}
-chgrp -v utmp /var/log/lastlog
-chmod -v 664 /var/log/lastlog
-chmod -v 600 /var/log/btmp
+	touch /var/log/{btmp,lastlog,faillog,wtmp}
+	chgrp -v utmp /var/log/lastlog
+	chmod -v 664 /var/log/lastlog
+	chmod -v 600 /var/log/btmp
 
-install -o tester -d /home/tester
+	install -o tester -d /home/tester
 
-##
-# gettext Step
-##
+	##
+	# gettext Step
+	##
 
-extract_file "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz" "${WORK}/gettext-${GETTEXT_VER}"
+	extract_file "${SOURCES}/gettext-${GETTEXT_VER}.tar.xz" "${WORK}/gettext-${GETTEXT_VER}"
 
-cd "${WORK}/gettext-${GETTEXT_VER}"
+	cd "${WORK}/gettext-${GETTEXT_VER}"
 
-msg "Configuring gettext..."
+	msg "Configuring gettext..."
 
-./configure --disable-shared
+	./configure --disable-shared
 
-msg "Building gettext..."
+	msg "Building gettext..."
 
-make
+	make
 
-msg "Installing gettext..."
+	msg "Installing gettext..."
 
-cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
+	cp -v gettext-tools/src/{msgfmt,msgmerge,xgettext} /usr/bin
 
-clean_work_dir
+	clean_work_dir
 
-##
-# bison Step
-##
+	##
+	# bison Step
+	##
 
-extract_file "${SOURCES}/bison-${BISON_VER}.tar.xz" "${WORK}/bison-${BISON_VER}"
+	extract_file "${SOURCES}/bison-${BISON_VER}.tar.xz" "${WORK}/bison-${BISON_VER}"
 
-cd "${WORK}/bison-${BISON_VER}"
+	cd "${WORK}/bison-${BISON_VER}"
 
-msg "Configuring bison..."
+	msg "Configuring bison..."
 
-./configure --prefix=/usr --docdir=/usr/share/doc/bison-${BISON_VER}
+	./configure --prefix=/usr --docdir=/usr/share/doc/bison-${BISON_VER}
 
-msg "Building bison..."
+	msg "Building bison..."
 
-make
+	make
 
-msg "Installing bison..."
+	msg "Installing bison..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# Perl Step
-##
+	##
+	# Perl Step
+	##
 
-extract_file "${SOURCES}/perl-${PERL_VER}.tar.xz" "${WORK}/perl-${PERL_VER}"
+	extract_file "${SOURCES}/perl-${PERL_VER}.tar.xz" "${WORK}/perl-${PERL_VER}"
 
-cd "${WORK}/perl-${PERL_VER}"
+	cd "${WORK}/perl-${PERL_VER}"
 
-msg "Configuring Perl..."
+	msg "Configuring Perl..."
 
-sh Configure -des \
-	-D prefix=/usr \
-	-D vendorprefix=/usr \
-	-D useshrplib \
-	-D privlib=/usr/lib/perl5/5.42/core_perl \
-	-D archlib=/usr/lib/perl5/5.42/core_perl \
-	-D sitelib=/usr/lib/perl5/5.42/site_perl \
-	-D sitearch=/usr/lib/perl5/5.42/site_perl \
-	-D vendorlib=/usr/lib/perl5/5.42/vendor_perl \
-	-D vendorarch=/usr/lib/perl5/5.42/vendor_perl
+	sh Configure -des \
+		-D prefix=/usr \
+		-D vendorprefix=/usr \
+		-D useshrplib \
+		-D privlib=/usr/lib/perl5/5.42/core_perl \
+		-D archlib=/usr/lib/perl5/5.42/core_perl \
+		-D sitelib=/usr/lib/perl5/5.42/site_perl \
+		-D sitearch=/usr/lib/perl5/5.42/site_perl \
+		-D vendorlib=/usr/lib/perl5/5.42/vendor_perl \
+		-D vendorarch=/usr/lib/perl5/5.42/vendor_perl
 
-msg "Building Perl..."
+	msg "Building Perl..."
 
-make
+	make
 
-msg "Installing Perl..."
+	msg "Installing Perl..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# Python Step
-##
+	##
+	# Python Step
+	##
 
-extract_file "${SOURCES}/Python-${PYTHON_VER}.tar.xz" "${WORK}/Python-${PYTHON_VER}"
+	extract_file "${SOURCES}/Python-${PYTHON_VER}.tar.xz" "${WORK}/Python-${PYTHON_VER}"
 
-cd "${WORK}/Python-${PYTHON_VER}"
+	cd "${WORK}/Python-${PYTHON_VER}"
 
-msg "Configuring Python..."
+	msg "Configuring Python..."
 
-./configure \
-	--prefix=/usr \
-	--enable-shared \
-	--without-ensurepip \
-	--without-static-libpython
-
-msg "Building Python..."
-
-make
-
-msg "Installing Python..."
-
-make install
-
-clean_work_dir
-
-##
-# Texinfo Step
-##
-
-extract_file "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz" "${WORK}/texinfo-${TEXINFO_VER}"
-
-cd "${WORK}/texinfo-${TEXINFO_VER}"
-
-msg "Configuring texinfo..."
-
-./configure --prefix=/usr
-
-msg "Building texinfo..."
-
-make
-
-msg "Installing texinfo..."
-
-make install
-
-clean_work_dir
-
-##
-# util-linux Step
-##
-
-extract_file "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${WORK}/util-linux-${UTIL_LINUX_VER}"
-
-cd "${WORK}/util-linux-${UTIL_LINUX_VER}"
-
-msg "Configuring util-linux..."
-
-ADJTIME_PATH=/var/lib/hwclock/adjtime \
 	./configure \
-	--disable-chfn-chsh \
-	--disable-liblastlog2 \
-	--disable-login \
-	--disable-nologin \
-	--disable-pylibmount \
-	--disable-runuser \
-	--disable-setpriv \
-	--disable-static \
-	--disable-su \
-	--libdir=/usr/lib \
-	--runstatedir=/run \
-	--without-python
+		--prefix=/usr \
+		--enable-shared \
+		--without-ensurepip \
+		--without-static-libpython
 
-msg "Building util-linux..."
+	msg "Building Python..."
 
-make
+	make
 
-msg "Installing util-linux..."
+	msg "Installing Python..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# Cleanup Step
-##
+	##
+	# Texinfo Step
+	##
 
-msg "Cleaning up unnecessary files..."
+	extract_file "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz" "${WORK}/texinfo-${TEXINFO_VER}"
 
-rm -rf /usr/share/{info,man,doc}/*
+	cd "${WORK}/texinfo-${TEXINFO_VER}"
 
-find /usr/{lib,libexec} -name \*.la -delete
+	msg "Configuring texinfo..."
 
-##
-# glibc Step
-##
+	./configure --prefix=/usr
 
-extract_file "${SOURCES}/glibc-${GLIBC_VER}.tar.gz" "${WORK}/glibc-${GLIBC_VER}"
+	msg "Building texinfo..."
 
-cd "${WORK}/glibc-${GLIBC_VER}"
+	make
 
-msg "Patching glibc..."
+	msg "Installing texinfo..."
 
-patch -Np1 -i "${SOURCES}/glibc-${GLIBC_VER}-fhs-1.patch"
+	make install
 
-msg "Configuring glibc..."
+	clean_work_dir
 
-mkdir -v build
+	##
+	# util-linux Step
+	##
 
-cd build
+	extract_file "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${WORK}/util-linux-${UTIL_LINUX_VER}"
 
-echo "rootsbindir=/usr/sbin" >configparms
+	cd "${WORK}/util-linux-${UTIL_LINUX_VER}"
 
-../configure \
-	--prefix=/usr \
-	--disable-werror \
-	--disable-nscd \
-	libc_cv_slibdir=/usr/lib \
-	--enable-stack-protector=strong \
-	--enable-kernel=5.4
+	msg "Configuring util-linux..."
 
-msg "Building glibc..."
+	ADJTIME_PATH=/var/lib/hwclock/adjtime \
+		./configure \
+		--disable-chfn-chsh \
+		--disable-liblastlog2 \
+		--disable-login \
+		--disable-nologin \
+		--disable-pylibmount \
+		--disable-runuser \
+		--disable-setpriv \
+		--disable-static \
+		--disable-su \
+		--libdir=/usr/lib \
+		--runstatedir=/run \
+		--without-python
 
-make
+	msg "Building util-linux..."
 
-msg "Checking glibc..."
+	make
 
-# Disable io/tst-lchmod test as its known to fail in a chroot.
-sed -i "/\btst-lchmod /d" "${WORK}/glibc-${GLIBC_VER}/io/Makefile"
+	msg "Installing util-linux..."
 
-TIMEOUTFACTOR=16 make check
+	make install
 
-# Disable outdated sanity check.
-sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
+	clean_work_dir
 
-msg "Installing glibc..."
+	##
+	# Cleanup Step
+	##
 
-make install
+	msg "Cleaning up unnecessary files..."
 
-#  Fix a hardcoded path to the executable loader in the ldd script
-sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
+	rm -rf /usr/share/{info,man,doc}/*
 
-# Add ld.so.conf
-cat >/etc/ld.so.conf <<"EOF"
+	find /usr/{lib,libexec} -name \*.la -delete
+
+	##
+	# glibc Step
+	##
+
+	extract_file "${SOURCES}/glibc-${GLIBC_VER}.tar.gz" "${WORK}/glibc-${GLIBC_VER}"
+
+	cd "${WORK}/glibc-${GLIBC_VER}"
+
+	msg "Patching glibc..."
+
+	patch -Np1 -i "${SOURCES}/glibc-${GLIBC_VER}-fhs-1.patch"
+
+	msg "Configuring glibc..."
+
+	mkdir -v build
+
+	cd build
+
+	echo "rootsbindir=/usr/sbin" >configparms
+
+	../configure \
+		--prefix=/usr \
+		--disable-werror \
+		--disable-nscd \
+		libc_cv_slibdir=/usr/lib \
+		--enable-stack-protector=strong \
+		--enable-kernel=5.4
+
+	msg "Building glibc..."
+
+	make
+
+	msg "Checking glibc..."
+
+	# Disable io/tst-lchmod test as its known to fail in a chroot.
+	sed -i "/\btst-lchmod /d" "${WORK}/glibc-${GLIBC_VER}/io/Makefile"
+
+	TIMEOUTFACTOR=16 make check
+
+	# Disable outdated sanity check.
+	sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
+
+	msg "Installing glibc..."
+
+	make install
+
+	#  Fix a hardcoded path to the executable loader in the ldd script
+	sed '/RTLDLIST=/s@/usr@@g' -i /usr/bin/ldd
+
+	# Add ld.so.conf
+	cat >/etc/ld.so.conf <<"EOF"
 # Begin /etc/ld.so.conf
 /usr/local/lib
 /opt/lib
@@ -475,789 +477,807 @@ include /etc/ld.so.conf.d/*.conf
 # End /etc/ld.so.conf
 EOF
 
-##
-# Timezone Data Step
-##
+	##
+	# Timezone Data Step
+	##
 
-extract_file "${SOURCES}/tzdata${TZ_DATA_VER}.tar.gz" "${WORK}/tzdata${TZ_DATA_VER}"
+	extract_file "${SOURCES}/tzdata${TZ_DATA_VER}.tar.gz" "${WORK}/tzdata${TZ_DATA_VER}"
 
-cd "${WORK}/tzdata${TZ_DATA_VER}"
+	cd "${WORK}/tzdata${TZ_DATA_VER}"
 
-msg "Configuring timezone data..."
+	msg "Configuring timezone data..."
 
-ZONE_INFO=/usr/share/zoneinfo
-ZONES="etcetera southamerica northamerica europe africa antarctica asia australasia backward"
-ZONE_DEFAULT="America/New_York"
-mkdir -pv $ZONE_INFO/{posix,right}
+	ZONE_INFO=/usr/share/zoneinfo
+	ZONES="etcetera southamerica northamerica europe africa antarctica asia australasia backward"
+	ZONE_DEFAULT="America/New_York"
+	mkdir -pv $ZONE_INFO/{posix,right}
 
-for tz in $ZONES; do
-	msg "Installing timezone data for $tz..."
-	zic -L /dev/null -d $ZONE_INFO ${tz}
-	zic -L /dev/null -d $ZONE_INFO/posix ${tz}
-	zic -L leapseconds -d $ZONE_INFO/right ${tz}
-done
+	for tz in $ZONES; do
+		msg "Installing timezone data for $tz..."
+		zic -L /dev/null -d $ZONE_INFO ${tz}
+		zic -L /dev/null -d $ZONE_INFO/posix ${tz}
+		zic -L leapseconds -d $ZONE_INFO/right ${tz}
+	done
 
-cp -v zone.tab zone1970.tab iso3166.tab $ZONE_INFO
+	cp -v zone.tab zone1970.tab iso3166.tab $ZONE_INFO
 
-zic -d $ZONE_INFO -p $ZONE_DEFAULT
+	zic -d $ZONE_INFO -p $ZONE_DEFAULT
 
-ln -sfv /usr/share/zoneinfo/$ZONE_DEFAULT /etc/localtime
+	ln -sfv /usr/share/zoneinfo/$ZONE_DEFAULT /etc/localtime
 
-unset ZONE_INFO tz ZONE_DEFAULT ZONES
+	unset ZONE_INFO tz ZONE_DEFAULT ZONES
 
-clean_work_dir
+	clean_work_dir
 
-##
-# zlib Step
-##
+	##
+	# zlib Step
+	##
 
-extract_file "${SOURCES}/zlib-${ZLIB_VER}.tar.xz" "${WORK}/zlib-${ZLIB_VER}"
+	extract_file "${SOURCES}/zlib-${ZLIB_VER}.tar.xz" "${WORK}/zlib-${ZLIB_VER}"
 
-cd "${WORK}/zlib-${ZLIB_VER}"
+	cd "${WORK}/zlib-${ZLIB_VER}"
 
-msg "Configuring zlib..."
+	msg "Configuring zlib..."
 
-./configure --prefix=/usr
+	./configure --prefix=/usr
 
-msg "Building zlib..."
+	msg "Building zlib..."
 
-make
+	make
 
-msg "Checking zlib..."
+	msg "Checking zlib..."
 
-make test
+	make test
 
-msg "Installing zlib..."
+	msg "Installing zlib..."
 
-make install
+	make install
 
-rm -fv /usr/lib/libz.a
+	rm -fv /usr/lib/libz.a
 
-clean_work_dir
+	clean_work_dir
 
-##
-# bzip2 Step
-##
+	##
+	# bzip2 Step
+	##
 
-extract_file "${SOURCES}/bzip2-${BZIP2_VER}.tar.gz" "${WORK}/bzip2-${BZIP2_VER}"
+	extract_file "${SOURCES}/bzip2-${BZIP2_VER}.tar.gz" "${WORK}/bzip2-${BZIP2_VER}"
 
-cd "${WORK}/bzip2-${BZIP2_VER}"
+	cd "${WORK}/bzip2-${BZIP2_VER}"
 
-msg "Configuring bzip2..."
+	msg "Configuring bzip2..."
 
-sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
+	sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 
-make -f Makefile-libbz2_so
+	make -f Makefile-libbz2_so
 
-make clean
+	make clean
 
-msg "Building bzip2..."
+	msg "Building bzip2..."
 
-make
+	make
 
-msg "Installing bzip2..."
+	msg "Installing bzip2..."
 
-make install PREFIX=/usr
+	make install PREFIX=/usr
 
-cp -av libbz2.so.* /usr/lib
-cp -v bzip2-shared /usr/bin/bzip2
-ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so
+	cp -av libbz2.so.* /usr/lib
+	cp -v bzip2-shared /usr/bin/bzip2
+	ln -sv libbz2.so.1.0.8 /usr/lib/libbz2.so
 
-for i in /usr/bin/{bzcat,bunzip2}; do
-	ln -sfv bzip2 $i
-done
+	for i in /usr/bin/{bzcat,bunzip2}; do
+		ln -sfv bzip2 $i
+	done
 
-rm -fv /usr/lib/libbz2.a
+	rm -fv /usr/lib/libbz2.a
 
-clean_work_dir
+	clean_work_dir
 
-##
-# xz Step
-##
+	##
+	# xz Step
+	##
 
-extract_file "${SOURCES}/xz-${XZ_VER}.tar.xz" "${WORK}/xz-${XZ_VER}"
+	extract_file "${SOURCES}/xz-${XZ_VER}.tar.xz" "${WORK}/xz-${XZ_VER}"
 
-cd "${WORK}/xz-${XZ_VER}"
+	cd "${WORK}/xz-${XZ_VER}"
 
-msg "Configuring xz..."
+	msg "Configuring xz..."
 
-./configure --prefix=/usr \
-	--disable-static \
-	--docdir=/usr/share/doc/xz-${XZ_VER}
+	./configure --prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/xz-${XZ_VER}
 
-msg "Building xz..."
+	msg "Building xz..."
 
-make
+	make
 
-msg "Checking xz..."
+	msg "Checking xz..."
 
-make check
+	make check
 
-msg "Installing xz..."
+	msg "Installing xz..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# zstd Step
-##
+	##
+	# zstd Step
+	##
 
-extract_file "${SOURCES}/zstd-${ZSTD_VER}.tar.gz" "${WORK}/zstd-${ZSTD_VER}"
+	extract_file "${SOURCES}/zstd-${ZSTD_VER}.tar.gz" "${WORK}/zstd-${ZSTD_VER}"
 
-cd "${WORK}/zstd-${ZSTD_VER}"
+	cd "${WORK}/zstd-${ZSTD_VER}"
 
-msg "Building zstd..."
+	msg "Building zstd..."
 
-make prefix=/usr
+	make prefix=/usr
 
-msg "Checking zstd..."
+	msg "Checking zstd..."
 
-make check
+	make check
 
-msg "Installing zstd..."
+	msg "Installing zstd..."
 
-make prefix=/usr install
+	make prefix=/usr install
 
-rm -v /usr/lib/libzstd.a
+	rm -v /usr/lib/libzstd.a
 
-clean_work_dir
+	clean_work_dir
 
-##
-# file Step
-##
+	##
+	# file Step
+	##
 
-extract_file "${SOURCES}/file-${FILE_VER}.tar.gz" "${WORK}/file-${FILE_VER}"
+	extract_file "${SOURCES}/file-${FILE_VER}.tar.gz" "${WORK}/file-${FILE_VER}"
 
-cd "${WORK}/file-${FILE_VER}"
+	cd "${WORK}/file-${FILE_VER}"
 
-msg "Configuring file..."
+	msg "Configuring file..."
 
-./configure --prefix=/usr
+	./configure --prefix=/usr
 
-msg "Building file..."
+	msg "Building file..."
 
-make
+	make
 
-msg "Checking file..."
+	msg "Checking file..."
 
-make check
+	make check
 
-msg "Installing file..."
+	msg "Installing file..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# readline Step
-##
+	##
+	# readline Step
+	##
 
-extract_file "${SOURCES}/readline-${READLINE_VER}.tar.gz" "${WORK}/readline-${READLINE_VER}"
+	extract_file "${SOURCES}/readline-${READLINE_VER}.tar.gz" "${WORK}/readline-${READLINE_VER}"
 
-cd "${WORK}/readline-${READLINE_VER}"
+	cd "${WORK}/readline-${READLINE_VER}"
 
-msg "Configuring readline..."
+	msg "Configuring readline..."
 
-sed -i '/MV.*old/d' Makefile.in
-sed -i '/{OLDSUFF}/c:' support/shlib-install
-sed -i 's/-Wl,-rpath,[^ ]*//' support/shobj-conf
+	sed -i '/MV.*old/d' Makefile.in
+	sed -i '/{OLDSUFF}/c:' support/shlib-install
+	sed -i 's/-Wl,-rpath,[^ ]*//' support/shobj-conf
 
-./configure --prefix=/usr \
-	--disable-static \
-	--with-curses \
-	--docdir=/usr/share/doc/readline-${READLINE_VER}
+	./configure --prefix=/usr \
+		--disable-static \
+		--with-curses \
+		--docdir=/usr/share/doc/readline-${READLINE_VER}
 
-msg "Building readline..."
+	msg "Building readline..."
 
-make SHLIB_LIBS="-lncursesw"
+	make SHLIB_LIBS="-lncursesw"
 
-msg "Installing readline..."
+	msg "Installing readline..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# m4 Step
-##
+	##
+	# m4 Step
+	##
 
-extract_file "${SOURCES}/m4-${M4_VER}.tar.xz" "${WORK}/m4-${M4_VER}"
+	extract_file "${SOURCES}/m4-${M4_VER}.tar.xz" "${WORK}/m4-${M4_VER}"
 
-cd "${WORK}/m4-${M4_VER}"
+	cd "${WORK}/m4-${M4_VER}"
 
-msg "Configuring m4..."
+	msg "Configuring m4..."
 
-./configure --prefix=/usr
+	./configure --prefix=/usr
 
-msg "Building m4..."
+	msg "Building m4..."
 
-make
+	make
 
-msg "Checking m4..."
+	msg "Checking m4..."
 
-make check
+	make check
 
-msg "Installing m4..."
+	msg "Installing m4..."
 
-make install
+	make install
 
-clean_work_dir
+	clean_work_dir
 
-##
-# flex Step
-##
+	##
+	# flex Step
+	##
 
-extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
+	extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
 
-cd "${WORK}/flex-${FLEX_VER}"
+	cd "${WORK}/flex-${FLEX_VER}"
 
-msg "Configuring flex..."
+	msg "Configuring flex..."
 
-./configure \
-	--prefix=/usr \
-	--docdir=/usr/share/doc/flex-${FLEX_VER} \
-	--disable-static
+	./configure \
+		--prefix=/usr \
+		--docdir=/usr/share/doc/flex-${FLEX_VER} \
+		--disable-static
 
-msg "Building flex..."
+	msg "Building flex..."
 
-make
+	make
 
-msg "Checking flex..."
+	msg "Checking flex..."
 
-make check
+	make check
 
-msg "Installing flex..."
+	msg "Installing flex..."
 
-make install
+	make install
 
-ln -sv flex /usr/bin/lex
+	ln -sv flex /usr/bin/lex
 
-clean_work_dir
+	clean_work_dir
 
-##
-# pkgconf Step
-##
+	##
+	# pkgconf Step
+	##
 
-extract_file "${SOURCES}/pkgconf-${PKGCONF_VER}.tar.xz" "${WORK}/pkgconf-${PKGCONF_VER}"
+	extract_file "${SOURCES}/pkgconf-${PKGCONF_VER}.tar.xz" "${WORK}/pkgconf-${PKGCONF_VER}"
 
-cd "${WORK}/pkgconf-${PKGCONF_VER}"
+	cd "${WORK}/pkgconf-${PKGCONF_VER}"
 
-msg "Configuring pkgconf..."
+	msg "Configuring pkgconf..."
 
-./configure \
-	--prefix=/usr \
-	--disable-static \
-	--docdir=/usr/share/doc/pkgconf-${PKGCONF_VER}
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/pkgconf-${PKGCONF_VER}
 
-msg "Building pkgconf..."
+	msg "Building pkgconf..."
 
-make
+	make
 
-msg "Installing pkgconf..."
+	msg "Installing pkgconf..."
 
-make install
+	make install
 
-ln -sv pkgconf /usr/bin/pkg-config
+	ln -sv pkgconf /usr/bin/pkg-config
 
-clean_work_dir
+	clean_work_dir
 
-##
-# binutils Step
-##
+	##
+	# binutils Step
+	##
 
-extract_file "${SOURCES}/binutils-${BINUTILS_VER}.tar.xz" "${WORK}/binutils-${BINUTILS_VER}"
+	extract_file "${SOURCES}/binutils-${BINUTILS_VER}.tar.xz" "${WORK}/binutils-${BINUTILS_VER}"
 
-cd "${WORK}/binutils-${BINUTILS_VER}"
+	cd "${WORK}/binutils-${BINUTILS_VER}"
 
-msg "Configuring binutils..."
+	msg "Configuring binutils..."
 
-mkdir -v build
+	mkdir -v build
 
-cd build
+	cd build
 
-../configure \
-	--prefix=/usr \
-	--sysconfdir=/etc \
-	--enable-ld=default \
-	--enable-plugins \
-	--enable-shared \
-	--disable-werror \
-	--enable-64-bit-bfd \
-	--enable-new-dtags \
-	--with-system-zlib \
-	--enable-default-hash-style=gnu
+	../configure \
+		--prefix=/usr \
+		--sysconfdir=/etc \
+		--enable-ld=default \
+		--enable-plugins \
+		--enable-shared \
+		--disable-werror \
+		--enable-64-bit-bfd \
+		--enable-new-dtags \
+		--with-system-zlib \
+		--enable-default-hash-style=gnu
 
-msg "Building binutils..."
+	msg "Building binutils..."
 
-make tooldir=/usr
+	make tooldir=/usr
 
-msg "Checking binutils..."
+	msg "Checking binutils..."
 
-make -k check
+	make -k check
 
-# Check for build errors and exit failures are found in the files
-grep '^FAIL:' $(find -name '*.log') && {
-	msg "Error: Some binutils tests failed."
-	exit 1
+	# Check for build errors and exit failures are found in the files
+	grep '^FAIL:' $(find -name '*.log') && {
+		msg "Error: Some binutils tests failed."
+		exit 1
+	}
+
+	msg "Installing binutils..."
+
+	make tooldir=/usr install
+
+	rm -rfv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a /usr/share/doc/gprofng/
+
+	clean_work_dir
+
+	##
+	# gmp Step
+	##
+
+	extract_file "${SOURCES}/gmp-${GMP_VER}.tar.xz" "${WORK}/gmp-${GMP_VER}"
+
+	cd "${WORK}/gmp-${GMP_VER}"
+
+	msg "Configuring gmp..."
+
+	sed -i '/long long t1;/,+1s/()/(...)/' configure
+
+	./configure \
+		--prefix=/usr \
+		--enable-cxx \
+		--disable-static \
+		--docdir=/usr/share/doc/gmp-${GMP_VER}
+
+	msg "Building gmp..."
+
+	make
+
+	msg "Checking gmp..."
+
+	make check 2>&1 | tee gmp-check-log
+
+	# Also make sure 199 tests passed
+	if awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log; then
+		msg "All gmp tests passed."
+	else
+		msg "Error: Some gmp tests failed."
+		exit 1
+	fi
+
+	msg "Installing gmp..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# mpfr Step
+	##
+
+	extract_file "${SOURCES}/mpfr-${MPFR_VER}.tar.xz" "${WORK}/mpfr-${MPFR_VER}"
+
+	cd "${WORK}/mpfr-${MPFR_VER}"
+
+	msg "Configuring mpfr..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--enable-thread-safe \
+		--docdir=/usr/share/doc/mpfr-${MPFR_VER}
+
+	msg "Building mpfr..."
+
+	make
+
+	msg "Checking mpfr..."
+
+	make check
+
+	msg "Installing mpfr..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# mpc Step
+	##
+
+	extract_file "${SOURCES}/mpc-${MPC_VER}.tar.gz" "${WORK}/mpc-${MPC_VER}"
+
+	cd "${WORK}/mpc-${MPC_VER}"
+
+	msg "Configuring mpc..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/mpc-${MPC_VER}
+
+	msg "Building mpc..."
+
+	make
+
+	msg "Checking mpc..."
+
+	make check
+
+	msg "Installing mpc..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# attr Step
+	##
+
+	extract_file "${SOURCES}/attr-${ATTR_VER}.tar.gz" "${WORK}/attr-${ATTR_VER}"
+
+	cd "${WORK}/attr-${ATTR_VER}"
+
+	msg "Configuring attr..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/attr-${ATTR_VER}
+
+	msg "Building attr..."
+
+	make
+
+	msg "Checking attr..."
+
+	make check
+
+	msg "Installing attr..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# acl Step
+	##
+
+	extract_file "${SOURCES}/acl-${ACL_VER}.tar.xz" "${WORK}/acl-${ACL_VER}"
+
+	cd "${WORK}/acl-${ACL_VER}"
+
+	msg "Configuring acl..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/acl-${ACL_VER}
+
+	msg "Building acl..."
+
+	make
+
+	msg "Checking acl..."
+
+	# Disable test/cp.test as it fails in a chroot environment
+	sed -e 's|test/cp.test||' -i test/Makemodule.am Makefile.in Makefile
+
+	make check
+
+	msg "Installing acl..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# libcap Step
+	##
+
+	extract_file "${SOURCES}/libcap-${LIBCAP_VER}.tar.xz" "${WORK}/libcap-${LIBCAP_VER}"
+
+	cd "${WORK}/libcap-${LIBCAP_VER}"
+
+	msg "Configuring libcap..."
+
+	sed -i '/install -m.*STA/d' libcap/Makefile
+
+	msg "Building libcap..."
+
+	make prefix=/usr lib=lib
+
+	msg "Checking libcap..."
+
+	make test
+
+	msg "Installing libcap..."
+
+	make prefix=/usr lib=lib install
+
+	clean_work_dir
+
+	##
+	# libxcrypt Step
+	##
+
+	extract_file "${SOURCES}/libxcrypt-${LIBXCRPT_VER}.tar.xz" "${WORK}/libxcrypt-${LIBXCRPT_VER}"
+
+	cd "${WORK}/libxcrypt-${LIBXCRPT_VER}"
+
+	msg "Configuring libxcrypt..."
+
+	./configure --prefix=/usr \
+		--enable-hashes=strong,glibc \
+		--enable-obsolete-api=no \
+		--disable-static \
+		--disable-failure-tokens
+
+	msg "Building libxcrypt..."
+
+	make
+
+	msg "Checking libxcrypt..."
+
+	make check
+
+	msg "Installing libxcrypt..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# shadow Step
+	##
+
+	extract_file "${SOURCES}/shadow-${SHADOW_VER}.tar.xz" "${WORK}/shadow-${SHADOW_VER}"
+
+	cd "${WORK}/shadow-${SHADOW_VER}"
+
+	msg "Configuring shadow..."
+
+	sed -i 's/groups$(EXEEXT) //' src/Makefile.in
+	find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
+	find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
+	find man -name Makefile.in -exec sed -i 's/passwd\.5 / /' {} \;
+
+	sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD YESCRYPT:' \
+		-e 's:/var/spool/mail:/var/mail:' \
+		-e '/PATH=/{s@/sbin:@@;s@/bin:@@}' \
+		-i etc/login.defs
+
+	touch /usr/bin/passwd
+
+	./configure \
+		--sysconfdir=/etc \
+		--disable-static \
+		--with-{b,yes}crypt \
+		--without-libbsd \
+		--with-group-name-max-length=32
+
+	msg "Building shadow..."
+
+	make
+
+	msg "Installing shadow..."
+
+	make exec_prefix=/usr install
+
+	clean_work_dir
+
+	##
+	# gcc Step
+	##
+
+	extract_file "${SOURCES}/gcc-${GCC_VER}.tar.xz" "${WORK}/gcc-${GCC_VER}"
+
+	cd "${WORK}/gcc-${GCC_VER}"
+
+	msg "Configuring gcc..."
+
+	case $(uname -m) in
+	x86_64)
+		sed -e '/m64=/s/lib64/lib/' \
+			-i.orig gcc/config/i386/t-linux64
+		;;
+	aarch64)
+		sed -e '/m64=/s/lib64/lib/' \
+			-i.orig gcc/config/aarch64/t-linux64
+		;;
+	esac
+
+	mkdir -v build
+
+	cd build
+
+	LD=ld \
+		../configure \
+		--prefix=/usr \
+		--enable-languages=c,c++ \
+		--enable-default-pie \
+		--enable-default-ssp \
+		--enable-host-pie \
+		--disable-multilib \
+		--disable-bootstrap \
+		--disable-fixincludes \
+		--with-system-zlib
+
+	msg "Building gcc..."
+
+	make
+
+	msg "Setting up for gcc checks..."
+
+	ulimit -s -H unlimited
+
+	sed -e '/cpython/d' -i ../gcc/testsuite/gcc.dg/plugin/plugin.exp
+
+	msg "Checking gcc..."
+
+	chown -R tester .
+
+	su tester -c "PATH=$PATH make -k check"
+
+	msg "Extractring gcc check results..."
+
+	../contrib/test_summary
+
+	msg "Installing gcc..."
+
+	make install
+
+	chown -v -R root:root /usr/lib/gcc/$(gcc -dumpmachine)/15.2.0/include{,-fixed}
+
+	ln -svr /usr/bin/cpp /usr/lib
+
+	ln -svf ../../libexec/gcc/$(gcc -dumpmachine)/15.2.0/liblto_plugin.so /usr/lib/bfd-plugins/
+
+	mkdir -pv /usr/share/gdb/auto-load/usr/lib
+
+	mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
+
+	clean_work_dir
+
+	##
+	# ncurses Step
+	##
+
+	extract_file "${SOURCES}/ncurses-${NCURSES_VER}.tgz" "${WORK}/ncurses-${NCURSES_VER}"
+
+	cd "${WORK}/ncurses-${NCURSES_VER}"
+
+	msg "Configuring ncurses..."
+
+	./configure \
+		--prefix=/usr \
+		--mandir=/usr/share/man \
+		--with-shared \
+		--without-debug \
+		--without-normal \
+		--with-cxx-shared \
+		--enable-pc-files \
+		--with-pkg-config-libdir=/usr/lib/pkgconfig
+
+	msg "Building ncurses..."
+
+	make
+
+	msg "Installing ncurses..."
+
+	make DESTDIR=$PWD/dest install
+
+	install -vm755 $PWD/dest/usr/lib/libncursesw.so.6.5 /usr/lib
+
+	rm -v $PWD/dest/usr/lib/libncursesw.so.6.5
+
+	sed -e 's/^#if.*XOPEN.*$/#if 1/' -i dest/usr/include/curses.h
+
+	cp -av dest/* /
+
+	ln -sfv libncursesw.so /usr/lib/libcurses.so
+
+	clean_work_dir
+
+	##
+	# sed Step
+	##
+
+	extract_file "${SOURCES}/sed-${SED_VER}.tar.xz" "${WORK}/sed-${SED_VER}"
+
+	cd "${WORK}/sed-${SED_VER}"
+
+	msg "Configuring sed..."
+
+	./configure --prefix=/usr
+
+	msg "Building sed..."
+
+	make
+
+	msg "Checking sed..."
+
+	chown -R tester .
+
+	su tester -c "PATH=$PATH make -k check"
+
+	msg "Installing sed..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# bash Step
+	##
+
+	extract_file "${SOURCES}/bash-$BASH_VER.tar.gz" "${WORK}/bash-$BASH_VER"
+
+	cd "${WORK}/bash-$BASH_VER"
+
+	msg "Configuring bash..."
+
+	./configure \
+		--prefix=/usr \
+		--without-bash-malloc \
+		--with-installed-readline \
+		--docdir=/usr/share/doc/bash-${BASH_VER}
+
+	msg "Building bash..."
+
+	make
+
+	msg "Checking bash..."
+
+	chown -R tester .
+
+	msg "Installing bash..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# libtool Step
+	##
+
+	extract_file "${SOURCES}/libtool-${LIBTOOL_VER}.tar.xz" "${WORK}/libtool-${LIBTOOL_VER}"
+
+	cd "${WORK}/libtool-${LIBTOOL_VER}"
+
+	msg "Configuring libtool..."
+
+	./configure --prefix=/usr
+
+	msg "Building libtool..."
+
+	make
+
+	msg "Checking libtool..."
+
+	make check
+
+	msg "Installing libtool..."
+
+	make install
+
+	clean_work_dir
+
+	msg "Chroot bootstrap stage 1 completed successfully."
 }
 
-msg "Installing binutils..."
+bootstrap_stage_2() {
+	msg "Chroot bootstrap stage 2 not yet implemented."
+}
 
-make tooldir=/usr install
-
-rm -rfv /usr/lib/lib{bfd,ctf,ctf-nobfd,gprofng,opcodes,sframe}.a /usr/share/doc/gprofng/
-
-clean_work_dir
-
-##
-# gmp Step
-##
-
-extract_file "${SOURCES}/gmp-${GMP_VER}.tar.xz" "${WORK}/gmp-${GMP_VER}"
-
-cd "${WORK}/gmp-${GMP_VER}"
-
-msg "Configuring gmp..."
-
-sed -i '/long long t1;/,+1s/()/(...)/' configure
-
-./configure \
-	--prefix=/usr \
-	--enable-cxx \
-	--disable-static \
-	--docdir=/usr/share/doc/gmp-${GMP_VER}
-
-msg "Building gmp..."
-
-make
-
-msg "Checking gmp..."
-
-make check 2>&1 | tee gmp-check-log
-
-# Also make sure 199 tests passed
-if awk '/# PASS:/{total+=$3} ; END{print total}' gmp-check-log; then
-	msg "All gmp tests passed."
+# Default to stage 1 if no argument is given
+STAGE=${1:-1}
+if [ "${STAGE}" -eq 1 ]; then
+	bootstrap_stage_1
+elif [ "${STAGE}" -eq 2 ]; then
+	bootstrap_stage_2
 else
-	msg "Error: Some gmp tests failed."
+	echo "Invalid stage: ${STAGE}. Valid stages are 1 and 2."
 	exit 1
 fi
-
-msg "Installing gmp..."
-
-make install
-
-clean_work_dir
-
-##
-# mpfr Step
-##
-
-extract_file "${SOURCES}/mpfr-${MPFR_VER}.tar.xz" "${WORK}/mpfr-${MPFR_VER}"
-
-cd "${WORK}/mpfr-${MPFR_VER}"
-
-msg "Configuring mpfr..."
-
-./configure \
-	--prefix=/usr \
-	--disable-static \
-	--enable-thread-safe \
-	--docdir=/usr/share/doc/mpfr-${MPFR_VER}
-
-msg "Building mpfr..."
-
-make
-
-msg "Checking mpfr..."
-
-make check
-
-msg "Installing mpfr..."
-
-make install
-
-clean_work_dir
-
-##
-# mpc Step
-##
-
-extract_file "${SOURCES}/mpc-${MPC_VER}.tar.gz" "${WORK}/mpc-${MPC_VER}"
-
-cd "${WORK}/mpc-${MPC_VER}"
-
-msg "Configuring mpc..."
-
-./configure \
-	--prefix=/usr \
-	--disable-static \
-	--docdir=/usr/share/doc/mpc-${MPC_VER}
-
-msg "Building mpc..."
-
-make
-
-msg "Checking mpc..."
-
-make check
-
-msg "Installing mpc..."
-
-make install
-
-clean_work_dir
-
-##
-# attr Step
-##
-
-extract_file "${SOURCES}/attr-${ATTR_VER}.tar.gz" "${WORK}/attr-${ATTR_VER}"
-
-cd "${WORK}/attr-${ATTR_VER}"
-
-msg "Configuring attr..."
-
-./configure \
-	--prefix=/usr \
-	--disable-static \
-	--docdir=/usr/share/doc/attr-${ATTR_VER}
-
-msg "Building attr..."
-
-make
-
-msg "Checking attr..."
-
-make check
-
-msg "Installing attr..."
-
-make install
-
-clean_work_dir
-
-##
-# acl Step
-##
-
-extract_file "${SOURCES}/acl-${ACL_VER}.tar.xz" "${WORK}/acl-${ACL_VER}"
-
-cd "${WORK}/acl-${ACL_VER}"
-
-msg "Configuring acl..."
-
-./configure \
-	--prefix=/usr \
-	--disable-static \
-	--docdir=/usr/share/doc/acl-${ACL_VER}
-
-msg "Building acl..."
-
-make
-
-msg "Checking acl..."
-
-# Disable test/cp.test as it fails in a chroot environment
-sed -e 's|test/cp.test||' -i test/Makemodule.am Makefile.in Makefile
-
-make check
-
-msg "Installing acl..."
-
-make install
-
-clean_work_dir
-
-##
-# libcap Step
-##
-
-extract_file "${SOURCES}/libcap-${LIBCAP_VER}.tar.xz" "${WORK}/libcap-${LIBCAP_VER}"
-
-cd "${WORK}/libcap-${LIBCAP_VER}"
-
-msg "Configuring libcap..."
-
-sed -i '/install -m.*STA/d' libcap/Makefile
-
-msg "Building libcap..."
-
-make prefix=/usr lib=lib
-
-msg "Checking libcap..."
-
-make test
-
-msg "Installing libcap..."
-
-make prefix=/usr lib=lib install
-
-clean_work_dir
-
-##
-# libxcrypt Step
-##
-
-extract_file "${SOURCES}/libxcrypt-${LIBXCRPT_VER}.tar.xz" "${WORK}/libxcrypt-${LIBXCRPT_VER}"
-
-cd "${WORK}/libxcrypt-${LIBXCRPT_VER}"
-
-msg "Configuring libxcrypt..."
-
-./configure --prefix=/usr \
-	--enable-hashes=strong,glibc \
-	--enable-obsolete-api=no \
-	--disable-static \
-	--disable-failure-tokens
-
-msg "Building libxcrypt..."
-
-make
-
-msg "Checking libxcrypt..."
-
-make check
-
-msg "Installing libxcrypt..."
-
-make install
-
-clean_work_dir
-
-##
-# shadow Step
-##
-
-extract_file "${SOURCES}/shadow-${SHADOW_VER}.tar.xz" "${WORK}/shadow-${SHADOW_VER}"
-
-cd "${WORK}/shadow-${SHADOW_VER}"
-
-msg "Configuring shadow..."
-
-sed -i 's/groups$(EXEEXT) //' src/Makefile.in
-find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
-find man -name Makefile.in -exec sed -i 's/getspnam\.3 / /' {} \;
-find man -name Makefile.in -exec sed -i 's/passwd\.5 / /' {} \;
-
-sed -e 's:#ENCRYPT_METHOD DES:ENCRYPT_METHOD YESCRYPT:' \
-	-e 's:/var/spool/mail:/var/mail:' \
-	-e '/PATH=/{s@/sbin:@@;s@/bin:@@}' \
-	-i etc/login.defs
-
-touch /usr/bin/passwd
-
-./configure \
-	--sysconfdir=/etc \
-	--disable-static \
-	--with-{b,yes}crypt \
-	--without-libbsd \
-	--with-group-name-max-length=32
-
-msg "Building shadow..."
-
-make
-
-msg "Installing shadow..."
-
-make exec_prefix=/usr install
-
-clean_work_dir
-
-##
-# gcc Step
-##
-
-extract_file "${SOURCES}/gcc-${GCC_VER}.tar.xz" "${WORK}/gcc-${GCC_VER}"
-
-cd "${WORK}/gcc-${GCC_VER}"
-
-msg "Configuring gcc..."
-
-case $(uname -m) in
-x86_64)
-	sed -e '/m64=/s/lib64/lib/' \
-		-i.orig gcc/config/i386/t-linux64
-	;;
-aarch64)
-	sed -e '/m64=/s/lib64/lib/' \
-		-i.orig gcc/config/aarch64/t-linux64
-	;;
-esac
-
-mkdir -v build
-
-cd build
-
-LD=ld \
-	../configure \
-	--prefix=/usr \
-	--enable-languages=c,c++ \
-	--enable-default-pie \
-	--enable-default-ssp \
-	--enable-host-pie \
-	--disable-multilib \
-	--disable-bootstrap \
-	--disable-fixincludes \
-	--with-system-zlib
-
-msg "Building gcc..."
-
-make
-
-msg "Setting up for gcc checks..."
-
-ulimit -s -H unlimited
-
-sed -e '/cpython/d' -i ../gcc/testsuite/gcc.dg/plugin/plugin.exp
-
-msg "Checking gcc..."
-
-chown -R tester .
-
-su tester -c "PATH=$PATH make -k check"
-
-msg "Extractring gcc check results..."
-
-../contrib/test_summary
-
-msg "Installing gcc..."
-
-make install
-
-chown -v -R root:root /usr/lib/gcc/$(gcc -dumpmachine)/15.2.0/include{,-fixed}
-
-ln -svr /usr/bin/cpp /usr/lib
-
-ln -svf ../../libexec/gcc/$(gcc -dumpmachine)/15.2.0/liblto_plugin.so /usr/lib/bfd-plugins/
-
-mkdir -pv /usr/share/gdb/auto-load/usr/lib
-
-mv -v /usr/lib/*gdb.py /usr/share/gdb/auto-load/usr/lib
-
-clean_work_dir
-
-##
-# ncurses Step
-##
-
-extract_file "${SOURCES}/ncurses-${NCURSES_VER}.tgz" "${WORK}/ncurses-${NCURSES_VER}"
-
-cd "${WORK}/ncurses-${NCURSES_VER}"
-
-msg "Configuring ncurses..."
-
-./configure \
-	--prefix=/usr \
-	--mandir=/usr/share/man \
-	--with-shared \
-	--without-debug \
-	--without-normal \
-	--with-cxx-shared \
-	--enable-pc-files \
-	--with-pkg-config-libdir=/usr/lib/pkgconfig
-
-msg "Building ncurses..."
-
-make
-
-msg "Installing ncurses..."
-
-make DESTDIR=$PWD/dest install
-
-install -vm755 $PWD/dest/usr/lib/libncursesw.so.6.5 /usr/lib
-
-rm -v $PWD/dest/usr/lib/libncursesw.so.6.5
-
-sed -e 's/^#if.*XOPEN.*$/#if 1/' -i dest/usr/include/curses.h
-
-cp -av dest/* /
-
-ln -sfv libncursesw.so /usr/lib/libcurses.so
-
-clean_work_dir
-
-##
-# sed Step
-##
-
-extract_file "${SOURCES}/sed-${SED_VER}.tar.xz" "${WORK}/sed-${SED_VER}"
-
-cd "${WORK}/sed-${SED_VER}"
-
-msg "Configuring sed..."
-
-./configure --prefix=/usr
-
-msg "Building sed..."
-
-make
-
-msg "Checking sed..."
-
-chown -R tester .
-
-su tester -c "PATH=$PATH make -k check"
-
-msg "Installing sed..."
-
-make install
-
-clean_work_dir
-
-##
-# bash Step
-##
-
-extract_file "${SOURCES}/bash-$BASH_VER.tar.gz" "${WORK}/bash-$BASH_VER"
-
-cd "${WORK}/bash-$BASH_VER"
-
-msg "Configuring bash..."
-
-./configure \
-	--prefix=/usr \
-	--without-bash-malloc \
-	--with-installed-readline \
-	--docdir=/usr/share/doc/bash-${BASH_VER}
-
-msg "Building bash..."
-
-make
-
-msg "Checking bash..."
-
-chown -R tester .
-
-msg "Installing bash..."
-
-make install
-
-clean_work_dir
-
-##
-# libtool Step
-##
-
-extract_file "${SOURCES}/libtool-${LIBTOOL_VER}.tar.xz" "${WORK}/libtool-${LIBTOOL_VER}"
-
-cd "${WORK}/libtool-${LIBTOOL_VER}"
-
-msg "Configuring libtool..."
-
-./configure --prefix=/usr
-
-msg "Building libtool..."
-
-make
-
-msg "Checking libtool..."
-
-make check
-
-msg "Installing libtool..."
-
-make install
-
-clean_work_dir
