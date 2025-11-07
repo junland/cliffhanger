@@ -168,7 +168,7 @@ bootstrap_stage_1() {
 
 	msg "Creating essential files..."
 
-	cat >/etc/hosts <<EOF
+	cat >/etc/hosts <<"EOF"
 127.0.0.1  localhost $(hostname)
 ::1        localhost
 EOF
