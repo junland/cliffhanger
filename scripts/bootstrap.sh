@@ -12,11 +12,6 @@ TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"${TARGET_ROOTFS_PATH}/
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"${TARGET_ROOTFS_PATH}/tmp/work"}
 TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_ARCH}-buildroot-linux-gnu"}
 TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${TARGET_ROOTFS_PATH}/toolchain"}
-TOOLCHAIN_TARGET_ARCH="${TARGET_ARCH//_/-}"
-
-# Runtime variables
-CURL_OPTS="-L -s"
-
 EXIT_AFTER_TEMP_TOOLS=${EXIT_AFTER_TEMP_TOOLS:-false}
 
 # Variables with shorter names
@@ -102,13 +97,13 @@ extract_file() {
 
 	case ${archive_file} in
 	*.tar.bz2 | *.tbz2)
-		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
 		;;
 	*.tar.xz | *.txz)
-		tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
 		;;
 	*.tar.gz | *.tgz)
-		tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components=${strip_components} ${verbose_flag}
+		tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
 		;;
 	*.zip)
 		unzip -q "${archive_file}" -d "${dest_dir}"
@@ -235,7 +230,7 @@ make install
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
-cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h >$(dirname $("$TARGET_TRIPLET"-gcc -print-libgcc-file-name))/include/limits.h
 
 clean_work_dir
 
@@ -325,7 +320,7 @@ sed '/RTLDLIST=/s@/usr@@g' -i "${TARGET_ROOTFS_PATH}/usr/bin/ldd"
 
 msg "Verify that compiling and linking works..."
 
-echo 'int main(){}' | ${TARGET_TRIPLET}-gcc -xc -
+echo 'int main(){}' | "${TARGET_TRIPLET}"-gcc -xc -
 
 readelf -l a.out | grep ld-linux
 
@@ -394,7 +389,7 @@ autoreconf -f
 
 msg "Configuring m4..."
 
-./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(build-aux/config.guess)
+./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build=$(build-aux/config.guess)
 
 msg "Building m4..."
 
@@ -420,13 +415,13 @@ mkdir -vp build
 
 pushd build
 
-../configure --prefix=${TARGET_ROOTFS_PATH} AWK=gawk
+../configure --prefix="${TARGET_ROOTFS_PATH}" AWK=gawk
 
 make -C include
 
 make -C progs tic
 
-install progs/tic ${TOOLCHAIN_PATH}/bin
+install progs/tic "${TOOLCHAIN_PATH}"/bin
 
 popd
 
@@ -434,7 +429,7 @@ msg "Configuring ncurses..."
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(./config.guess) \
 	--mandir=/usr/share/man \
 	--with-manpage-format=normal \
@@ -473,7 +468,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 ./configure \
 	--prefix=/usr \
 	--build=$(sh support/config.guess) \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--without-bash-malloc
 
 msg "Building bash..."
@@ -503,7 +498,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess) \
 	--enable-install-program=hostname \
 	--enable-no-install-program=kill,uptime
@@ -540,7 +535,7 @@ msg "Configuring diffutils..."
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(./config.guess)
 
 msg "Building diffutils..."
@@ -584,7 +579,7 @@ popd
 
 msg "Configuring file..."
 
-./configure --prefix=/usr --host=${TARGET_TRIPLET} --build=$(./config.guess)
+./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build=$(./config.guess)
 
 msg "Building file..."
 
@@ -614,7 +609,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--localstatedir=/var/lib/locate \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building findutils..."
@@ -644,7 +639,7 @@ sed -i 's/extras//' Makefile.in
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building gawk..."
@@ -672,7 +667,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building grep..."
@@ -700,7 +695,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET}
+	--host="${TARGET_TRIPLET}"
 
 msg "Building gzip..."
 
@@ -729,7 +724,7 @@ autoreconf -f
 	--build=$(build-aux/config.guess) \
 	--prefix=/usr \
 	--without-guile \
-	--host=${TARGET_TRIPLET}
+	--host="${TARGET_TRIPLET}"
 
 msg "Building make..."
 
@@ -756,7 +751,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building patch..."
@@ -784,7 +779,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building sed..."
@@ -812,7 +807,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess)
 
 msg "Building tar..."
@@ -840,7 +835,7 @@ autoreconf -f
 
 ./configure \
 	--prefix=/usr \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--build=$(build-aux/config.guess) \
 	--disable-static \
 	--docdir=/usr/share/doc/xz-5.6.4
@@ -853,7 +848,7 @@ msg "Installing xz..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-rm -v ${TARGET_ROOTFS_PATH}/usr/lib/liblzma.la
+rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/liblzma.la
 
 clean_work_dir
 
@@ -876,7 +871,7 @@ cd build
 ../configure \
 	--prefix=/usr \
 	--build=$(../config.guess) \
-	--host=${TARGET_TRIPLET} \
+	--host="${TARGET_TRIPLET}" \
 	--disable-nls \
 	--enable-shared \
 	--enable-gprofng=no \
@@ -893,7 +888,7 @@ msg "Installing binutils..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-rm -v ${TARGET_ROOTFS_PATH}/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
+rm -v "${TARGET_ROOTFS_PATH}"/usr/lib/lib{bfd,ctf,ctf-nobfd,opcodes,sframe}.{a,la}
 
 clean_work_dir
 
@@ -924,11 +919,11 @@ cd build
 
 ../configure \
 	--build=$(../config.guess) \
-	--host=${TARGET_TRIPLET} \
-	--target=${TARGET_TRIPLET} \
-	LDFLAGS_FOR_TARGET=-L$PWD/${TARGET_TRIPLET}/libgcc \
+	--host="${TARGET_TRIPLET}" \
+	--target="${TARGET_TRIPLET}" \
+	LDFLAGS_FOR_TARGET=-L"$PWD"/"${TARGET_TRIPLET}"/libgcc \
 	--prefix=/usr \
-	--with-build-sysroot=$TARGET_ROOTFS_PATH \
+	--with-build-sysroot="$TARGET_ROOTFS_PATH" \
 	--enable-default-pie \
 	--enable-default-ssp \
 	--disable-nls \
@@ -949,7 +944,7 @@ msg "Installing gcc..."
 
 make install DESTDIR="${TARGET_ROOTFS_PATH}"
 
-ln -svf gcc ${TARGET_ROOTFS_PATH}/usr/bin/cc
+ln -svf gcc "${TARGET_ROOTFS_PATH}"/usr/bin/cc
 
 clean_work_dir
 
