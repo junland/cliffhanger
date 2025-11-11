@@ -311,7 +311,7 @@ echo "libc_cv_slibdir=/usr/lib" >>configparms
 
 msg "Building glibc..."
 
-make -j1
+make -j2
 
 msg "Installing glibc..."
 
