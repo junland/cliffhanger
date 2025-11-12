@@ -116,7 +116,7 @@ extract_file() {
 }
 
 # Setup PATH
-PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 
 # Set CONFIG_SITE for cross-compilation
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
