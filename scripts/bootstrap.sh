@@ -52,7 +52,7 @@ msg() {
 clean_work_dir() {
 	cd "${TARGET_ROOTFS_PATH}"
 	msg "Cleaning up work directory at ${WORK}..."
-	rm -rf "${WORK}"/*
+	rm -rf "${WORK:?}"/*
 }
 
 # Extracts an archive file to a destination directory
@@ -234,7 +234,7 @@ make install
 
 cd "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 
-cat gcc/limitx.h gcc/glimits.h gcc/limity.h >"$(dirname $($TARGET_TRIPLET-gcc -print-libgcc-file-name))/include/limits.h"
+cat gcc/limitx.h gcc/glimits.h gcc/limity.h >"$(dirname $("$TARGET_TRIPLET"-gcc -print-libgcc-file-name))/include/limits.h"
 
 clean_work_dir
 
@@ -583,11 +583,11 @@ popd
 
 msg "Configuring file..."
 
-./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build=$(./config.guess)
+./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build="$(./config.guess)"
 
 msg "Building file..."
 
-make FILE_COMPILE=$(pwd)/build/src/file
+make FILE_COMPILE="$(pwd)/build/src/file"
 
 msg "Installing file..."
 
