@@ -124,8 +124,11 @@ CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 # Set locale
 LC_ALL=POSIX
 
+# Set encoding
+LANG=en_US.UTF-8
+
 # Export needed variables
-export PATH LC_ALL CONFIG_SITE
+export PATH LC_ALL CONFIG_SITE LANG
 
 # Create necessary directories
 msg "Creating necessary directories..."
