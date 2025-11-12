@@ -87,20 +87,3 @@ jobs:
             tail -n 50 ${{ github.workspace }}/scripts/bootstrap.log
             exit 1
           fi
-
-      - name: Upload bootstrap log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: bootstrap-log
-          path: ${{ github.workspace }}/scripts/bootstrap.log
-
-      - name: Remove toolchain in rootfs
-        run: |
-          rm -rf rootfs/toolchain
-
-      - name: Upload bootstrap rootfs
-        uses: actions/upload-artifact@v4
-        with:
-          name: bootstrap-rootfs
-          path: rootfs/*
