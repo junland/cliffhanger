@@ -303,7 +303,7 @@ echo "rootsbindir=/usr/sbin" >configparms
 ../configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(../scripts/config.guess) \
+	--build="$(../scripts/config.guess)" \
 	--enable-kernel=5.4 \
 	--disable-nscd \
 	libc_cv_slibdir=/usr/lib
@@ -389,7 +389,7 @@ autoreconf -f
 
 msg "Configuring m4..."
 
-./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build=$(build-aux/config.guess)
+./configure --prefix=/usr --host="${TARGET_TRIPLET}" --build="$(build-aux/config.guess)"
 
 msg "Building m4..."
 
@@ -430,7 +430,7 @@ msg "Configuring ncurses..."
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(./config.guess) \
+	--build="$(./config.guess)" \
 	--mandir=/usr/share/man \
 	--with-manpage-format=normal \
 	--with-shared \
@@ -467,7 +467,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 
 ./configure \
 	--prefix=/usr \
-	--build=$(sh support/config.guess) \
+	--build="$(sh support/config.guess)" \
 	--host="${TARGET_TRIPLET}" \
 	--without-bash-malloc
 
@@ -499,7 +499,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess) \
+	--build="$(build-aux/config.guess)" \
 	--enable-install-program=hostname \
 	--enable-no-install-program=kill,uptime
 
@@ -536,7 +536,7 @@ msg "Configuring diffutils..."
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(./config.guess)
+	--build="$(./config.guess)"
 
 msg "Building diffutils..."
 
@@ -610,7 +610,7 @@ autoreconf -f
 	--prefix=/usr \
 	--localstatedir=/var/lib/locate \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building findutils..."
 
@@ -640,7 +640,7 @@ sed -i 's/extras//' Makefile.in
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building gawk..."
 
@@ -668,7 +668,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building grep..."
 
@@ -721,7 +721,7 @@ cd "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 autoreconf -f
 
 ./configure \
-	--build=$(build-aux/config.guess) \
+	--build="$(build-aux/config.guess)" \
 	--prefix=/usr \
 	--without-guile \
 	--host="${TARGET_TRIPLET}"
@@ -752,7 +752,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building patch..."
 
@@ -780,7 +780,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building sed..."
 
@@ -808,7 +808,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess)
+	--build="$(build-aux/config.guess)"
 
 msg "Building tar..."
 
@@ -836,7 +836,7 @@ autoreconf -f
 ./configure \
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
-	--build=$(build-aux/config.guess) \
+	--build="$(build-aux/config.guess)" \
 	--disable-static \
 	--docdir=/usr/share/doc/xz-5.6.4
 
@@ -870,7 +870,7 @@ cd build
 
 ../configure \
 	--prefix=/usr \
-	--build=$(../config.guess) \
+	--build="$(../config.guess)" \
 	--host="${TARGET_TRIPLET}" \
 	--disable-nls \
 	--enable-shared \
@@ -918,12 +918,12 @@ mkdir -v build
 cd build
 
 ../configure \
-	--build=$(../config.guess) \
+	--build="$(../config.guess)" \
 	--host="${TARGET_TRIPLET}" \
 	--target="${TARGET_TRIPLET}" \
 	LDFLAGS_FOR_TARGET=-L"$PWD"/"${TARGET_TRIPLET}"/libgcc \
 	--prefix=/usr \
-	--with-build-sysroot="$TARGET_ROOTFS_PATH" \
+	--with-build-sysroot="${TARGET_ROOTFS_PATH}" \
 	--enable-default-pie \
 	--enable-default-ssp \
 	--disable-nls \
