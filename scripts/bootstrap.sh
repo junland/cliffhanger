@@ -325,7 +325,7 @@ echo "rootsbindir=/usr/sbin" >configparms
 
 msg "Building glibc..."
 
-make -j2
+make
 
 msg "Installing glibc..."
 
