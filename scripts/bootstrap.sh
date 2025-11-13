@@ -118,16 +118,22 @@ extract_file() {
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 
-echo "export PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" >> $PWD/.env
+echo "export PATH=${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" > $PWD/.env
 
 # Set CONFIG_SITE for cross-compilation
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
+echo "export CONFIG_SITE=${TARGET_ROOTFS_PATH}/usr/share/config.site" >> $PWD/.env
+
 # Set locale
 LC_ALL=POSIX
 
+echo "export LC_ALL=POSIX" >> $PWD/.env
+
 # Set encoding
 LANG=en_US.UTF-8
+
+echo "export LANG=en_US.UTF-8" >> $PWD/.env
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE LANG
