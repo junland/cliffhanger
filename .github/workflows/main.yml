@@ -1,10 +1,6 @@
 name: Build on GitHub Hosted Runner
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
