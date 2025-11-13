@@ -130,13 +130,8 @@ LC_ALL=POSIX
 
 echo "export LC_ALL=POSIX" >> "$PWD"/.env
 
-# Set encoding
-LANG=en_US.UTF-8
-
-echo "export LANG=en_US.UTF-8" >> "$PWD"/.env
-
 # Export needed variables
-export PATH LC_ALL CONFIG_SITE LANG
+export PATH LC_ALL CONFIG_SITE
 
 # Create necessary directories
 msg "Creating necessary directories..."
@@ -312,6 +307,9 @@ patch -Np1 -i "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}-fhs-1.patch"
 mkdir -vp "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
 
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}/build"
+
+# Make sure bash hashing is disabled for glibc build
+unset -f hash
 
 echo "rootsbindir=/usr/sbin" >configparms
 
