@@ -97,13 +97,13 @@ extract_file() {
 
 	case ${archive_file} in
 	*.tar.bz2 | *.tbz2)
-		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
+		tar -xjf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" "${verbose_flag}"
 		;;
 	*.tar.xz | *.txz)
-		tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
+		tar -xJf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" "${verbose_flag}"
 		;;
 	*.tar.gz | *.tgz)
-		tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" ${verbose_flag}
+		tar -xzf "${archive_file}" -C "${dest_dir}" --strip-components="${strip_components}" "${verbose_flag}"
 		;;
 	*.zip)
 		unzip -q "${archive_file}" -d "${dest_dir}"
@@ -118,22 +118,22 @@ extract_file() {
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 
-echo "export PATH=${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" > $PWD/.env
+echo "export PATH=${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" > "$PWD"/.env
 
 # Set CONFIG_SITE for cross-compilation
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
-echo "export CONFIG_SITE=${TARGET_ROOTFS_PATH}/usr/share/config.site" >> $PWD/.env
+echo "export CONFIG_SITE=${TARGET_ROOTFS_PATH}/usr/share/config.site" >> "$PWD"/.env
 
 # Set locale
 LC_ALL=POSIX
 
-echo "export LC_ALL=POSIX" >> $PWD/.env
+echo "export LC_ALL=POSIX" >> "$PWD"/.env
 
 # Set encoding
 LANG=en_US.UTF-8
 
-echo "export LANG=en_US.UTF-8" >> $PWD/.env
+echo "export LANG=en_US.UTF-8" >> "$PWD"/.env
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE LANG
@@ -853,7 +853,7 @@ autoreconf -f
 	--host="${TARGET_TRIPLET}" \
 	--build="$(build-aux/config.guess)" \
 	--disable-static \
-	--docdir=/usr/share/doc/xz-5.6.4
+	--docdir=/usr/share/doc/xz-${XZ_VER}
 
 msg "Building xz..."
 
