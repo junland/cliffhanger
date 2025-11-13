@@ -118,6 +118,8 @@ extract_file() {
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 
+echo "export PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" >> $PWD/.env
+
 # Set CONFIG_SITE for cross-compilation
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
