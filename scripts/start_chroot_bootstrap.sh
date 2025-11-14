@@ -5,51 +5,57 @@ set -e # Exit on error
 
 umask 022
 
+# Validate running as root
 if [ "$EUID" -ne 0 ]; then
-	echo "Please run as root"
+	echo "Error: This script must be run as root"
 	exit 1
 fi
 
-if [ "$#" -ne 2 ]; then
-	echo "Usage: $0 <chroot_path> <stage_number>"
+# Validate arguments
+if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+	echo "Usage: $0 <chroot_path> [stage_number]"
+	echo "  chroot_path   - Path to the chroot directory"
+	echo "  stage_number  - Bootstrap stage to run (1 or 2, default: 1)"
 	exit 1
 fi
 
-if [ ! -d "$1" ]; then
-	echo "Error: $1 is not a directory"
-	exit 1
-fi
-
-# Make sure "/tmp/chroot_bootstrap.sh" exists
-if [ ! -f "$1/tmp/chroot_bootstrap.sh" ]; then
-	echo "Error: $1/tmp/chroot_bootstrap.sh is needed but does not exist"
-	exit 1
-fi
-
-# Script variables
 CHROOT_PATH="$1"
-CURL_OPTS="-L -s"
-ROOTFS="${CHROOT_PATH}"
-WORK="${ROOTFS}/tmp/work"
 STAGE="${2:-1}"
-SOURCES="${ROOTFS}/tmp/sources"
+
+# Validate chroot path
+if [ ! -d "$CHROOT_PATH" ]; then
+	echo "Error: Chroot path '$CHROOT_PATH' is not a directory"
+	exit 1
+fi
+
+# Validate bootstrap script exists
+BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
+if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
+	echo "Error: Bootstrap script not found at '$BOOTSTRAP_SCRIPT'"
+	echo "Please ensure the bootstrap script is copied to the chroot environment"
+	exit 1
+fi
+
+# Validate stage number
+if ! [[ "$STAGE" =~ ^[1-2]$ ]]; then
+	echo "Error: Invalid stage number '$STAGE'"
+	echo "Valid stages are: 1 or 2"
+	exit 1
+fi
+
+# Environment variables
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
+LC_ALL=POSIX
+TERM=xterm
+
+export LC_ALL TERM
 
 # msg function that will make echo's pretty.
 msg() {
 	echo " ==> $*"
 }
 
-# Set locale
-LC_ALL=POSIX
-
-# Set TERM
-TERM=xterm
-
-# Export needed variables
-export LC_ALL TERM
-
-msg "Starting chroot bootstrap process in $CHROOT_PATH"
+msg "Starting chroot bootstrap stage $STAGE in $CHROOT_PATH"
 
 # Make sure directories have root ownership
 echo "Setting ownership of $CHROOT_PATH to root..."
