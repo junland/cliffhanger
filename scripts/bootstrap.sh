@@ -6,11 +6,11 @@ set -e # Exit on error
 umask 022
 
 # Locale, directory, and architecture variables
-TARGET_ARCH=${TARGET_ARCH:-"x86_64"}
+TARGET_CPU_ARCH=${TARGET_CPU_ARCH:-"x86_64"}
 TARGET_ROOTFS_PATH=${TARGET_ROOTFS_PATH:-"${PWD}/rootfs"}
 TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"${TARGET_ROOTFS_PATH}/tmp/sources"}
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"${TARGET_ROOTFS_PATH}/tmp/work"}
-TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_ARCH}-buildroot-linux-gnu"}
+TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_CPU_ARCH}-buildroot-linux-gnu"}
 TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${TARGET_ROOTFS_PATH}/toolchain"}
 EXIT_AFTER_TEMP_TOOLS=${EXIT_AFTER_TEMP_TOOLS:-false}
 
@@ -280,7 +280,7 @@ msg "Configuring glibc..."
 
 cd "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 
-case ${TARGET_ARCH} in
+case ${TARGET_CPU_ARCH} in
 i?86)
 	ln -sfv ld-linux.so.2 "${TARGET_ROOTFS_PATH}/lib/ld-lsb.so.3"
 	;;
@@ -297,7 +297,7 @@ riscv64)
 	ln -sfv ../lib/ld-linux-riscv64.so.1 "${TARGET_ROOTFS_PATH}/lib64/ld-lsb-riscv64.so.3"
 	;;
 *)
-	echo "Unknown architecture: ${TARGET_ARCH}"
+	echo "Unknown architecture: ${TARGET_CPU_ARCH}"
 	exit 1
 	;;
 esac
@@ -317,6 +317,7 @@ echo "rootsbindir=/usr/sbin" >configparms
 	--prefix=/usr \
 	--host="${TARGET_TRIPLET}" \
 	--build="$(../scripts/config.guess)" \
+	--with-headers="${TARGET_ROOTFS_PATH}/usr/include" \
 	--enable-kernel=5.4 \
 	--disable-nscd \
 	libc_cv_slibdir=/usr/lib
