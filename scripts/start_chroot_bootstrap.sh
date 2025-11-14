@@ -10,8 +10,8 @@ if [ "$EUID" -ne 0 ]; then
 	exit 1
 fi
 
-if [ "$#" -ne 1 ]; then
-	echo "Usage: $0 <chroot_path>"
+if [ "$#" -ne 2 ]; then
+	echo "Usage: $0 <chroot_path> <stage_number>"
 	exit 1
 fi
 
