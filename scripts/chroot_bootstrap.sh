@@ -454,7 +454,7 @@ EOF
 	# Disable io/tst-lchmod test as its known to fail in a chroot.
 	sed -i "/\btst-lchmod /d" "${WORK}/glibc-${GLIBC_VER}/io/Makefile"
 
-	TIMEOUTFACTOR=16 make check
+	TIMEOUTFACTOR=16 make check -j1
 
 	# Disable outdated sanity check.
 	sed '/test-installation/s@$(PERL)@echo not running@' -i ../Makefile
