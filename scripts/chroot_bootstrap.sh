@@ -455,7 +455,7 @@ EOF
 	sed -i "/\btst-lchmod /d" "${WORK}/glibc-${GLIBC_VER}/io/Makefile"
 
 	# Disable stdlib/test-cxa_atexit-race2 test as it its known to fail in a chroot.
-	sed -i "/\btest-cxa_atexit-race2 /d" "${WORK}/glibc-${GLIBC_VER}/stdlib/Makefile"
+	#sed -i "/\btest-cxa_atexit-race2 /d" "${WORK}/glibc-${GLIBC_VER}/stdlib/Makefile"
 
 	TIMEOUTFACTOR=15 make check -j1
 
