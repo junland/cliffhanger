@@ -134,7 +134,9 @@ export LC_ALL
 
 clean_work_dir
 
-bootstrap_stage_1() {
+bootstrap_stage_2() {
+
+	msg "Starting chroot bootstrap stage 2..."
 
 	msg "Creating standard directory tree in chroot..."
 
@@ -305,7 +307,7 @@ EOF
 
 	sh Configure -des \
 		-D prefix=/usr \
-		-D vendorprefix=/usr \
+ -D vendorprefix=/usr \
 		-D useshrplib \
 		-D privlib=/usr/lib/perl5/5.42/core_perl \
 		-D archlib=/usr/lib/perl5/5.42/core_perl \
@@ -1241,11 +1243,12 @@ EOF
 
 	clean_work_dir
 
-	msg "Chroot bootstrap stage 1 completed successfully."
+	msg "Chroot bootstrap stage 2 completed successfully."
 }
 
-bootstrap_stage_2() {
-	msg "Chroot bootstrap stage 2 not yet implemented."
+bootstrap_stage_3() {
+
+	msg "Starting chroot bootstrap stage 3..."
 
 	##
 	# libtool Step
@@ -1276,11 +1279,11 @@ bootstrap_stage_2() {
 
 # Default to stage 1 if no argument is given
 STAGE=${1:-1}
-if [ "${STAGE}" -eq 1 ]; then
-	bootstrap_stage_1
-elif [ "${STAGE}" -eq 2 ]; then
+if [ "${STAGE}" -eq 2 ]; then
 	bootstrap_stage_2
+elif [ "${STAGE}" -eq 3 ]; then
+	bootstrap_stage_3
 else
-	echo "Invalid stage: ${STAGE}. Valid stages are 1 and 2."
+	echo "Invalid stage: ${STAGE}. Valid stages are 2 and 3."
 	exit 1
 fi

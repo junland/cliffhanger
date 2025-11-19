@@ -118,17 +118,17 @@ extract_file() {
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
 
-echo "export PATH=${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" > "$PWD"/.env
+echo "export PATH=${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin" >"$PWD"/.env
 
 # Set CONFIG_SITE for cross-compilation
 CONFIG_SITE="${TARGET_ROOTFS_PATH}/usr/share/config.site"
 
-echo "export CONFIG_SITE=${TARGET_ROOTFS_PATH}/usr/share/config.site" >> "$PWD"/.env
+echo "export CONFIG_SITE=${TARGET_ROOTFS_PATH}/usr/share/config.site" >>"$PWD"/.env
 
 # Set locale
 LC_ALL=POSIX
 
-echo "export LC_ALL=POSIX" >> "$PWD"/.env
+echo "export LC_ALL=POSIX" >>"$PWD"/.env
 
 # Export needed variables
 export PATH LC_ALL CONFIG_SITE
@@ -151,6 +151,8 @@ ln -sv usr/lib "$TARGET_ROOTFS_PATH"/lib64
 
 # Clean work directory before starting, just in case
 clean_work_dir
+
+msg "Starting bootstrap stage 1..."
 
 ##
 # binutils Step
