@@ -1241,6 +1241,12 @@ EOF
 
 	clean_work_dir
 
+	msg "Chroot bootstrap stage 1 completed successfully."
+}
+
+bootstrap_stage_2() {
+	msg "Chroot bootstrap stage 2 not yet implemented."
+
 	##
 	# libtool Step
 	##
@@ -1266,12 +1272,6 @@ EOF
 	make install
 
 	clean_work_dir
-
-	msg "Chroot bootstrap stage 1 completed successfully."
-}
-
-bootstrap_stage_2() {
-	msg "Chroot bootstrap stage 2 not yet implemented."
 }
 
 # Default to stage 1 if no argument is given
