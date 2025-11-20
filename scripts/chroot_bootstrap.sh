@@ -1277,8 +1277,8 @@ bootstrap_stage_3() {
 	clean_work_dir
 }
 
-# Default to stage 1 if no argument is given
-STAGE=${1:-1}
+# Default to stage 2 if no argument is given
+STAGE=${1:-2}
 if [ "${STAGE}" -eq 2 ]; then
 	bootstrap_stage_2
 elif [ "${STAGE}" -eq 3 ]; then
