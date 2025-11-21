@@ -37,9 +37,9 @@ if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
 fi
 
 # Validate stage number
-if ! [[ "$STAGE" =~ ^[1-2]$ ]]; then
+if ! [[ "$STAGE" =~ ^[2-3]$ ]]; then
 	echo "Error: Invalid stage number '$STAGE'"
-	echo "Valid stages are: 1 or 2"
+	echo "Valid stages are: 2 or 3"
 	exit 1
 fi
 
