@@ -20,14 +20,17 @@ BISON_VER="3.8.2"
 BZIP2_VER="1.0.8"
 COREUTILS_VER="9.7"
 DIFFUTILS_VER="3.12"
+EXPAT_VER="2.7.1"
 FILE_VER="5.46"
 FINDUTILS_VER="4.10.0"
 FLEX_VER="2.6.4"
 GAWK_VER="5.3.2"
 GCC_VER="15.2.0"
+GDBM_VER="1.26"
 GETTEXT_VER="0.26"
 GLIBC_VER="2.42"
 GMP_VER="6.3.0"
+GPERF_VER="3.3"
 GREP_VER="3.12"
 GZIP_VER="1.13"
 LIBCAP_VER="2.76"
@@ -307,7 +310,7 @@ EOF
 
 	sh Configure -des \
 		-D prefix=/usr \
- -D vendorprefix=/usr \
+		-D vendorprefix=/usr \
 		-D useshrplib \
 		-D privlib=/usr/lib/perl5/5.42/core_perl \
 		-D archlib=/usr/lib/perl5/5.42/core_perl \
@@ -1271,6 +1274,160 @@ bootstrap_stage_3() {
 	make check
 
 	msg "Installing libtool..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# GDBM Step
+	##
+
+	extract_file "${SOURCES}/gdbm-${GDBM_VER}.tar.gz" "${WORK}/gdbm-${GDBM_VER}"
+
+	cd "${WORK}/gdbm-${GDBM_VER}"
+
+	msg "Configuring gdbm..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--enable-libgdbm-compat
+
+	msg "Building gdbm..."
+
+	make
+
+	msg "Checking gdbm..."
+
+	make check
+
+	msg "Installing gdbm..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# gperf Step
+	##
+
+	extract_file "${SOURCES}/gperf-${GPERF_VER}.tar.gz" "${WORK}/gperf-${GPERF_VER}"
+
+	cd "${WORK}/gperf-${GPERF_VER}"
+
+	msg "Configuring gperf..."
+
+	./configure \
+		--prefix=/usr \
+		--docdir=/usr/share/doc/gperf-${GPERF_VER}
+
+	msg "Building gperf..."
+
+	make
+
+	msg "Checking gperf..."
+
+	make check
+
+	msg "Installing gperf..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# expat Step
+	##
+
+	extract_file "${SOURCES}/expat-${EXPAT_VER}.tar.xz" "${WORK}/expat-${EXPAT_VER}"
+
+	cd "${WORK}/expat-${EXPAT_VER}"
+
+	msg "Configuring expat..."
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/expat-${EXPAT_VER}
+
+	msg "Building expat..."
+
+	make
+
+	msg "Checking expat..."
+
+	make check
+
+	msg "Installing expat..."
+
+	make install
+
+	##
+	# Perl Step
+	##
+
+	extract_file "${SOURCES}/perl-${PERL_VER}.tar.xz" "${WORK}/perl-${PERL_VER}"
+
+	cd "${WORK}/perl-${PERL_VER}"
+
+	msg "Configuring Perl..."
+
+	export BUILD_ZLIB=False
+	export BUILD_BZIP2=0
+
+	sh Configure -des \
+		-D prefix=/usr \
+		-D vendorprefix=/usr \
+		-D privlib=/usr/lib/perl5/$PERL_VER/core_perl \
+		-D archlib=/usr/lib/perl5/$PERL_VER/core_perl \
+		-D sitelib=/usr/lib/perl5/$PERL_VER/site_perl \
+		-D sitearch=/usr/lib/perl5/$PERL_VER/site_perl \
+		-D vendorlib=/usr/lib/perl5/$PERL_VER/vendor_perl \
+		-D vendorarch=/usr/lib/perl5/$PERL_VER/vendor_perl \
+		-D man1dir=/usr/share/man/man1 \
+		-D man3dir=/usr/share/man/man3 \
+		-D pager="/usr/bin/less -isR" \
+		-D useshrplib \
+		-D usethreads
+
+	msg "Building Perl..."
+
+	make
+
+	msg "Checking Perl..."
+
+	TEST_JOBS=$(nproc) make test_harness
+
+	msg "Installing Perl..."
+
+	make install
+
+	unset BUILD_ZLIB BUILD_BZIP2
+
+	clean_work_dir
+
+	##
+	# Autoconf Step
+	##
+
+	extract_file "${SOURCES}/autoconf-${AUTOCONF_VER}.tar.xz" "${WORK}/autoconf-${AUTOCONF_VER}"
+
+	cd "${WORK}/autoconf-${AUTOCONF_VER}"
+
+	msg "Configuring autoconf..."
+
+	./configure --prefix=/usr
+
+	msg "Building autoconf..."
+
+	make
+
+	msg "Checking autoconf..."
+
+	make check
+
+	msg "Installing autoconf..."
 
 	make install
 
