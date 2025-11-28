@@ -56,6 +56,8 @@ UTIL_LINUX_VER="2.41.1"
 XZ_VER="5.8.1"
 ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
+LESS_VER="679"
+INETUTILS_VER="2.6"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -1404,6 +1406,72 @@ bootstrap_stage_3() {
 	make install
 
 	unset BUILD_ZLIB BUILD_BZIP2
+
+	clean_work_dir
+
+	##
+	# Inetutils Step
+	##
+
+	extract_file "${SOURCES}/inetutils-${INETUTILS_VER}.tar.xz" "${WORK}/inetutils-${INETUTILS_VER}"
+
+	cd "${WORK}/inetutils-${INETUTILS_VER}"
+
+	msg "Configuring inetutils..."
+
+	sed -i 's/def HAVE_TERMCAP_TGETENT/ 1/' telnet/telnet.c
+
+	./configure \
+		--prefix=/usr \
+		--bindir=/usr/bin \
+		--localstatedir=/var \
+		--disable-logger \
+		--disable-whois \
+		--disable-rcp \
+		--disable-rexec \
+		--disable-rlogin \
+		--disable-rsh \
+		--disable-servers
+
+	msg "Building inetutils..."
+
+	make
+
+	msg "Checking inetutils..."
+
+	make check
+
+	msg "Installing inetutils..."
+
+	make install
+
+	mv -v /usr/{,s}bin/ifconfig
+
+	clean_work_dir
+
+	##
+	# less Step
+	##
+
+	extract_file "${SOURCES}/less-${LESS_VER}.tar.gz" "${WORK}/less-${LESS_VER}"
+
+	cd "${WORK}/less-${LESS_VER}"
+
+	msg "Configuring less..."
+
+	./configure --prefix=/usr --sysconfdir=/etc
+
+	msg "Building less..."
+
+	make
+
+	msg "Checking less..."
+
+	make check
+
+	msg "Installing less..."
+
+	make install
 
 	clean_work_dir
 
