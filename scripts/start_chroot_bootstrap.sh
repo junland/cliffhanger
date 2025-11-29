@@ -29,7 +29,7 @@ if [ ! -d "$CHROOT_PATH" ]; then
 fi
 
 # Validate bootstrap script exists
-BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
+BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/bootstrap_stage2and3.sh"
 if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
 	echo "Error: Bootstrap script not found at '$BOOTSTRAP_SCRIPT'"
 	echo "Please ensure the bootstrap script is copied to the chroot environment"
@@ -117,7 +117,7 @@ else
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
-		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh ${STAGE}"
+		/bin/bash --login +h -c "/tmp/bootstrap_stage2and3.sh ${STAGE}"
 fi
 
 # Cleanup will be called automatically by the trap
