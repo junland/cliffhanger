@@ -50,28 +50,27 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/steps/_common.sh"
 
 # Source all step files
-source "${SCRIPT_DIR}/steps/binutils_pass1_step.sh"
-source "${SCRIPT_DIR}/steps/gcc_pass1_step.sh"
-source "${SCRIPT_DIR}/steps/linux_headers_step.sh"
-source "${SCRIPT_DIR}/steps/glibc_step.sh"
-source "${SCRIPT_DIR}/steps/libstdcxx_step.sh"
-source "${SCRIPT_DIR}/steps/m4_step.sh"
-source "${SCRIPT_DIR}/steps/ncurses_step.sh"
 source "${SCRIPT_DIR}/steps/bash_step.sh"
+source "${SCRIPT_DIR}/steps/binutils_pass1_step.sh"
+source "${SCRIPT_DIR}/steps/binutils_step.sh"
 source "${SCRIPT_DIR}/steps/coreutils_step.sh"
 source "${SCRIPT_DIR}/steps/diffutils_step.sh"
 source "${SCRIPT_DIR}/steps/file_step.sh"
 source "${SCRIPT_DIR}/steps/findutils_step.sh"
 source "${SCRIPT_DIR}/steps/gawk_step.sh"
+source "${SCRIPT_DIR}/steps/gcc_step.sh"
+source "${SCRIPT_DIR}/steps/glibc_step.sh"
 source "${SCRIPT_DIR}/steps/grep_step.sh"
 source "${SCRIPT_DIR}/steps/gzip_step.sh"
+source "${SCRIPT_DIR}/steps/libstdcxx_step.sh"
+source "${SCRIPT_DIR}/steps/linux_headers_step.sh"
+source "${SCRIPT_DIR}/steps/m4_step.sh"
 source "${SCRIPT_DIR}/steps/make_step.sh"
+source "${SCRIPT_DIR}/steps/ncurses_step.sh"
 source "${SCRIPT_DIR}/steps/patch_step.sh"
 source "${SCRIPT_DIR}/steps/sed_step.sh"
 source "${SCRIPT_DIR}/steps/tar_step.sh"
 source "${SCRIPT_DIR}/steps/xz_step.sh"
-source "${SCRIPT_DIR}/steps/binutils_pass2_step.sh"
-source "${SCRIPT_DIR}/steps/gcc_pass2_step.sh"
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
@@ -112,119 +111,37 @@ clean_work_dir
 
 msg "Starting bootstrap stage 1..."
 
-##
-# binutils Step
-##
-step_binutils_pass1
+# Define all build steps in order
+BOOTSTRAP_STEPS=(
+	"binutils_pass1"
+	"gcc_pass1"
+	"linux_headers"
+	"glibc"
+	"libstdcxx"
+	"m4"
+	"ncurses"
+	"bash"
+	"coreutils"
+	"diffutils"
+	"file"
+	"findutils"
+	"gawk"
+	"grep"
+	"gzip"
+	"make"
+	"patch"
+	"sed"
+	"tar"
+	"xz"
+	"binutils_pass2"
+	"gcc_pass2"
+)
 
-##
-# gcc Step (1st Pass - Part A)
-##
-step_gcc_pass1
-
-##
-# linux-headers Step
-##
-step_linux_headers
-
-##
-# glibc Step
-##
-step_glibc
-
-##
-# gcc - libstdc++ Step (1st Pass - Part B)
-##
-step_libstdcxx
-
-##
-# Temporary Tools Installed
-##
-
-##
-# m4 Step
-##
-step_m4
-
-##
-# ncurses Step
-##
-step_ncurses
-
-##
-# bash Step
-##
-step_bash
-
-##
-# coreutils Step
-##
-step_coreutils
-
-##
-# diffutils
-##
-step_diffutils
-
-##
-# file Step
-##
-step_file
-
-##
-# findutils Step
-##
-step_findutils
-
-##
-# gawk Step
-##
-step_gawk
-
-##
-# grep Step
-##
-step_grep
-
-##
-# gzip Step
-##
-step_gzip
-
-##
-# make Step
-##
-step_make
-
-##
-# patch Step
-##
-step_patch
-
-##
-# sed Step
-##
-step_sed
-
-##
-# tar Step
-##
-step_tar
-
-##
-# xz Step
-##
-step_xz
-
-##
-# binutils Step
-##
-step_binutils_pass2
-
-##
-# gcc Step
-##
-step_gcc_pass2
+# Execute each step
+for step in "${BOOTSTRAP_STEPS[@]}"; do
+	msg "Executing step: ${step}..."
+	step_${step}
+done
 
 if [ "${EXIT_AFTER_TEMP_TOOLS}" = true ]; then
 	msg "Exiting after temporary tools installation as requested."
