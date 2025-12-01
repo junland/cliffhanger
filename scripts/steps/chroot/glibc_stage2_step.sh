@@ -60,4 +60,6 @@ step_chroot_glibc() {
 include /etc/ld.so.conf.d/*.conf
 # End /etc/ld.so.conf
 EOF
+
+	clean_work_dir
 }

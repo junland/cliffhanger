@@ -24,4 +24,6 @@ step_chroot_expat() {
 	msg "Installing expat..."
 
 	make install
+
+	clean_work_dir
 }

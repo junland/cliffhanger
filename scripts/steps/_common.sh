@@ -25,7 +25,7 @@ extract_file() {
 	# Make sure the archive file exists, if not find another archive file with a different extension.
 	if [ ! -f "${archive_file}" ]; then
 		msg "Archive file ${archive_file} does not exist, searching for alternative..."
-		archive_file=$(find "${SOURCES}" -name "$(basename "${archive_file}" | sed 's/\.[^.]*$//').*")
+		archive_file=$(find "${SOURCES}" -name "$(basename "${archive_file}" | sed 's/\.[^.]*$//').*" | head -1)
 		if [ ! -f "${archive_file}" ]; then
 			msg "Error: Archive file ${archive_file} does not exist."
 			exit 1
