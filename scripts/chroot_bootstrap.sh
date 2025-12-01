@@ -5,6 +5,12 @@ set -e # Exit on error
 
 umask 022
 
+# Validate running within chroot
+if [ ! -f /etc/chroot_environment ]; then
+	echo "Error: This script must be run inside the chroot environment"
+	exit 1
+fi
+
 # Directory variables
 TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"/tmp/sources"}
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"/tmp/work"}
@@ -118,163 +124,48 @@ bootstrap_stage_2() {
 
 	msg "Starting chroot bootstrap stage 2..."
 
-	# Setup chroot environment
-	step_chroot_setup
+	# Define stage 2 steps
+	local stage2_steps=(
+		"setup"
+		"gettext"
+		"bison"
+		"perl_stage2"
+		"python_stage2"
+		"texinfo"
+		"util_linux"
+		"cleanup"
+		"glibc"
+		"tzdata"
+		"zlib"
+		"bzip2"
+		"xz"
+		"zstd"
+		"file"
+		"readline"
+		"m4"
+		"flex"
+		"pkgconf"
+		"binutils"
+		"gmp"
+		"mpfr"
+		"mpc"
+		"attr"
+		"acl"
+		"libcap"
+		"libxcrypt"
+		"shadow"
+		"gcc"
+		"ncurses"
+		"sed"
+		"bash"
+	)
 
-	##
-	# gettext Step
-	##
-	step_chroot_gettext
+	# Execute each step
+	for step in "${stage2_steps[@]}"; do
+		step_chroot_${step}
+	done
 
-	##
-	# bison Step
-	##
-	step_chroot_bison
-
-	##
-	# Perl Step
-	##
-	step_chroot_perl_stage2
-
-	##
-	# Python Step
-	##
-	step_chroot_python_stage2
-
-	##
-	# Texinfo Step
-	##
-	step_chroot_texinfo
-
-	##
-	# util-linux Step
-	##
-	step_chroot_util_linux
-
-	##
-	# Cleanup Step
-	##
-	step_chroot_cleanup
-
-	##
-	# glibc Step
-	##
-	step_chroot_glibc
-
-	##
-	# Timezone Data Step
-	##
-	step_chroot_tzdata
-
-	##
-	# zlib Step
-	##
-	step_chroot_zlib
-
-	##
-	# bzip2 Step
-	##
-	step_chroot_bzip2
-
-	##
-	# xz Step
-	##
-	step_chroot_xz
-
-	##
-	# zstd Step
-	##
-	step_chroot_zstd
-
-	##
-	# file Step
-	##
-	step_chroot_file
-
-	##
-	# readline Step
-	##
-	step_chroot_readline
-
-	##
-	# m4 Step
-	##
-	step_chroot_m4
-
-	##
-	# flex Step
-	##
-	step_chroot_flex
-
-	##
-	# pkgconf Step
-	##
-	step_chroot_pkgconf
-
-	##
-	# binutils Step
-	##
-	step_chroot_binutils
-
-	##
-	# gmp Step
-	##
-	step_chroot_gmp
-
-	##
-	# mpfr Step
-	##
-	step_chroot_mpfr
-
-	##
-	# mpc Step
-	##
-	step_chroot_mpc
-
-	##
-	# attr Step
-	##
-	step_chroot_attr
-
-	##
-	# acl Step
-	##
-	step_chroot_acl
-
-	##
-	# libcap Step
-	##
-	step_chroot_libcap
-
-	##
-	# libxcrypt Step
-	##
-	step_chroot_libxcrypt
-
-	##
-	# shadow Step
-	##
-	step_chroot_shadow
-
-	##
-	# gcc Step
-	##
-	step_chroot_gcc
-
-	##
-	# ncurses Step
-	##
-	step_chroot_ncurses
-
-	##
-	# sed Step
-	##
-	step_chroot_sed
-
-	##
-	# bash Step
-	##
-	step_chroot_bash
+	clean_work_dir
 
 	msg "Chroot bootstrap stage 2 completed successfully."
 }
@@ -283,47 +174,26 @@ bootstrap_stage_3() {
 
 	msg "Starting chroot bootstrap stage 3..."
 
-	##
-	# libtool Step
-	##
-	step_chroot_libtool
+	# Define stage 3 steps
+	local stage3_steps=(
+		"libtool"
+		"gdbm"
+		"gperf"
+		"expat"
+		"perl_stage3"
+		"inetutils"
+		"less"
+		"autoconf"
+	)
 
-	##
-	# GDBM Step
-	##
-	step_chroot_gdbm
-
-	##
-	# gperf Step
-	##
-	step_chroot_gperf
-
-	##
-	# expat Step
-	##
-	step_chroot_expat
-
-	##
-	# Perl Step
-	##
-	step_chroot_perl_stage3
-
-	##
-	# Inetutils Step
-	##
-	step_chroot_inetutils
-
-	##
-	# less Step
-	##
-	step_chroot_less
-
-	##
-	# Autoconf Step
-	##
-	step_chroot_autoconf
+	# Execute each step
+	for step in "${stage3_steps[@]}"; do
+		step_chroot_${step}
+	done
 
 	clean_work_dir
+
+	msg "Chroot bootstrap stage 3 completed successfully."
 }
 
 # Default to stage 2 if no argument is given
