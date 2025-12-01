@@ -30,3 +30,29 @@ step_xz() {
 
 	clean_work_dir
 }
+
+step_chroot_xz() {
+	extract_file "${SOURCES}/xz-${XZ_VER}.tar.xz" "${WORK}/xz-${XZ_VER}"
+
+	cd "${WORK}/xz-${XZ_VER}"
+
+	msg "Configuring xz..."
+
+	./configure --prefix=/usr \
+		--disable-static \
+		--docdir=/usr/share/doc/xz-${XZ_VER}
+
+	msg "Building xz..."
+
+	make
+
+	msg "Checking xz..."
+
+	make check
+
+	msg "Installing xz..."
+
+	make install
+
+	clean_work_dir
+}
