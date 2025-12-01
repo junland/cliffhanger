@@ -21,18 +21,11 @@ fi
 
 CHROOT_PATH="$1"
 STAGE="${2:-1}"
+BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
 
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
 	echo "Error: Chroot path '$CHROOT_PATH' is not a directory"
-	exit 1
-fi
-
-# Validate bootstrap script exists
-BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
-if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
-	echo "Error: Bootstrap script not found at '$BOOTSTRAP_SCRIPT'"
-	echo "Please ensure the bootstrap script is copied to the chroot environment"
 	exit 1
 fi
 
@@ -57,6 +50,16 @@ msg() {
 
 msg "Starting chroot bootstrap stage $STAGE in $CHROOT_PATH"
 
+# Copy the bootstrap script into the chroot environment
+msg "Copying bootstrap script to chroot environment..."
+cp -v "$(realpath "$0")" "$BOOTSTRAP_SCRIPT"
+chmod +x "$BOOTSTRAP_SCRIPT"
+
+# Copy step files into the chroot environment
+msg "Copying step files to chroot environment..."
+STEP_DIR="$(dirname "$(realpath "$0")")/steps"
+cp -rv "$STEP_DIR"/* "$CHROOT_PATH/tmp/steps/"
+
 # Make sure directories have root ownership
 echo "Setting ownership of $CHROOT_PATH to root..."
 chown -R root:root "$CHROOT_PATH"
@@ -80,6 +83,8 @@ else
 	mount -t tmpfs -o nosuid,nodev tmpfs $CHROOT_PATH/dev/shm
 fi
 
+touch $CHROOT_PATH/etc/chroot_environment
+
 # Cleanup function
 cleanup() {
 	echo "Cleaning up chroot environment..."
@@ -93,6 +98,8 @@ cleanup() {
 
 	rm -v $CHROOT_PATH/dev/console || true
 	rm -v $CHROOT_PATH/dev/null || true
+
+	rm -v $CHROOT_PATH/etc/chroot_environment || true
 }
 
 # Set trap to ensure cleanup always runs

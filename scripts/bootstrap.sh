@@ -12,7 +12,6 @@ TARGET_ROOTFS_SOURCES_PATH=${TARGET_ROOTFS_SOURCES_PATH:-"${TARGET_ROOTFS_PATH}/
 TARGET_ROOTFS_WORK_PATH=${TARGET_ROOTFS_WORK_PATH:-"${TARGET_ROOTFS_PATH}/tmp/work"}
 TARGET_TRIPLET=${TARGET_TRIPLET:-"${TARGET_CPU_ARCH}-buildroot-linux-gnu"}
 TOOLCHAIN_PATH=${TOOLCHAIN_PATH:-"${TARGET_ROOTFS_PATH}/toolchain"}
-EXIT_AFTER_TEMP_TOOLS=${EXIT_AFTER_TEMP_TOOLS:-false}
 
 # Variables with shorter names
 ROOTFS="${TARGET_ROOTFS_PATH}"
@@ -26,25 +25,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/steps/_common.sh"
 
 # Source all step files
-source "${SCRIPT_DIR}/steps/bash_step.sh"
-source "${SCRIPT_DIR}/steps/binutils_step.sh"
-source "${SCRIPT_DIR}/steps/coreutils_step.sh"
-source "${SCRIPT_DIR}/steps/diffutils_step.sh"
-source "${SCRIPT_DIR}/steps/file_step.sh"
-source "${SCRIPT_DIR}/steps/findutils_step.sh"
-source "${SCRIPT_DIR}/steps/gawk_step.sh"
-source "${SCRIPT_DIR}/steps/gcc_step.sh"
-source "${SCRIPT_DIR}/steps/glibc_step.sh"
-source "${SCRIPT_DIR}/steps/grep_step.sh"
-source "${SCRIPT_DIR}/steps/gzip_step.sh"
-source "${SCRIPT_DIR}/steps/linux_headers_step.sh"
-source "${SCRIPT_DIR}/steps/m4_step.sh"
-source "${SCRIPT_DIR}/steps/make_step.sh"
-source "${SCRIPT_DIR}/steps/ncurses_step.sh"
-source "${SCRIPT_DIR}/steps/patch_step.sh"
-source "${SCRIPT_DIR}/steps/sed_step.sh"
-source "${SCRIPT_DIR}/steps/tar_step.sh"
-source "${SCRIPT_DIR}/steps/xz_step.sh"
+source "${SCRIPT_DIR}/steps/*_step.sh"
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
@@ -117,7 +98,4 @@ for step in "${BOOTSTRAP_STEPS[@]}"; do
 	step_${step}
 done
 
-if [ "${EXIT_AFTER_TEMP_TOOLS}" = true ]; then
-	msg "Exiting after temporary tools installation as requested."
-	exit 0
-fi
+msg "Bootstrap stage 1 completed successfully!"
