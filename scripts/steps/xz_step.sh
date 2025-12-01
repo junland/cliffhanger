@@ -1,6 +1,8 @@
 #!/bin/bash
 # Xz Step - Build and install xz
 
+XZ_VER="5.8.1"
+
 step_xz() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/xz-${XZ_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/xz-${XZ_VER}"
 

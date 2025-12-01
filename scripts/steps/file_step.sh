@@ -1,6 +1,8 @@
 #!/bin/bash
 # File Step - Build and install file command
 
+FILE_VER="5.46"
+
 step_file() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/file-${FILE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/file-${FILE_VER}"
 

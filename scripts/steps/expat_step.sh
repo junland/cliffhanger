@@ -1,6 +1,8 @@
 #!/bin/bash
 # Expat Step - Build and install expat in chroot
 
+EXPAT_VER="2.7.1"
+
 step_chroot_expat() {
 	extract_file "${SOURCES}/expat-${EXPAT_VER}.tar.xz" "${WORK}/expat-${EXPAT_VER}"
 

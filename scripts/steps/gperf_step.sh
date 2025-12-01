@@ -1,6 +1,8 @@
 #!/bin/bash
 # Gperf Step - Build and install gperf in chroot
 
+GPERF_VER="3.3"
+
 step_chroot_gperf() {
 	extract_file "${SOURCES}/gperf-${GPERF_VER}.tar.gz" "${WORK}/gperf-${GPERF_VER}"
 

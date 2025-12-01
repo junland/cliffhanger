@@ -1,6 +1,8 @@
 #!/bin/bash
 # Util-linux Step - Build and install util-linux in chroot
 
+UTIL_LINUX_VER="2.41.1"
+
 step_chroot_util_linux() {
 	extract_file "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${WORK}/util-linux-${UTIL_LINUX_VER}"
 

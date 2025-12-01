@@ -1,6 +1,8 @@
 #!/bin/bash
 # Timezone Data Step - Install timezone data in chroot
 
+TZ_DATA_VER="2025b"
+
 step_chroot_tzdata() {
 	extract_file "${SOURCES}/tzdata${TZ_DATA_VER}.tar.gz" "${WORK}/tzdata${TZ_DATA_VER}"
 

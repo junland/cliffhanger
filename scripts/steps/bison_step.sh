@@ -1,6 +1,8 @@
 #!/bin/bash
 # Bison Step - Build and install bison in chroot
 
+BISON_VER="3.8.2"
+
 step_chroot_bison() {
 	extract_file "${SOURCES}/bison-${BISON_VER}.tar.xz" "${WORK}/bison-${BISON_VER}"
 

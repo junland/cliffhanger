@@ -1,6 +1,8 @@
 #!/bin/bash
 # Coreutils Step - Build and install coreutils
 
+COREUTILS_VER="9.7"
+
 step_coreutils() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/coreutils-${COREUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/coreutils-${COREUTILS_VER}"
 

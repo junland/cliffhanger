@@ -1,6 +1,8 @@
 #!/bin/bash
 # Make Step - Build and install make
 
+MAKE_VER="4.4.1"
+
 step_make() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/make-${MAKE_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/make-${MAKE_VER}"
 

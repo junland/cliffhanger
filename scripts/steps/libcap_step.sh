@@ -1,6 +1,8 @@
 #!/bin/bash
 # Libcap Step - Build and install libcap in chroot
 
+LIBCAP_VER="2.76"
+
 step_chroot_libcap() {
 	extract_file "${SOURCES}/libcap-${LIBCAP_VER}.tar.xz" "${WORK}/libcap-${LIBCAP_VER}"
 

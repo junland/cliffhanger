@@ -1,6 +1,8 @@
 #!/bin/bash
 # Shadow Step - Build and install shadow in chroot
 
+SHADOW_VER="4.18.0"
+
 step_chroot_shadow() {
 	extract_file "${SOURCES}/shadow-${SHADOW_VER}.tar.xz" "${WORK}/shadow-${SHADOW_VER}"
 

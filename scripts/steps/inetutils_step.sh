@@ -1,6 +1,8 @@
 #!/bin/bash
 # Inetutils Step - Build and install inetutils in chroot
 
+INETUTILS_VER="2.6"
+
 step_chroot_inetutils() {
 	extract_file "${SOURCES}/inetutils-${INETUTILS_VER}.tar.xz" "${WORK}/inetutils-${INETUTILS_VER}"
 

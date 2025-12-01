@@ -1,6 +1,8 @@
 #!/bin/bash
 # Less Step - Build and install less in chroot
 
+LESS_VER="679"
+
 step_chroot_less() {
 	extract_file "${SOURCES}/less-${LESS_VER}.tar.gz" "${WORK}/less-${LESS_VER}"
 

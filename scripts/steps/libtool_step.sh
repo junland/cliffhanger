@@ -1,6 +1,8 @@
 #!/bin/bash
 # Libtool Step - Build and install libtool in chroot
 
+LIBTOOL_VER="2.5.4"
+
 step_chroot_libtool() {
 	extract_file "${SOURCES}/libtool-${LIBTOOL_VER}.tar.xz" "${WORK}/libtool-${LIBTOOL_VER}"
 

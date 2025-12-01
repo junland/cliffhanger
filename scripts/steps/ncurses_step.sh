@@ -1,6 +1,8 @@
 #!/bin/bash
 # Ncurses Step - Build and install ncurses
 
+NCURSES_VER="6.5-20250809"
+
 step_ncurses() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/ncurses-${NCURSES_VER}.tgz" "${TARGET_ROOTFS_WORK_PATH}/ncurses-${NCURSES_VER}"
 

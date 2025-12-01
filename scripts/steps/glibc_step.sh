@@ -1,6 +1,8 @@
 #!/bin/bash
 # Glibc Step - Build and install glibc
 
+GLIBC_VER="2.42"
+
 step_glibc() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/glibc-${GLIBC_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/glibc-${GLIBC_VER}"
 

@@ -1,6 +1,12 @@
 #!/bin/bash
 # GCC Step - Cross-compiler GCC
 
+GCC_VER="15.2.0"
+GMP_VER="6.3.0"
+MPC_VER="1.3.1"
+MPFR_VER="4.2.2"
+GLIBC_VER="2.42"
+
 step_gcc_pass1() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gcc-${GCC_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}"
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gmp-${GMP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gcc-${GCC_VER}/gmp"
