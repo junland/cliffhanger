@@ -1,6 +1,8 @@
 #!/bin/bash
 # Zlib Step - Build and install zlib in chroot
 
+ZLIB_VER="1.3.1"
+
 step_chroot_zlib() {
 	extract_file "${SOURCES}/zlib-${ZLIB_VER}.tar.xz" "${WORK}/zlib-${ZLIB_VER}"
 

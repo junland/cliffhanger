@@ -1,6 +1,8 @@
 #!/bin/bash
 # Gawk Step - Build and install gawk
 
+GAWK_VER="5.3.2"
+
 step_gawk() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gawk-${GAWK_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gawk-${GAWK_VER}"
 

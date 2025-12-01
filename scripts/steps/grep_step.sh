@@ -1,6 +1,8 @@
 #!/bin/bash
 # Grep Step - Build and install grep
 
+GREP_VER="3.12"
+
 step_grep() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/grep-${GREP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/grep-${GREP_VER}"
 

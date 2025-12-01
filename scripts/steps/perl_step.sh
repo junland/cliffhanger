@@ -1,6 +1,8 @@
 #!/bin/bash
 # Perl Step - Build and install Perl in chroot
 
+PERL_VER="5.42.0"
+
 step_chroot_perl_stage2() {
 	extract_file "${SOURCES}/perl-${PERL_VER}.tar.xz" "${WORK}/perl-${PERL_VER}"
 

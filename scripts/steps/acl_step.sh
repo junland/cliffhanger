@@ -1,6 +1,8 @@
 #!/bin/bash
 # ACL Step - Build and install acl in chroot
 
+ACL_VER="2.3.2"
+
 step_chroot_acl() {
 	extract_file "${SOURCES}/acl-${ACL_VER}.tar.xz" "${WORK}/acl-${ACL_VER}"
 

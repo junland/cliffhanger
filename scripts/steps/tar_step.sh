@@ -1,6 +1,8 @@
 #!/bin/bash
 # Tar Step - Build and install tar
 
+TAR_VER="1.35"
+
 step_tar() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/tar-${TAR_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/tar-${TAR_VER}"
 

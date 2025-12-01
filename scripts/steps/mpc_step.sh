@@ -1,6 +1,8 @@
 #!/bin/bash
 # MPC Step - Build and install mpc in chroot
 
+MPC_VER="1.3.1"
+
 step_chroot_mpc() {
 	extract_file "${SOURCES}/mpc-${MPC_VER}.tar.gz" "${WORK}/mpc-${MPC_VER}"
 

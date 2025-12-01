@@ -1,6 +1,8 @@
 #!/bin/bash
 # Pkgconf Step - Build and install pkgconf in chroot
 
+PKGCONF_VER="2.5.1"
+
 step_chroot_pkgconf() {
 	extract_file "${SOURCES}/pkgconf-${PKGCONF_VER}.tar.xz" "${WORK}/pkgconf-${PKGCONF_VER}"
 

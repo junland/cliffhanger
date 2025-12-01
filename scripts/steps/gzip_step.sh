@@ -1,6 +1,8 @@
 #!/bin/bash
 # Gzip Step - Build and install gzip
 
+GZIP_VER="1.13"
+
 step_gzip() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/gzip-${GZIP_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/gzip-${GZIP_VER}"
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Bash Step - Build and install bash
 
+BASH_VER="5.3"
+
 step_bash() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/bash-${BASH_VER}.tar.gz" "${TARGET_ROOTFS_WORK_PATH}/bash-${BASH_VER}"
 

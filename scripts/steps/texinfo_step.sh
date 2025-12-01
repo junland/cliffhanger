@@ -1,6 +1,8 @@
 #!/bin/bash
 # Texinfo Step - Build and install texinfo in chroot
 
+TEXINFO_VER="7.2"
+
 step_chroot_texinfo() {
 	extract_file "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz" "${WORK}/texinfo-${TEXINFO_VER}"
 

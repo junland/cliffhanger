@@ -1,6 +1,8 @@
 #!/bin/bash
 # GMP Step - Build and install gmp in chroot
 
+GMP_VER="6.3.0"
+
 step_chroot_gmp() {
 	extract_file "${SOURCES}/gmp-${GMP_VER}.tar.xz" "${WORK}/gmp-${GMP_VER}"
 

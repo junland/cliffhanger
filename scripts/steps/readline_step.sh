@@ -1,6 +1,8 @@
 #!/bin/bash
 # Readline Step - Build and install readline in chroot
 
+READLINE_VER="8.3"
+
 step_chroot_readline() {
 	extract_file "${SOURCES}/readline-${READLINE_VER}.tar.gz" "${WORK}/readline-${READLINE_VER}"
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Findutils Step - Build and install findutils
 
+FINDUTILS_VER="4.10.0"
+
 step_findutils() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/findutils-${FINDUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/findutils-${FINDUTILS_VER}"
 

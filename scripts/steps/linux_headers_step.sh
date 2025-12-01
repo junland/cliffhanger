@@ -1,6 +1,8 @@
 #!/bin/bash
 # Linux Headers Step - Install kernel headers
 
+LINUX_VER="6.16.1"
+
 step_linux_headers() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/linux-${LINUX_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/linux-${LINUX_VER}"
 

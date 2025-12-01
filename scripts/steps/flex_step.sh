@@ -1,6 +1,8 @@
 #!/bin/bash
 # Flex Step - Build and install flex in chroot
 
+FLEX_VER="2.6.4"
+
 step_chroot_flex() {
 	extract_file "${SOURCES}/flex-${FLEX_VER}.tar.gz" "${WORK}/flex-${FLEX_VER}"
 

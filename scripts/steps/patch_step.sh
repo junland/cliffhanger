@@ -1,6 +1,8 @@
 #!/bin/bash
 # Patch Step - Build and install patch
 
+PATCH_VER="2.7.6"
+
 step_patch() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/patch-${PATCH_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/patch-${PATCH_VER}"
 

@@ -1,6 +1,8 @@
 #!/bin/bash
 # Bzip2 Step - Build and install bzip2 in chroot
 
+BZIP2_VER="1.0.8"
+
 step_chroot_bzip2() {
 	extract_file "${SOURCES}/bzip2-${BZIP2_VER}.tar.gz" "${WORK}/bzip2-${BZIP2_VER}"
 

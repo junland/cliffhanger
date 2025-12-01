@@ -1,6 +1,8 @@
 #!/bin/bash
 # Libxcrypt Step - Build and install libxcrypt in chroot
 
+LIBXCRPT_VER="4.4.38"
+
 step_chroot_libxcrypt() {
 	extract_file "${SOURCES}/libxcrypt-${LIBXCRPT_VER}.tar.xz" "${WORK}/libxcrypt-${LIBXCRPT_VER}"
 

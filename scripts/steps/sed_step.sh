@@ -1,6 +1,8 @@
 #!/bin/bash
 # Sed Step - Build and install sed
 
+SED_VER="4.9"
+
 step_sed() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/sed-${SED_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/sed-${SED_VER}"
 

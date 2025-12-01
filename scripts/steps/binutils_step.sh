@@ -1,6 +1,8 @@
 #!/bin/bash
 # Binutils Step - Cross-toolchain binutils
 
+BINUTILS_VER="2.45"
+
 step_binutils_pass1() {
 	extract_file "${TARGET_ROOTFS_SOURCES_PATH}/binutils-${BINUTILS_VER}.tar.xz" "${TARGET_ROOTFS_WORK_PATH}/binutils-${BINUTILS_VER}"
 
