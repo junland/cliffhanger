@@ -31,7 +31,11 @@ fi
 source "${STEP_DIR}/_common.sh"
 
 # Source all step files
-source "${STEP_DIR}/*_step.sh"
+for script in "${STEP_DIR}"/*_step.sh; do
+	[ -f "$script" ] && source "$script"
+done
+
+exit 0
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"
