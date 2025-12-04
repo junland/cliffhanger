@@ -18,14 +18,22 @@ ROOTFS="${TARGET_ROOTFS_PATH}"
 WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
-# Get the directory of this script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Set step scripts directory
+STEP_DIR=${STEP_DIR:-"$(dirname "$(realpath "$0")")/steps"}
+
+# Make sure step directory exists
+if [ ! -d "${STEP_DIR}" ]; then
+	echo "Error: Step directory ${STEP_DIR} does not exist."
+	exit 1
+fi
 
 # Source common utilities
-source "${SCRIPT_DIR}/steps/_common.sh"
+source "${STEP_DIR}/_common.sh"
 
 # Source all step files
-source "${SCRIPT_DIR}/steps/*_step.sh"
+for script in "${STEP_DIR}"/*_step.sh; do
+	[ -f "$script" ] && source "$script"
+done
 
 # Setup PATH
 PATH="${TOOLCHAIN_PATH}/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin"

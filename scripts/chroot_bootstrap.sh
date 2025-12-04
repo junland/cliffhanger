@@ -22,7 +22,9 @@ SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 source "${TARGET_ROOTFS_STEPS_PATH}/steps/_common.sh"
 
 # Source all chroot step files
-source "${TARGET_ROOTFS_STEPS_PATH}/steps/*_step.sh"
+for step in "${TARGET_ROOTFS_STEPS_PATH}/steps/*_step.sh"; do
+	[ -f "$step" ] && source "$step"
+done
 
 # Set locale
 LC_ALL=POSIX
