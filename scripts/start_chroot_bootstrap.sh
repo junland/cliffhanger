@@ -36,8 +36,6 @@ if ! [[ "$STAGE" =~ ^[2-3]$ ]]; then
 	exit 1
 fi
 
-exit 1
-
 # Environment variables
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 LC_ALL=POSIX
