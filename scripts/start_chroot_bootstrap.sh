@@ -70,21 +70,21 @@ chown -R root:root "$CHROOT_PATH"
 
 # Prepare the chroot environment
 echo "Setting up chroot environment in $CHROOT_PATH..."
-mkdir -pv $CHROOT_PATH/{dev,proc,sys,run}
-mknod -m 600 $CHROOT_PATH/dev/console c 5 1
-mknod -m 666 $CHROOT_PATH/dev/null c 1 3
-mount -v --bind /dev $CHROOT_PATH/dev
-mount -vt devpts devpts $CHROOT_PATH/dev/pts -o gid=5,mode=620
-mount -vt proc proc $CHROOT_PATH/proc
-mount -vt sysfs sysfs $CHROOT_PATH/sys
-mount -vt tmpfs tmpfs $CHROOT_PATH/run
+mkdir -pv "$CHROOT_PATH"/{dev,proc,sys,run}
+mknod -m 600 "$CHROOT_PATH"/dev/console c 5 1
+mknod -m 666 "$CHROOT_PATH"/dev/null c 1 3
+mount -v --bind /dev "$CHROOT_PATH"/dev
+mount -vt devpts devpts "$CHROOT_PATH"/dev/pts -o gid=5,mode=620
+mount -vt proc proc "$CHROOT_PATH"/proc
+mount -vt sysfs sysfs "$CHROOT_PATH"/sys
+mount -vt tmpfs tmpfs "$CHROOT_PATH"/run
 
-if [ -h $CHROOT_PATH/dev/shm ]; then
+if [ -h "$CHROOT_PATH"/dev/shm ]; then
 	echo "Creating directory for /dev/shm"
-	mkdir -pv $CHROOT_PATH/$(readlink $CHROOT_PATH/dev/shm)
+	mkdir -pv "$CHROOT_PATH"/$(readlink "$CHROOT_PATH"/dev/shm)
 else
 	echo "Mounting /dev/shm"
-	mount -t tmpfs -o nosuid,nodev tmpfs $CHROOT_PATH/dev/shm
+	mount -t tmpfs -o nosuid,nodev tmpfs "$CHROOT_PATH/dev/shm"
 fi
 
 touch $CHROOT_PATH/etc/chroot_environment
@@ -109,7 +109,7 @@ cleanup() {
 # Set trap to ensure cleanup always runs
 trap cleanup EXIT INT TERM
 
-echo "Entering chroot and starting bootstraping process..."
+echo "Entering chroot and starting bootstrapping process..."
 
 if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 	msg "Entering chroot in standalone mode..."
