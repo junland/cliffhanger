@@ -55,6 +55,10 @@ msg "Copying bootstrap script to chroot environment..."
 cp -v "$(realpath "$0")" "$BOOTSTRAP_SCRIPT"
 chmod +x "$BOOTSTRAP_SCRIPT"
 
+# Create necessary directories in the chroot environment
+msg "Creating necessary directories in chroot..."
+mkdir -pv "$CHROOT_PATH/tmp/steps"
+
 # Copy step files into the chroot environment
 msg "Copying step files to chroot environment..."
 STEP_DIR="$(dirname "$(realpath "$0")")/steps"
