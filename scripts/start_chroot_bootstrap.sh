@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set +h # Disable hashall to speed up script execution
 set -e # Exit on error
