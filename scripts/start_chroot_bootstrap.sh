@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 set +h # Disable hashall to speed up script execution
 set -e # Exit on error
@@ -15,13 +15,15 @@ fi
 if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
 	echo "Usage: $0 <chroot_path> [stage_number]"
 	echo "  chroot_path   - Path to the chroot directory"
-	echo "  stage_number  - Bootstrap stage to run (2 or 3, default: 2)"
+	echo "  stage_number  - Bootstrap stage to run (1 or 2, default: 1)"
 	exit 1
 fi
 
 CHROOT_PATH="$1"
-STAGE="${2:-2}"
-BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
+STAGE="${2:-1}"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+BOOTSTRAP_SCRIPT="${SCRIPT_DIR}/chroot_bootstrap.sh"
+CHROOT_BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
 
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
@@ -52,12 +54,8 @@ msg "Starting chroot bootstrap stage $STAGE in $CHROOT_PATH"
 
 # Copy the bootstrap script into the chroot environment
 msg "Copying bootstrap script to chroot environment..."
-cp -v "$(realpath "$0")" "$BOOTSTRAP_SCRIPT"
-chmod +x "$BOOTSTRAP_SCRIPT"
-
-# Create necessary directories in the chroot environment
-msg "Creating necessary directories in chroot..."
-mkdir -pv "$CHROOT_PATH/tmp/steps"
+cp -v $BOOTSTRAP_SCRIPT "$CHROOT_BOOTSTRAP_SCRIPT"
+chmod +x "$CHROOT_BOOTSTRAP_SCRIPT"
 
 # Copy step files into the chroot environment
 msg "Copying step files to chroot environment..."
@@ -70,21 +68,21 @@ chown -R root:root "$CHROOT_PATH"
 
 # Prepare the chroot environment
 echo "Setting up chroot environment in $CHROOT_PATH..."
-mkdir -pv "$CHROOT_PATH"/{dev,proc,sys,run}
-mknod -m 600 "$CHROOT_PATH"/dev/console c 5 1
-mknod -m 666 "$CHROOT_PATH"/dev/null c 1 3
-mount -v --bind /dev "$CHROOT_PATH"/dev
-mount -vt devpts devpts "$CHROOT_PATH"/dev/pts -o gid=5,mode=620
-mount -vt proc proc "$CHROOT_PATH"/proc
-mount -vt sysfs sysfs "$CHROOT_PATH"/sys
-mount -vt tmpfs tmpfs "$CHROOT_PATH"/run
+mkdir -pv $CHROOT_PATH/{dev,proc,sys,run}
+mknod -m 600 $CHROOT_PATH/dev/console c 5 1
+mknod -m 666 $CHROOT_PATH/dev/null c 1 3
+mount -v --bind /dev $CHROOT_PATH/dev
+mount -vt devpts devpts $CHROOT_PATH/dev/pts -o gid=5,mode=620
+mount -vt proc proc $CHROOT_PATH/proc
+mount -vt sysfs sysfs $CHROOT_PATH/sys
+mount -vt tmpfs tmpfs $CHROOT_PATH/run
 
-if [ -h "$CHROOT_PATH"/dev/shm ]; then
+if [ -h $CHROOT_PATH/dev/shm ]; then
 	echo "Creating directory for /dev/shm"
-	mkdir -pv "$CHROOT_PATH"/$(readlink "$CHROOT_PATH"/dev/shm)
+	mkdir -pv $CHROOT_PATH/$(readlink $CHROOT_PATH/dev/shm)
 else
 	echo "Mounting /dev/shm"
-	mount -t tmpfs -o nosuid,nodev tmpfs "$CHROOT_PATH/dev/shm"
+	mount -t tmpfs -o nosuid,nodev tmpfs $CHROOT_PATH/dev/shm
 fi
 
 touch $CHROOT_PATH/etc/chroot_environment
@@ -109,7 +107,7 @@ cleanup() {
 # Set trap to ensure cleanup always runs
 trap cleanup EXIT INT TERM
 
-echo "Entering chroot and starting bootstrapping process..."
+echo "Entering chroot and starting bootstraping process..."
 
 if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 	msg "Entering chroot in standalone mode..."
