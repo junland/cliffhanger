@@ -38,7 +38,7 @@ if ! [[ "$STAGE" =~ ^[2-3]$ ]]; then
 	exit 1
 fi
 
-# Environment variables
+# Environment variables for compiliation
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 LC_ALL=POSIX
 TERM=xterm

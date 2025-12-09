@@ -27,11 +27,12 @@ for step in ${TARGET_ROOTFS_STEPS_PATH}/*_step.sh; do
 	[ -f "$step" ] && source "$step"
 done
 
-# Set locale
+# Environment variables for compiliation
+ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 LC_ALL=POSIX
+TERM=xterm
 
-# Export needed variables
-export LC_ALL
+export LC_ALL TERM
 
 clean_work_dir
 
