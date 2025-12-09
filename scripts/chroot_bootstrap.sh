@@ -19,10 +19,10 @@ WORK="${TARGET_ROOTFS_WORK_PATH}"
 SOURCES="${TARGET_ROOTFS_SOURCES_PATH}"
 
 # Source common utilities
-source "${TARGET_ROOTFS_STEPS_PATH}/steps/_common.sh"
+source "${TARGET_ROOTFS_STEPS_PATH}/_common.sh"
 
 # Source all chroot step files
-for step in "${TARGET_ROOTFS_STEPS_PATH}/steps/*_step.sh"; do
+for step in "${TARGET_ROOTFS_STEPS_PATH}/*_step.sh"; do
 	[ -f "$step" ] && source "$step"
 done
 
