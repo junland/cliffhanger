@@ -23,7 +23,7 @@ source "${TARGET_ROOTFS_STEPS_PATH}/_common.sh"
 
 # Source all chroot step files
 for step in ${TARGET_ROOTFS_STEPS_PATH}/*_step.sh; do
-    msg "Sourcing step file: $step"
+	msg "Sourcing step file: $step"
 	[ -f "$step" ] && source "$step"
 done
 
@@ -77,8 +77,8 @@ bootstrap_stage_2() {
 
 	# Execute each step
 	for step in "${stage2_steps[@]}"; do
-        # Make sure function exists before calling it.
-		if ! declare -f "step_chroot_${step}" > /dev/null; then
+		# Make sure function exists before calling it.
+		if ! declare -f "step_chroot_${step}" >/dev/null; then
 			msg "Error: step_chroot_${step} function not found!"
 			exit 1
 		fi
@@ -109,8 +109,8 @@ bootstrap_stage_3() {
 
 	# Execute each step
 	for step in "${stage3_steps[@]}"; do
-        # Make sure function exists before calling it.
-		if ! declare -f "step_chroot_${step}" > /dev/null; then
+		# Make sure function exists before calling it.
+		if ! declare -f "step_chroot_${step}" >/dev/null; then
 			msg "Error: step_chroot_${step} function not found!"
 			exit 1
 		fi
@@ -118,12 +118,12 @@ bootstrap_stage_3() {
 		step_chroot_${step}
 	done
 
-STAGE=${1:-2}
-# Validate that STAGE is numeric
-if ! [[ "${STAGE}" =~ ^[0-9]+$ ]]; then
-	echo "Error: Stage must be a number"
-	exit 1
-fi
+	STAGE=${1:-2}
+	# Validate that STAGE is numeric
+	if ! [[ "${STAGE}" =~ ^[0-9]+$ ]]; then
+		echo "Error: Stage must be a number"
+		exit 1
+	fi
 
 	msg "Chroot bootstrap stage 3 completed successfully."
 }
