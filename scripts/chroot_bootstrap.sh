@@ -23,6 +23,7 @@ source "${TARGET_ROOTFS_STEPS_PATH}/_common.sh"
 
 # Source all chroot step files
 for step in "${TARGET_ROOTFS_STEPS_PATH}/*_step.sh"; do
+    msg "Sourcing step file: $step"
 	[ -f "$step" ] && source "$step"
 done
 
