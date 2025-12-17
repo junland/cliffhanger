@@ -107,6 +107,10 @@ bootstrap_stage_3() {
 		"perl_stage3"
 		"perl_xml_parser"
 		"autoconf"
+		"automake"
+		"openssl"
+		"elfutils_lib"
+		"libffi"
 	)
 
 	# Execute each step
