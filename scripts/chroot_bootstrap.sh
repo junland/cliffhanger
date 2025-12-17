@@ -102,9 +102,10 @@ bootstrap_stage_3() {
 		"gdbm"
 		"gperf"
 		"expat"
-		"perl_stage3"
 		"inetutils"
 		"less"
+		"perl_stage3"
+		"perl_xml_parser"
 		"autoconf"
 	)
 
