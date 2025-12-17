@@ -29,10 +29,6 @@ done
 
 # Environment variables for compiliation
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
-LC_ALL=POSIX
-TERM=xterm
-
-export LC_ALL TERM
 
 clean_work_dir
 

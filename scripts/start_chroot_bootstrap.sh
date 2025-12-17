@@ -41,9 +41,8 @@ fi
 # Environment variables for compiliation
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 LC_ALL=POSIX
-TERM=xterm
 
-export LC_ALL TERM
+export LC_ALL
 
 # msg function that will make echo's pretty.
 msg() {
@@ -68,7 +67,7 @@ chown -R root:root "$CHROOT_PATH"
 
 # Prepare the chroot environment
 echo "Setting up chroot environment in $CHROOT_PATH..."
-mkdir -pv $CHROOT_PATH/{dev,proc,sys,run}
+mkdir -pv $CHROOT_PATH/{dev,proc,sys,run,root,tmp}
 mknod -m 600 $CHROOT_PATH/dev/console c 5 1
 mknod -m 666 $CHROOT_PATH/dev/null c 1 3
 mount -v --bind /dev $CHROOT_PATH/dev
