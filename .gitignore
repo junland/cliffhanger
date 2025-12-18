@@ -64,6 +64,8 @@ dkms.conf
 toolchains/
 toolchain/
 rootfs/
+sources/
+build/
 
 # Development files
 *.env
