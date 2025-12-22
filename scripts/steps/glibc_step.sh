@@ -133,5 +133,9 @@ include /etc/ld.so.conf.d/*.conf
 # End /etc/ld.so.conf
 EOF
 
+    # Generate and install locale(s)
+	msg "Generating and installing locales..."
+	make localedata/install-locales
+
 	clean_work_dir
 }
