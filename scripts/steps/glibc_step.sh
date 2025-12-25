@@ -110,6 +110,9 @@ step_chroot_glibc() {
 	# Disable stdlib/test-cxa_atexit-race2 test as it its known to fail in a chroot.
 	sed -i "/\btest-cxa_atexit-race2 /d" "${WORK}/glibc-${GLIBC_VER}/stdlib/Makefile"
 
+	# Disable sunrpc/tst-udp-timeout test as its known to fail in virtualbox.
+	sed -i "/\btst-udp-timeout /d" "${WORK}/glibc-${GLIBC_VER}/sunrpc/Makefile"
+	
 	TIMEOUTFACTOR=15 make check -j1
 
 	# Disable outdated sanity check.
