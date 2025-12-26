@@ -111,7 +111,7 @@ step_chroot_glibc() {
 	sed -i "/\btest-cxa_atexit-race2 /d" "${WORK}/glibc-${GLIBC_VER}/stdlib/Makefile"
 
 	# Disable sunrpc/tst-udp-timeout test as its known to fail in virtualbox.
-	sed -i "/\btst-udp-timeout /d" "${WORK}/glibc-${GLIBC_VER}/sunrpc/Makefile"
+	sed -i "s/ tst-udp-timeout//g" "${WORK}/glibc-${GLIBC_VER}/sunrpc/Makefile"
 	
 	TIMEOUTFACTOR=15 make check -j1
 
