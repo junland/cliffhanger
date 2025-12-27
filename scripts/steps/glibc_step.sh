@@ -112,6 +112,9 @@ step_chroot_glibc() {
 
 	# Disable sunrpc/tst-udp-timeout test as its known to fail in virtualbox.
 	sed -i "s/ tst-udp-timeout//g" "${WORK}/glibc-${GLIBC_VER}/sunrpc/Makefile"
+
+	# Disable misc/tst-timerfd test as its known to fail in a chroot.
+	sed -i "/\btst-timerfd /d" "${WORK}/glibc-${GLIBC_VER}/sysdeps/unix/sysv/linux/Makefile"
 	
 	TIMEOUTFACTOR=15 make check -j1
 
