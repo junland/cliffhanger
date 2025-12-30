@@ -31,7 +31,7 @@ step_chroot_inetutils() {
 	msg "Checking inetutils..."
 
 	# Disable libls.sh test as its known to fail in a chroot.
-	sed -i sed '/^libls.sh.log:/,/^$/d' tests/Makefile
+	sed -i 's/^libls.sh.log:/,/^$/d' tests/Makefile
 
 	make check
 
