@@ -39,6 +39,7 @@ bootstrap_stage_2() {
 	# Define stage 2 steps
 	local stage2_steps=(
 		"setup"
+		"iana_etc"
 		"gettext"
 		"bison"
 		"perl_stage2"
