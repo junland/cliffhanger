@@ -100,7 +100,7 @@ step_chroot_glibc() {
 
 	msg "Building glibc..."
 
-	make
+	make -j1
 
 	msg "Checking glibc..."
 
