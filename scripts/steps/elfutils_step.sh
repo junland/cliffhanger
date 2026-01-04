@@ -21,8 +21,11 @@ step_chroot_elfutils_lib() {
 
 	msg "Checking elfutils-lib..."
 
-	make check
+    # Run the test suite but also point the locaation of libelf to avoid test failures
+	LD_LIBRARY_PATH=$(pwd)/libelf
 
+	make check
+	
 	msg "Installing elfutils-lib..."
 
 	make -C libelf install
