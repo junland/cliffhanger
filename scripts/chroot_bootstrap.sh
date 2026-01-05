@@ -109,7 +109,10 @@ bootstrap_stage_3() {
 		"elfutils_lib"
 		"libffi"
 		"python_stage3"
-		
+		"python_flint_core"
+		"python_packaging"
+		"python_wheel"
+		"python_setuptools"
 	)
 
 	# Execute each step
