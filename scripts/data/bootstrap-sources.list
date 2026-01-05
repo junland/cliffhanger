@@ -61,3 +61,5 @@ https://www.kernel.org/pub/linux/utils/util-linux/v2.41/util-linux-2.41.1.tar.xz
 https://www.linuxfromscratch.org/patches/lfs/12.4/glibc-2.42-fhs-1.patch
 https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz
 https://zlib.net/zlib-1.3.1.tar.xz
+https://github.com/ninja-build/ninja/archive/v1.13.1/ninja-1.13.1.tar.gz
+https://github.com/mesonbuild/meson/releases/download/1.8.3/meson-1.8.3.tar.gz
