@@ -108,6 +108,8 @@ bootstrap_stage_3() {
 		"openssl"
 		"elfutils_lib"
 		"libffi"
+		"python_stage3"
+		
 	)
 
 	# Execute each step
