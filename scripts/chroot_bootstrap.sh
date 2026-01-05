@@ -75,13 +75,23 @@ bootstrap_stage_2() {
 
 	# Execute each step
 	for step in "${stage2_steps[@]}"; do
+		# Make sure the step has not already been completed
+		if [ -f "/tmp/.chroot_bootstrap_stage2_${step}_done" ]; then
+			msg "Skipping step ${step}, already completed."
+			continue
+		fi
+
 		# Make sure function exists before calling it.
 		if ! declare -f "step_chroot_${step}" >/dev/null; then
 			msg "Error: step_chroot_${step} function not found!"
 			exit 1
 		fi
 
+		# Call the step function
 		step_chroot_${step}
+
+		# If the step function has succeded write a stamp file to track progress
+		touch "/tmp/.chroot_bootstrap_stage2_${step}_done"
 	done
 
 	clean_work_dir
@@ -115,15 +125,25 @@ bootstrap_stage_3() {
 		"python_setuptools"
 	)
 
-	# Execute each step
+	# Execute each chroot step
 	for step in "${stage3_steps[@]}"; do
+		# Make sure the step has not already been completed
+		if [ -f "/tmp/.chroot_bootstrap_stage3_${step}_done" ]; then
+			msg "Skipping step ${step}, already completed."
+			continue
+		fi
+
 		# Make sure function exists before calling it.
 		if ! declare -f "step_chroot_${step}" >/dev/null; then
 			msg "Error: step_chroot_${step} function not found!"
 			exit 1
 		fi
 
+		# Call the step function
 		step_chroot_${step}
+
+		# If the step function has succeded write a stamp file to track progress
+		touch "/tmp/.chroot_bootstrap_stage3_${step}_done"
 	done
 
 	STAGE=${1:-2}
