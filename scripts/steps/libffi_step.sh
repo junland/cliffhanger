@@ -3,7 +3,7 @@
 
 LIBFFI_VER="3.5.2"
 
-step_libffi() {
+step_chroot_libffi() {
 	extract_file "${SOURCES}/libffi-${LIBFFI_VER}.tar.gz" "${WORK}/libffi-${LIBFFI_VER}"
 
 	cd "${WORK}/libffi-${LIBFFI_VER}"
