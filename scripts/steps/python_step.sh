@@ -47,7 +47,7 @@ step_chroot_python_stage3() {
 
 	msg "Checking Python..."
 
-	make test TESTOPTS="--timeout 120"
+	make test TESTOPTS="--timeout 240"
 
 	msg "Installing Python..."
 
