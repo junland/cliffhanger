@@ -27,8 +27,11 @@ for step in ${TARGET_ROOTFS_STEPS_PATH}/*_step.sh; do
 	[ -f "$step" ] && source "$step"
 done
 
-# Environment variables for compiliation
-ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
+clean_tmp_files() {
+	msg "Cleaning temporary files..."
+	# Clean everything in /tmp except for work, sources, steps directories, stamp files, and bootstrap stage files
+	find /tmp -mindepth 1 -maxdepth 1 ! -name work ! -name sources ! -name steps ! -name ".chroot_bootstrap_*_done" ! -name chroot_bootstrap.sh -exec rm -rf {} +
+}
 
 clean_work_dir
 
@@ -87,6 +90,8 @@ bootstrap_stage_2() {
 			exit 1
 		fi
 
+		clean_tmp_files
+
 		# Call the step function
 		step_chroot_${step}
 
@@ -138,6 +143,8 @@ bootstrap_stage_3() {
 			msg "Error: step_chroot_${step} function not found!"
 			exit 1
 		fi
+
+		clean_tmp_files
 
 		# Call the step function
 		step_chroot_${step}
