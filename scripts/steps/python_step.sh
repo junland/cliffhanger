@@ -51,6 +51,8 @@ step_chroot_python_stage3() {
 
 	make test TESTOPTS="--timeout 240"
 
+	unset XTERM
+
 	msg "Installing Python..."
 
 	make install
