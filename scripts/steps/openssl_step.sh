@@ -23,7 +23,7 @@ step_chroot_openssl() {
 
 	msg "Checking OpenSSL..."
 
-	HARNESS_JOBS=$(nproc) make test
+	HARNESS_JOBS=$JOBS make test
 
 	msg "Installing OpenSSL..."
 

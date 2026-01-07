@@ -63,7 +63,7 @@ step_chroot_perl_stage3() {
 
 	msg "Checking Perl..."
 
-	TEST_JOBS=$(nproc) make test_harness
+	TEST_JOBS=$JOBS make test_harness
 
 	msg "Installing Perl..."
 

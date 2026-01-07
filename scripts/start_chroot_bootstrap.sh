@@ -24,6 +24,7 @@ STAGE="${2:-1}"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 BOOTSTRAP_SCRIPT="${SCRIPT_DIR}/chroot_bootstrap.sh"
 CHROOT_BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
+MAKE_JOBS=${MAKE_JOBS:-"$(nproc)"}
 
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
@@ -116,6 +117,7 @@ if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 		PATH=/usr/bin:/usr/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
+		JOBS="$MAKE_JOBS" \
 		/bin/bash --login +h
 else
 	msg "Running bootstrap script inside chroot..."
@@ -125,6 +127,7 @@ else
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
+		JOBS="$MAKE_JOBS" \
 		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh ${STAGE}"
 fi
 
