@@ -16,15 +16,16 @@ if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
 	echo "Usage: $0 <chroot_path> [stage_number]"
 	echo "  chroot_path   - Path to the chroot directory"
 	echo "  stage_number  - Bootstrap stage to run (1 or 2, default: 1)"
+	echo "  jobs		  - Number of make jobs to use (default: number of CPU cores)"
 	exit 1
 fi
 
 CHROOT_PATH="$1"
 STAGE="${2:-1}"
+MAKE_JOBS="${3:-$(nproc)}"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 BOOTSTRAP_SCRIPT="${SCRIPT_DIR}/chroot_bootstrap.sh"
 CHROOT_BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
-MAKE_JOBS=${MAKE_JOBS:-"$(nproc)"}
 
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
