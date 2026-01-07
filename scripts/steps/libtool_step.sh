@@ -24,5 +24,7 @@ step_chroot_libtool() {
 
 	make install
 
+	rm -fv /usr/lib/libltdl.a
+
 	clean_work_dir
 }
