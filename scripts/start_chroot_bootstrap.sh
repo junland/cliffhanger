@@ -40,6 +40,12 @@ if ! [[ "$STAGE" =~ ^[2-3]$ ]]; then
 	exit 1
 fi
 
+# Make sure we have the chroot command available
+if ! command -v chroot &>/dev/null; then
+	echo "Error: chroot command not found. Please install it and try again."
+	exit 1
+fi
+
 # Environment variables for compiliation
 ENTER_CHROOT_STANDALONE=${ENTER_CHROOT_STANDALONE:-"false"}
 LC_ALL=POSIX
