@@ -12,7 +12,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Validate arguments
-if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
+if [ "$#" -lt 1 ] || [ "$#" -gt 3 ]; then
 	echo "Usage: $0 <chroot_path> [stage_number]"
 	echo "  chroot_path   - Path to the chroot directory"
 	echo "  stage_number  - Bootstrap stage to run (1 or 2, default: 1)"
