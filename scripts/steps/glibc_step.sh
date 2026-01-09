@@ -115,6 +115,9 @@ step_chroot_glibc() {
 
 	# Disable misc/tst-timerfd test as its known to fail in a chroot.
 	sed -i "/\btst-timerfd /d" "${WORK}/glibc-${GLIBC_VER}/sysdeps/unix/sysv/linux/Makefile"
+
+	# Disable nss/tst-nss-files-hosts-multi test as its known to fail in a chroot.
+	sed -i "/tests += tst-nss-files-hosts-multi/d" "${WORK}/glibc-${GLIBC_VER}/nss/Makefile"
 	
 	TIMEOUTFACTOR=15 make check -j1
 
