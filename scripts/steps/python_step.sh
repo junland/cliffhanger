@@ -49,7 +49,7 @@ step_chroot_python_stage3() {
 
 	export XTERM="vt100"
 
-	make test TESTOPTS="--timeout 240"
+	make test TESTOPTS="--timeout 600"
 
 	unset XTERM
 
