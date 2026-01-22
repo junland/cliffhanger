@@ -116,25 +116,30 @@ trap cleanup EXIT INT TERM
 
 echo "Entering chroot and starting bootstraping process..."
 
+msg "Environment variables for chroot:"
+msg "Using LC_ALL = $LC_ALL"
+msg "Using MAKE_JOBS = $MAKE_JOBS"
+msg "Using TERM = $TERM"
+
 if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 	msg "Entering chroot in standalone mode..."
 	chroot "$CHROOT_PATH" /usr/bin/env -i \
 		HOME=/root \
+		JOBS="$MAKE_JOBS" \
 		LC_ALL="$LC_ALL" \
-		PATH=/usr/bin:/usr/sbin \
+		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
-		JOBS="$MAKE_JOBS" \
 		/bin/bash --login +h
 else
 	msg "Running bootstrap script inside chroot..."
 	chroot "$CHROOT_PATH" /usr/bin/env -i \
 		HOME=/root \
+		JOBS="$MAKE_JOBS" \
 		LC_ALL="$LC_ALL" \
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
 		TERM="$TERM" \
-		JOBS="$MAKE_JOBS" \
 		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh ${STAGE}"
 fi
 
