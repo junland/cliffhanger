@@ -32,6 +32,8 @@ step_chroot_python_stage3() {
 
 	cd "${WORK}/Python-${PYTHON_VER}"
 
+	msg "Debug before configure - TERM = $TERM"
+
 	msg "Configuring Python..."
 
 	./configure \
@@ -43,15 +45,17 @@ step_chroot_python_stage3() {
 
 	msg "Building Python..."
 
+	msg "Debug before make - TERM = $TERM"
+
 	make
+
+	msg "Debug after make - TERM = $TERM"
 
 	msg "Checking Python..."
 
-	export XTERM="vt100"
+	msg "Debug before make test - TERM = $TERM"
 
 	make test TESTOPTS="--timeout 600"
-
-	unset XTERM
 
 	msg "Installing Python..."
 
