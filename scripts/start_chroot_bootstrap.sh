@@ -129,6 +129,7 @@ if [ "$ENTER_CHROOT_STANDALONE" = "true" ]; then
 		LC_ALL="$LC_ALL" \
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
+		TERMINFO="/usr/share/terminfo" \
 		TERM="$TERM" \
 		/bin/bash --login +h
 else
@@ -139,6 +140,7 @@ else
 		LC_ALL="$LC_ALL" \
 		PATH=/usr/bin:/usr/sbin:/bin:/sbin \
 		PS1='\u:\w\$ ' \
+		TERMINFO="/usr/share/terminfo" \
 		TERM="$TERM" \
 		/bin/bash --login +h -c "/tmp/chroot_bootstrap.sh ${STAGE}"
 fi
