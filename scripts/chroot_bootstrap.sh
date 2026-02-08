@@ -93,7 +93,7 @@ bootstrap_stage_2() {
 		clean_tmp_files
 
 		# Call the step function
-		step_chroot_${step}
+		step_chroot_${step} | tee -a "/tmp/chroot_bootstrap_stage2_${step}.log"
 
 		# If the step function has succeded write a stamp file to track progress
 		touch "/tmp/.chroot_bootstrap_stage2_${step}_done"
@@ -147,7 +147,7 @@ bootstrap_stage_3() {
 		clean_tmp_files
 
 		# Call the step function
-		step_chroot_${step}
+		step_chroot_${step} | tee -a "/tmp/chroot_bootstrap_stage3_${step}.log"
 
 		# If the step function has succeded write a stamp file to track progress
 		touch "/tmp/.chroot_bootstrap_stage3_${step}_done"
