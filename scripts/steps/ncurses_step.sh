@@ -88,6 +88,11 @@ step_chroot_ncurses() {
 
 	cp -av dest/* /
 
+	for lib in ncurses form panel menu ; do
+		ln -sfv lib${lib}w.so /usr/lib/lib${lib}.so
+		ln -sfv ${lib}w.pc    /usr/lib/pkgconfig/${lib}.pc
+	done
+
 	ln -sfv libncursesw.so /usr/lib/libcurses.so
 
 	clean_work_dir
