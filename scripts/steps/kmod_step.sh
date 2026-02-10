@@ -10,8 +10,8 @@ step_chroot_kmod() {
 
 	msg "Configuring kmod..."
 
-	mkdir build
-	cd    build
+	mkdir -vp build
+	cd build
 
 	meson setup .. \
 		--prefix=/usr \
