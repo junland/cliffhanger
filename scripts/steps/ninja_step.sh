@@ -10,7 +10,7 @@ step_chroot_ninja() {
 
 	msg "Building ninja..."
 
-	python3 configure.py --bootstrap
+	python3 configure.py --bootstrap --verbose
 
 	msg "Installing ninja..."
 
