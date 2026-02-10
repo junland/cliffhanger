@@ -128,6 +128,9 @@ bootstrap_stage_3() {
 		"python_packaging"
 		"python_wheel"
 		"python_setuptools"
+		"ninja"
+		"meson"
+		"kmod"
 	)
 
 	# Execute each chroot step
