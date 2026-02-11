@@ -131,6 +131,10 @@ bootstrap_stage_3() {
 		"ninja"
 		"meson"
 		"kmod"
+		"coreutils"
+		"diffutils"
+		"gawk"
+		"findutils"
 	)
 
 	# Execute each chroot step
