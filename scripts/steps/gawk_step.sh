@@ -54,6 +54,8 @@ step_chroot_gawk() {
 
 	msg "Installing gawk..."
 
+	rm -f /usr/bin/gawk-${GAWK_VER}
+
 	make install
 
 	clean_work_dir
