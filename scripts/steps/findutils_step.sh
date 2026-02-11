@@ -29,3 +29,31 @@ step_findutils() {
 
 	clean_work_dir
 }
+
+step_chroot_findutils() {
+	extract_file "${SOURCES}/findutils-${FINDUTILS_VER}.tar.xz" "${WORK}/findutils-${FINDUTILS_VER}"
+
+	cd "${WORK}/findutils-${FINDUTILS_VER}"
+
+	msg "Configuring findutils..."
+
+	./configure \
+		--prefix=/usr \
+		--localstatedir=/var/lib/locate
+
+	msg "Building findutils..."
+
+	make
+
+	msg "Checking findutils..."
+
+	chown -R tester .
+
+	su tester -c "PATH=$PATH make check"
+
+	msg "Installing findutils..."
+
+	make install
+
+	clean_work_dir
+}

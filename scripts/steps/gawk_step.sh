@@ -30,3 +30,31 @@ step_gawk() {
 
 	clean_work_dir
 }
+
+step_chroot_gawk() {
+	extract_file "${SOURCES}/gawk-${GAWK_VER}.tar.xz" "${WORK}/gawk-${GAWK_VER}"
+
+	cd "${WORK}/gawk-${GAWK_VER}"
+
+	msg "Configuring gawk..."
+
+	sed -i 's/extras//' Makefile.in
+
+	./configure --prefix=/usr
+
+	msg "Building gawk..."
+
+	make
+
+	msg "Checking gawk..."
+
+	chown -R tester .
+
+	su tester -c "PATH=$PATH make check"
+
+	msg "Installing gawk..."
+
+	make install
+
+	clean_work_dir
+}

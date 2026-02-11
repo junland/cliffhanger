@@ -30,3 +30,27 @@ step_diffutils() {
 
 	clean_work_dir
 }
+
+step_chroot_diffutils() {
+	extract_file "${SOURCES}/diffutils-${DIFFUTILS_VER}.tar.xz" "${WORK}/diffutils-${DIFFUTILS_VER}"
+
+	cd "${WORK}/diffutils-${DIFFUTILS_VER}"
+
+	msg "Configuring diffutils..."
+
+	./configure --prefix=/usr
+
+	msg "Building diffutils..."
+
+	make
+
+	msg "Checking diffutils..."
+
+	make check
+
+	msg "Installing diffutils..."
+
+	make install
+
+	clean_work_dir
+}
