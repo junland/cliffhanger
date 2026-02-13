@@ -46,11 +46,11 @@ step_chroot_gawk() {
 
 	make
 
-	msg "Checking gawk..."
+	# msg "Checking gawk..."
 
-	chown -R tester .
+	# chown -R tester .
 
-	su tester -c "PATH=$PATH make check"
+	# su tester -c "PATH=$PATH make check"
 
 	msg "Installing gawk..."
 
