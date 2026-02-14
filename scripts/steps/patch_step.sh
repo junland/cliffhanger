@@ -28,3 +28,27 @@ step_patch() {
 
 	clean_work_dir
 }
+
+step_chroot_patch() {
+	extract_file "${SOURCES}/patch-${PATCH_VER}.tar.xz" "${WORK}/patch-${PATCH_VER}"
+
+	cd "${WORK}/patch-${PATCH_VER}"
+
+	msg "Configuring patch..."
+
+	./configure --prefix=/usr
+
+	msg "Building patch..."
+
+	make
+
+	msg "Checking patch..."
+
+	make check
+
+	msg "Installing patch..."
+
+	make install
+
+	clean_work_dir
+}

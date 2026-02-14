@@ -135,6 +135,11 @@ bootstrap_stage_3() {
 		"diffutils"
 		"gawk"
 		"findutils"
+		"groff"
+		"gzip"
+		"libpipeline"
+		"make"
+		"patch"
 	)
 
 	# Execute each chroot step
