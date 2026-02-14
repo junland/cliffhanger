@@ -29,3 +29,29 @@ step_make() {
 
 	clean_work_dir
 }
+
+step_chroot_make() {
+	extract_file "${SOURCES}/make-${MAKE_VER}.tar.gz" "${WORK}/make-${MAKE_VER}"
+
+	cd "${WORK}/make-${MAKE_VER}"
+
+	msg "Configuring make..."
+
+	./configure --prefix=/usr
+
+	msg "Building make..."
+
+	make
+
+	msg "Checking make..."
+
+	chown -R tester .
+
+	su tester -c "PATH=$PATH make check"
+
+	msg "Installing make..."
+
+	make install
+
+	clean_work_dir
+}
