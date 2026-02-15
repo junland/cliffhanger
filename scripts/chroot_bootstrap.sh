@@ -143,7 +143,7 @@ bootstrap_stage_3() {
 		"tar"
 		"texinfo"
 		"procps_ng"
-		"util_linux"
+		"util_linux_stage3"
 	)
 
 	# Execute each chroot step
