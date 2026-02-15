@@ -58,6 +58,8 @@ ZLIB_VER="1.3.1"
 ZSTD_VER="1.5.7"
 LESS_VER="679"
 INETUTILS_VER="2.6"
+AUTOCONF_VER="2.71"
+PROCPS_VER="4.0.5"
 
 # msg function that will make echo's pretty.
 msg() {
@@ -1496,6 +1498,138 @@ bootstrap_stage_3() {
 	make check
 
 	msg "Installing autoconf..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# tar Step
+	##
+
+	extract_file "${SOURCES}/tar-${TAR_VER}.tar.xz" "${WORK}/tar-${TAR_VER}"
+
+	cd "${WORK}/tar-${TAR_VER}"
+
+	msg "Configuring tar..."
+
+	./configure \
+		--prefix=/usr \
+		--docdir=/usr/share/doc/tar-${TAR_VER}
+
+	msg "Building tar..."
+
+	make
+
+	msg "Checking tar..."
+
+	make check
+
+	msg "Installing tar..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# texinfo Step
+	##
+
+	extract_file "${SOURCES}/texinfo-${TEXINFO_VER}.tar.xz" "${WORK}/texinfo-${TEXINFO_VER}"
+
+	cd "${WORK}/texinfo-${TEXINFO_VER}"
+
+	msg "Configuring texinfo..."
+
+	./configure --prefix=/usr
+
+	msg "Building texinfo..."
+
+	make
+
+	msg "Checking texinfo..."
+
+	make check
+
+	msg "Installing texinfo..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# procps-ng Step
+	##
+
+	extract_file "${SOURCES}/procps-v${PROCPS_VER}.tar.bz2" "${WORK}/procps-v${PROCPS_VER}"
+
+	cd "${WORK}/procps-v${PROCPS_VER}"
+
+	msg "Configuring procps-ng..."
+
+	# procps-ng git archive requires autogen.sh to generate configure script
+	./autogen.sh
+
+	./configure \
+		--prefix=/usr \
+		--disable-static \
+		--disable-kill \
+		--docdir=/usr/share/doc/procps-ng-${PROCPS_VER}
+
+	msg "Building procps-ng..."
+
+	make
+
+	msg "Checking procps-ng..."
+
+	make check
+
+	msg "Installing procps-ng..."
+
+	make install
+
+	clean_work_dir
+
+	##
+	# util-linux Step
+	##
+
+	extract_file "${SOURCES}/util-linux-${UTIL_LINUX_VER}.tar.xz" "${WORK}/util-linux-${UTIL_LINUX_VER}"
+
+	cd "${WORK}/util-linux-${UTIL_LINUX_VER}"
+
+	msg "Configuring util-linux..."
+
+	./configure \
+		--prefix=/usr \
+		--bindir=/usr/bin \
+		--sbindir=/usr/sbin \
+		--libdir=/usr/lib \
+		--runstatedir=/run \
+		--disable-chfn-chsh \
+		--disable-login \
+		--disable-nologin \
+		--disable-su \
+		--disable-setpriv \
+		--disable-runuser \
+		--disable-pylibmount \
+		--disable-liblastlog2 \
+		--disable-static \
+		--without-python \
+		ADJTIME_PATH=/var/lib/hwclock/adjtime \
+		--docdir=/usr/share/doc/util-linux-${UTIL_LINUX_VER}
+
+	msg "Building util-linux..."
+
+	make
+
+	msg "Checking util-linux..."
+
+	chown -R tester .
+
+	su tester -c "make -k check"
+
+	msg "Installing util-linux..."
 
 	make install
 
