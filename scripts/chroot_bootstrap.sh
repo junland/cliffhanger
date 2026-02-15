@@ -140,6 +140,10 @@ bootstrap_stage_3() {
 		"libpipeline"
 		"make"
 		"patch"
+		"tar"
+		"texinfo"
+		"procps_ng"
+		"util_linux"
 	)
 
 	# Execute each chroot step
