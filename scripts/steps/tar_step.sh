@@ -36,9 +36,7 @@ step_chroot_tar() {
 
 	msg "Configuring tar..."
 
-	sed 's/! $output_file eq/$output_file ne/' -i tp/Texinfo/Convert/*.pm
-
-	./configure --prefix=/usr
+	FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr
 
 	msg "Building tar..."
 
