@@ -28,3 +28,27 @@ step_tar() {
 
 	clean_work_dir
 }
+
+step_chroot_tar() {
+	extract_file "${SOURCES}/tar-${TAR_VER}.tar.xz" "${WORK}/tar-${TAR_VER}"
+
+	cd "${WORK}/tar-${TAR_VER}"
+
+	msg "Configuring tar..."
+
+	FORCE_UNSAFE_CONFIGURE=1 ./configure --prefix=/usr
+
+	msg "Building tar..."
+
+	make
+
+	msg "Checking tar..."
+
+	make check
+
+	msg "Installing tar..."
+
+	make install
+
+	clean_work_dir
+}
