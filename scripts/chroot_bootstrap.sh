@@ -141,7 +141,7 @@ bootstrap_stage_3() {
 		"make"
 		"patch"
 		"tar"
-		"texinfo"
+		"texinfo_stage3"
 		"procps_ng"
 		"util_linux_stage3"
 	)
