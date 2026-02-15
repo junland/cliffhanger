@@ -51,14 +51,14 @@ step_chroot_texinfo_stage3() {
 	make TEXMF=/usr/share/texmf install-tex
 
 	pushd /usr/share/info
-	
+
 	rm -v dir
-	
-	for f in *
-	    msg "Recreate info docs: $f"
-	    do install-info $f dir 2>/dev/null
+
+	for f in *; do
+		msg "Recreate info docs: $f"
+		install-info $f dir 2>/dev/null
 	done
-	
+
 	popd
 
 	clean_work_dir
