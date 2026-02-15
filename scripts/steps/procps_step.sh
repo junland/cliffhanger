@@ -10,23 +10,23 @@ step_chroot_procps_ng() {
 
 	msg "Configuring procps-ng..."
 
-	./autogen.sh
-
 	./configure \
 		--prefix=/usr \
+		--docdir=/usr/share/doc/procps-ng-${PROCPS_VER} \
 		--disable-static \
+		--enable-watch8bit \
 		--disable-kill \
 		--with-systemd
 
 	msg "Building procps-ng..."
 
-	# The src_w_LDADD workaround is needed to explicitly link against ncursesw
-	# for the 'w' utility, as the configure script may not properly detect it
-	make src_w_LDADD='$(LDADD) -lncursesw'
+	make
 
 	msg "Checking procps-ng..."
 
-	make check
+	chown -R tester .
+	
+    su tester -c "PATH=$PATH make check"
 
 	msg "Installing procps-ng..."
 
