@@ -20,6 +20,8 @@ step_chroot_procps_ng() {
 
 	msg "Building procps-ng..."
 
+	# The src_w_LDADD workaround is needed to explicitly link against ncursesw
+	# for the 'w' utility, as the configure script may not properly detect it
 	make src_w_LDADD='$(LDADD) -lncursesw'
 
 	msg "Checking procps-ng..."
