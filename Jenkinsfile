@@ -65,6 +65,26 @@ pipeline {
         }
     }
 
+    stage('Bootstrap Stage 1') {
+        steps {
+            sh """
+                set -o pipefail
+                ${env.WORKSPACE}/scripts/chroot_bootstrap.sh TARGET_ARCH=${params.TARGET_ARCH}  > ${env.WORKSPACE}/scripts/chroot_bootstrap.log 2>&1 &
+                BOOTSTRAP_PID=\$!
+
+                tail -F ${env.WORKSPACE}/scripts/chroot_bootstrap.log | grep --line-buffered -E '^ ==>' &
+
+                wait \$BOOTSTRAP_PID
+
+                if [ \$? -ne 0 ]; then
+                    echo '❌ Build failed! Showing last 50 lines:'
+                    tail -n 50 ${env.WORKSPACE}/scripts/chroot_bootstrap.log
+                    exit 1
+                fi
+            """
+        }
+    }
+
     post {
         failure {
             script {
