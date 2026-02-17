@@ -57,10 +57,10 @@ pipeline {
             }
         }
 
-        stage('Archive rootfs') {
+        stage('Archive Stage 0') {
             steps {
-                sh "tar -czf ${env.WORKSPACE}/rootfs.tar.gz -C ${env.WORKSPACE} rootfs"
-                archiveArtifacts artifacts: 'rootfs.tar.gz', fingerprint: true
+                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage1-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE} rootfs"
+                archiveArtifacts artifacts: 'rootfs-stage1-${env.BUILD_NUMBER}', fingerprint: true
             }
         }
     }
