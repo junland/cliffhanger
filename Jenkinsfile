@@ -95,6 +95,13 @@ pipeline {
                 """
             }
         }
+
+        stage('Archive rootfs') {
+            steps {
+                sh "tar -czf ${env.WORKSPACE}/rootfs.tar.gz -C ${env.WORKSPACE} rootfs"
+                archiveArtifacts artifacts: 'rootfs.tar.gz', fingerprint: true
+            }
+        }
     }
 
     post {
