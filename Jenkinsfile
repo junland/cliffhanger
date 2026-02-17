@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'TARGET_ARCH', choices: ['x86_64'], description: 'Target CPU architecture')
+        choice(name: 'TARGET_CPU_ARCH', choices: ['x86_64', 'aarch64'], description: 'Target CPU architecture')
     }
 
     stages {
@@ -59,8 +59,8 @@ pipeline {
 
         stage('Archive Stage 0') {
             steps {
-                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage1-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE} rootfs"
-                archiveArtifacts artifacts: 'rootfs-stage1-${env.BUILD_NUMBER}', fingerprint: true
+                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage1-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE} rootfs"
+                archiveArtifacts artifacts: "rootfs-stage1-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz", fingerprint: true
             }
         }
     }
