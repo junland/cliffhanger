@@ -68,16 +68,16 @@ pipeline {
             steps {
                 sh """
                     set -o pipefail
-                    ${env.WORKSPACE}/scripts/chroot_bootstrap.sh ${env.WORKSPACE}/rootfs 2 > ${env.WORKSPACE}/scripts/chroot_bootstrap_stage2.log 2>&1 &
+                    sudo ${env.WORKSPACE}/scripts/chroot_bootstrap.sh ${env.WORKSPACE}/rootfs 2 > ${env.WORKSPACE}/scripts/chroot_bootstrap_stage2.log 2>&1 &
                     BOOTSTRAP_PID=\$!
     
-                    tail -F ${env.WORKSPACE}/scripts/chroot_bootstrap.log | grep --line-buffered -E '^ ==>' &
+                    tail -F ${env.WORKSPACE}/scripts/chroot_bootstrap_stage2.log | grep --line-buffered -E '^ ==>' &
     
                     wait \$BOOTSTRAP_PID
     
                     if [ \$? -ne 0 ]; then
                         echo '❌ Build failed! Showing last 50 lines:'
-                        tail -n 50 ${env.WORKSPACE}/scripts/chroot_bootstrap.log
+                        tail -n 50 ${env.WORKSPACE}/scripts/chroot_bootstrap_stage2.log
                         exit 1
                     fi
                 """
@@ -94,13 +94,6 @@ pipeline {
     }
 
     post {
-        failure {
-            script {
-                if (fileExists("${env.WORKSPACE}/scripts/bootstrap.log")) {
-                    sh "tail -n 100 ${env.WORKSPACE}/scripts/bootstrap.log"
-                }
-            }
-        }
         cleanup {
             cleanWs()
         }
