@@ -37,11 +37,11 @@ pipeline {
             }
         }
 
-        stage('Bootstrap Stage 0') {
+        stage('Bootstrap Stage 1') {
             steps {
                 sh """
                     set -o pipefail
-                    TARGET_ARCH=${params.TARGET_ARCH} ${env.WORKSPACE}/scripts/bootstrap.sh > ${env.WORKSPACE}/scripts/bootstrap.log 2>&1 &
+                    TARGET_ARCH=${params.TARGET_ARCH} ${env.WORKSPACE}/scripts/bootstrap.sh > ${env.WORKSPACE}/scripts/bootstrap_stage1.log 2>&1 &
                     BOOTSTRAP_PID=\$!
 
                     tail -F ${env.WORKSPACE}/scripts/bootstrap.log | grep --line-buffered -E '^ ==>' &
@@ -57,32 +57,40 @@ pipeline {
             }
         }
 
-        stage('Archive Stage 0') {
+        stage('Archive Stage 1') {
             steps {
-                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage1-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE} rootfs"
+                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage1-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE}/rootfs"
                 archiveArtifacts artifacts: "rootfs-stage1-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz", fingerprint: true
             }
         }
-    }
-
-    stage('Bootstrap Stage 1') {
-        steps {
-            sh """
-                set -o pipefail
-                ${env.WORKSPACE}/scripts/chroot_bootstrap.sh TARGET_ARCH=${params.TARGET_ARCH}  > ${env.WORKSPACE}/scripts/chroot_bootstrap.log 2>&1 &
-                BOOTSTRAP_PID=\$!
-
-                tail -F ${env.WORKSPACE}/scripts/chroot_bootstrap.log | grep --line-buffered -E '^ ==>' &
-
-                wait \$BOOTSTRAP_PID
-
-                if [ \$? -ne 0 ]; then
-                    echo '❌ Build failed! Showing last 50 lines:'
-                    tail -n 50 ${env.WORKSPACE}/scripts/chroot_bootstrap.log
-                    exit 1
-                fi
-            """
+        
+        stage('Bootstrap Stage 2') {
+            steps {
+                sh """
+                    set -o pipefail
+                    ${env.WORKSPACE}/scripts/chroot_bootstrap.sh ${env.WORKSPACE}/rootfs 2 > ${env.WORKSPACE}/scripts/chroot_bootstrap_stage2.log 2>&1 &
+                    BOOTSTRAP_PID=\$!
+    
+                    tail -F ${env.WORKSPACE}/scripts/chroot_bootstrap.log | grep --line-buffered -E '^ ==>' &
+    
+                    wait \$BOOTSTRAP_PID
+    
+                    if [ \$? -ne 0 ]; then
+                        echo '❌ Build failed! Showing last 50 lines:'
+                        tail -n 50 ${env.WORKSPACE}/scripts/chroot_bootstrap.log
+                        exit 1
+                    fi
+                """
+            }
         }
+
+        stage('Archive Stage 2') {
+            steps {
+                sh "tar -czpf ${env.WORKSPACE}/rootfs-stage2-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz -C ${env.WORKSPACE}/rootfs"
+                archiveArtifacts artifacts: "rootfs-stage2-${env.TARGET_CPU_ARCH}-${env.BUILD_NUMBER}.tar.gz", fingerprint: true
+            }
+        }
+        
     }
 
     post {
