@@ -22,18 +22,29 @@ fi
 CHROOT_PATH="$1"
 STAGE="${2:-1}"
 
+# Get the directory where this script lives
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
 	echo "Error: Chroot path '$CHROOT_PATH' is not a directory"
 	exit 1
 fi
 
-# Validate bootstrap script exists
+# Validate bootstrap script exists, auto-copy from script directory if missing
 BOOTSTRAP_SCRIPT="${CHROOT_PATH}/tmp/chroot_bootstrap.sh"
 if [ ! -f "$BOOTSTRAP_SCRIPT" ]; then
-	echo "Error: Bootstrap script not found at '$BOOTSTRAP_SCRIPT'"
-	echo "Please ensure the bootstrap script is copied to the chroot environment"
-	exit 1
+	CHROOT_BOOTSTRAP_SRC="${SCRIPT_DIR}/chroot_bootstrap.sh"
+	if [ -f "$CHROOT_BOOTSTRAP_SRC" ]; then
+		echo "Copying chroot bootstrap script to $BOOTSTRAP_SCRIPT..."
+		mkdir -p "${CHROOT_PATH}/tmp"
+		cp -v "$CHROOT_BOOTSTRAP_SRC" "$BOOTSTRAP_SCRIPT"
+		chmod +x "$BOOTSTRAP_SCRIPT"
+	else
+		echo "Error: Bootstrap script not found at '$BOOTSTRAP_SCRIPT'"
+		echo "And source script not found at '$CHROOT_BOOTSTRAP_SRC'"
+		exit 1
+	fi
 fi
 
 # Validate stage number
