@@ -71,7 +71,7 @@ jobs:
         id: bootstrap
         run: |
           set -o pipefail
-          TARGET_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh > ${{ github.workspace }}/scripts/bootstrap.log 2>&1 &
+          TARGET_CPU_ARCH=${{ matrix.TARGET_ARCH }} ${{ github.workspace }}/scripts/bootstrap.sh > ${{ github.workspace }}/scripts/bootstrap.log 2>&1 &
 
           tail -F ${{ github.workspace }}/scripts/bootstrap.log | grep --line-buffered -E "^ ==>" &
 
