@@ -15,12 +15,12 @@ fi
 if [ "$#" -lt 1 ] || [ "$#" -gt 2 ]; then
 	echo "Usage: $0 <chroot_path> [stage_number]"
 	echo "  chroot_path   - Path to the chroot directory"
-	echo "  stage_number  - Bootstrap stage to run (1 or 2, default: 1)"
+	echo "  stage_number  - Bootstrap stage to run (2 or 3, default: 2)"
 	exit 1
 fi
 
 CHROOT_PATH="$1"
-STAGE="${2:-1}"
+STAGE="${2:-2}"
 
 # Validate chroot path
 if [ ! -d "$CHROOT_PATH" ]; then
